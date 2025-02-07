@@ -1,4 +1,4 @@
-package com.scit.mojimoji;
+package com.sangkeumi.mojimoji;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

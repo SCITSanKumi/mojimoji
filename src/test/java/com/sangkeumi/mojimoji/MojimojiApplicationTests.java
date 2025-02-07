@@ -1,4 +1,4 @@
-package com.scit.mojimoji;
+package com.sangkeumi.mojimoji;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
