@@ -12,21 +12,18 @@ import lombok.*;
 @Builder
 public class Kanji {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long kanjiId;
+
+    private String jlptRank;
+    private String category;
 
     @Column(nullable = false, length = 4)
     private String kanji;
 
-    private String kunon;
-    private String onyomi;
-    private String kunyomi;
+    private String korOnyomi;
+    private String korKunyomi;
+    private String jpnOnyomi;
+    private String jpnKunyomi;
     private String meaning;
-    private String bushu;
-    private String shapeComponent;
 
-    @Column(nullable = false)
-    private int strokeCount;
-
-    private String jlptRank;
 }
