@@ -28,7 +28,7 @@ CREATE TABLE Users (
     email VARCHAR(100) NOT NULL,                            -- 사용자 이메일 주소
     role VARCHAR(20) NOT NULL DEFAULT 'ROLE_USER',          -- 사용자 권한, 기본값은 'ROLE_USER'
     status VARCHAR(20) NOT NULL                             -- 사용자 상태: active, inactive, banned, pending, deleted 중 하나
-        CHECK (status IN ('active', 'inactive', 'banned', 'pending', 'deleted')),
+        CHECK (status IN ('ACTIVE', 'INACTIVE', 'BANNED', 'PENDING', 'DELETED')),
     profile_url VARCHAR(255),                               -- 프로필 이미지 URL (선택적)
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 계정 생성 일시
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 마지막 수정 일시
