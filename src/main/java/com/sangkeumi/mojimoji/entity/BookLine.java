@@ -1,7 +1,6 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,46 +20,51 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Community_Posts")
+@Table(name = "Book_Lines")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommunityPost {
+public class BookLine {
     /**
-     * Primary Key, 커뮤니티 게시글 식별자
+     * Primary Key, 각 줄의 식별자
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "community_post_id")
-    private Long communityPostId;
+    @Column(name = "line_id")
+    private Long lineId;
 
     /**
-     * 게시글 작성자 (Users 테이블과 다대일 관계)
+     * 어느 책에 속하는지 (Books 테이블과 다대일 관계)
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
 
     /**
-     * 게시글 제목
+     * 책 내에서의 순서를 나타내는 필드
      */
-    @Column(nullable = false, length = 100)
-    private String title;
+    @Column(nullable = false)
+    private int sequence;
 
     /**
-     * 게시글 내용 (TEXT)
+     * 해당 줄의 내용 (텍스트)
      */
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     /**
-     * 조회수
+     * 해당 줄이 플레이된 턴 수
      */
-    @Column(name = "hit_count", nullable = false)
-    @Builder.Default
-    private int hitCount = 0;
+    @Column(name = "played_turns", nullable = false)
+    private int playedTurns;
+
+    /**
+     * 해당 줄이 책의 끝인지 여부
+     */
+    @Column(name = "is_ended", nullable = false)
+    private boolean isEnded;
 
     /**
      * 생성일시
@@ -79,8 +83,8 @@ public class CommunityPost {
     // 양방향 관계
 
     /**
-     * 게시글에 달린 댓글 목록 (Community_Replies 테이블과 일대다 관계)
+     * 이 줄에서 사용된 한자들 (Used_Book_Kanjis 테이블과 일대다 관계)
      */
-    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityReply> communityReplies;
+    @OneToMany(mappedBy = "bookLine", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<UsedBookKanji> usedBookKanjis;
 }

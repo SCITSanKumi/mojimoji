@@ -18,34 +18,40 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Kanji_Collections")
+@Table(name = "Shared_Book_Replies")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KanjiCollection {
+public class SharedBookReply {
     /**
-     * Primary Key, 컬렉션 항목 식별자
+     * Primary Key, 공유된 책 댓글 식별자
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "kanji_collection_id")
-    private Long kanjiCollectionId;
+    @Column(name = "shared_book_reply_id")
+    private Long sharedBookReplyId;
 
     /**
-     * 수집된 한자 (Kanjis 테이블과 다대일 관계)
+     * 해당 댓글이 달린 공유된 책 (Shared_Books 테이블과 다대일 관계)
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kanji_id", nullable = false)
-    private Kanji kanji;
+    @JoinColumn(name = "shared_book_id", nullable = false)
+    private SharedBook sharedBook;
 
     /**
-     * 이 컬렉션을 소유한 유저 (Users 테이블과 다대일 관계)
+     * 댓글 작성자 (Users 테이블과 다대일 관계)
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    /**
+     * 댓글 내용
+     */
+    @Column(nullable = false, length = 2000)
+    private String content;
 
     /**
      * 생성일시

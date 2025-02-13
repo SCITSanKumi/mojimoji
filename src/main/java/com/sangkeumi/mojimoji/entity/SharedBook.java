@@ -1,7 +1,9 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,34 +21,41 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Kanji_Collections")
+@Table(name = "Shared_Books")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KanjiCollection {
+public class SharedBook {
     /**
-     * Primary Key, 컬렉션 항목 식별자
+     * Primary Key, 공유된 책 식별자
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "kanji_collection_id")
-    private Long kanjiCollectionId;
+    @Column(name = "shared_book_id")
+    private Long sharedBookId;
 
     /**
-     * 수집된 한자 (Kanjis 테이블과 다대일 관계)
+     * 공유된 책의 식별자 (Books 테이블과 다대일 혹은 1:1 관계)
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kanji_id", nullable = false)
-    private Kanji kanji;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
 
     /**
-     * 이 컬렉션을 소유한 유저 (Users 테이블과 다대일 관계)
+     * 조회수
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "hit_count", nullable = false)
+    @Builder.Default
+    private int hitCount = 0;
+
+    /**
+     * 추천수 (gaechu)
+     */
+    @Column(nullable = false)
+    @Builder.Default
+    private int gaechu = 0;
 
     /**
      * 생성일시
@@ -60,4 +70,12 @@ public class KanjiCollection {
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    // 양방향 관계
+
+    /**
+     * 공유된 책에 대한 댓글 목록 (Shared_Book_Replies 테이블과 일대다 관계)
+     */
+    @OneToMany(mappedBy = "sharedBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SharedBookReply> sharedBookReplies;
 }

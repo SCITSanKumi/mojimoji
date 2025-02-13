@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,56 +23,49 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Community_Posts")
+@Table(name = "Books")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommunityPost {
+public class Book {
     /**
-     * Primary Key, 커뮤니티 게시글 식별자
+     * Primary Key, 책의 식별자
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "community_post_id")
-    private Long communityPostId;
+    @Column(name = "book_id")
+    private Long bookId;
 
     /**
-     * 게시글 작성자 (Users 테이블과 다대일 관계)
+     * 책을 작성한 유저 (Users 테이블과 다대일 관계)
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     /**
-     * 게시글 제목
+     * 책 제목
      */
     @Column(nullable = false, length = 100)
     private String title;
 
     /**
-     * 게시글 내용 (TEXT)
+     * 책의 대표 이미지 URL
      */
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
 
     /**
-     * 조회수
-     */
-    @Column(name = "hit_count", nullable = false)
-    @Builder.Default
-    private int hitCount = 0;
-
-    /**
-     * 생성일시
+     * 책의 생성일시
      */
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     /**
-     * 최종 수정일시
+     * 책의 최종 수정일시
      */
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
@@ -79,8 +74,16 @@ public class CommunityPost {
     // 양방향 관계
 
     /**
-     * 게시글에 달린 댓글 목록 (Community_Replies 테이블과 일대다 관계)
+     * 책을 구성하는 줄들의 목록 (Book_Lines 테이블과 일대다 관계)
+     * sequence 필드로 정렬하여 책의 순서대로 조회 가능
      */
-    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityReply> communityReplies;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sequence ASC")
+    private List<BookLine> bookLines;
+
+    /**
+     * 책이 공유된 정보 (Shared_Books 테이블과 1:1 또는 1:N 관계; 여기서는 1:1로 가정)
+     */
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private SharedBook sharedBook;
 }

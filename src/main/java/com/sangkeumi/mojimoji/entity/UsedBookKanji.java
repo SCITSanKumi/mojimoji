@@ -18,34 +18,40 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Kanji_Collections")
+@Table(name = "Used_Book_Kanjis")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KanjiCollection {
+public class UsedBookKanji {
     /**
-     * Primary Key, 컬렉션 항목 식별자
+     * Primary Key, 사용된 한자 항목 식별자
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "kanji_collection_id")
-    private Long kanjiCollectionId;
+    @Column(name = "used_book_kanji_id")
+    private Long usedBookKanjiId;
 
     /**
-     * 수집된 한자 (Kanjis 테이블과 다대일 관계)
+     * 한자가 사용된 책의 줄 (Book_Lines 테이블과 다대일 관계)
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", nullable = false)
+    private BookLine bookLine;
+
+    /**
+     * 사용된 한자 (Kanjis 테이블과 다대일 관계)
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kanji_id", nullable = false)
     private Kanji kanji;
 
     /**
-     * 이 컬렉션을 소유한 유저 (Users 테이블과 다대일 관계)
+     * 힌트로 사용되었는지 여부
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "is_hint", nullable = false)
+    private boolean isHint;
 
     /**
      * 생성일시
@@ -53,11 +59,4 @@ public class KanjiCollection {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    /**
-     * 최종 수정일시
-     */
-    @Column(name = "updated_at", nullable = false)
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
 }
