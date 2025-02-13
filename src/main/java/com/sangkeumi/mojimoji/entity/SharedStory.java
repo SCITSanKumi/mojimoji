@@ -16,27 +16,24 @@ import java.util.List;
 public class SharedStory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "shared_story_id")
     private Long sharedStoryId;
 
-    @ManyToOne
-    @JoinColumn(name = "story_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "story_id", nullable = false, unique = true)
     private Story story;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int hitCount = 0;
+    @Column(name = "hit_count", nullable = false)
+    private int hitCount;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int gaechu = 0;
+    @Column(name = "gaechu", nullable = false)
+    private int gaechu;
 
-    @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "sharedStory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SharedStoryReply> sharedStoryReplies;

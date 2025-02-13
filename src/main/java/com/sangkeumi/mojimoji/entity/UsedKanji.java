@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class UsedKanji {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "used_kanji_id")
     private Long usedKanjiId;
 
     @ManyToOne
@@ -25,10 +26,9 @@ public class UsedKanji {
     @JoinColumn(name = "kanji_id", nullable = false)
     private Kanji kanji;
 
-    @Column(nullable = false)
+    @Column(name = "is_hint", nullable = false)
     private boolean isHint;
 
-    @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

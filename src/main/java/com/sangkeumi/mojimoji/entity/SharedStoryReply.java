@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class SharedStoryReply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "community_reply_id")
     private Long sharedStoryReplyId;
 
     @ManyToOne
@@ -28,11 +29,9 @@ public class SharedStoryReply {
     @Column(nullable = false, length = 2000)
     private String content;
 
-    @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 }

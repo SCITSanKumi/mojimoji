@@ -16,35 +16,37 @@ import java.util.List;
 public class Story {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "story_id")
     private Long storyId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "title", length = 100)
     private String title;
+
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int playedTurns = 0;
+    @Column(name = "played_turns", nullable = false)
+    private int playedTurns;
 
-    @Column(nullable = false)
+    @Column(name = "is_ended", nullable = false)
     private boolean isEnded;
 
+    @Column(name = "thumbnail_url", length = 255)
     private String thumbnailUrl;
 
-    @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsedKanji> usedKanjis;
 
-    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SharedStory> sharedStories;
+    @OneToOne(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SharedStory sharedStory;
 }
