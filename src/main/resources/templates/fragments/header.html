@@ -12,19 +12,24 @@
             <li class="nav-item"><a href="#" class="nav-link">스토리 시작</a></li>
             <li class="nav-item"><a href="#" class="nav-link">스토리 구경하기</a></li>
             <li class="nav-item"><a href="#" class="nav-link">이용방법</a></li>
+            <!-- 모바일 화면에서 드롭다운 항목을 개별 nav-item으로 표시 -->
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link">마이 페이지</a></li>
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link">내 스토리</a></li>
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link">한자 컬렉션</a></li>
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link text-danger">로그아웃</a></li>
+            <!-- 데스크톱에서는 드롭다운 메뉴 유지 -->
+            <li class="nav-item dropdown d-none d-lg-block">
+                <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#">마이 페이지</a></li>
+                    <li><a class="dropdown-item" href="#">내 스토리</a></li>
+                    <li><a class="dropdown-item" href="#">한자 컬렉션</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#">로그아웃</a></li>
+                </ul>
+            </li>
         </ul>
-        <!-- 사용자 드롭다운 메뉴 -->
-        <div class="dropdown ms-lg-3">
-            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end text-small">
-                <li><a class="dropdown-item" href="#">마이 페이지</a></li>
-                <li><a class="dropdown-item" href="#">내 스토리</a></li>
-                <li><a class="dropdown-item" href="#">한자 컬렉션</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">로그아웃</a></li>
-            </ul>
-        </div>
     </div>
 </nav>
