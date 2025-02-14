@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{css/bootstrap.min.css}">
     <script defer src="../static/js/bootstrap.bundle.min.js" th:src="@{js/bootstrap.bundle.min.js}"></script>
 </head>
+
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="container-fluid vh-100 d-flex justify-content-start align-items-center ps-5">
@@ -18,41 +20,102 @@
             </button>
         </div>
         <!-- 이미지 배치 -->
-        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png" class="position-absolute bottom-0 w-100">
+        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png"
+            class="position-absolute bottom-0 w-100">
     </div>
 
+    <!-- 스토리 top3 -->
+    <div class="container px-4 py-5" id="custom-cards">
+        <h1 class="pb-2">Top3</h1>
+        <h4 class="pb-2">지금 가장 인기 있는 스토리는?</h4>
 
-    <div class="album py-5 bg-body-tertiary">
-        <div class="container">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <img src="https://plus.unsplash.com/premium_photo-1723709016897-3cc15635e618?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8JUVDJTlFJUFDJUVCJUFGJUI4JUVDJTlFJTg4JUVCJThBJTk0JTIwJUVBJUIwJTk1JUVDJTk1JTg0JUVDJUE3JTgwJTIwJUVDJTgyJUFDJUVDJUE3JTg0fGVufDB8fDB8fHww"
-                            class="bd-placeholder-img card-img-top" width="100%" height="225" alt="Thumbnail">
-                        <div class="card-body">
-                            <h5 class="fw-bolder" style="font-size: 1rem;">태백산맥</h5>
-                            <span style="font-size: 0.875rem;">조정래</span>
-                        </div>
+        <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+            <div class="col">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+                    style="background-image: url('https://gptrpg.net/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fgptrpg-net.appspot.com%2Fpublic%2Fupload%2F2025-01-31%2Fa4149275-2e55-456d-b05d-64ee93eb64a1&w=1920&q=75');">
+                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                            <a href="스토리_상세_페이지_URL" class="text-white text-decoration-none">스토리 제목</a>
+                        </h3>
+                        <h5>작성자</h5>
+                        <ul class="d-flex list-unstyled mt-auto">
+                            <li class="me-auto">
+                                <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
+                                    class="rounded-circle border border-white">
+                            </li>
+                            <li class="d-flex align-items-center me-3">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#geo-fill" />
+                                </svg>
+                                <small>조회수</small>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#calendar3" />
+                                </svg>
+                                <small>2,000</small>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <img src="https://plus.unsplash.com/premium_photo-1723709016897-3cc15635e618?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8JUVDJTlFJUFDJUVCJUFGJUI4JUVDJTlFJTg4JUVCJThBJTk0JTIwJUVBJUIwJTk1JUVDJTk1JTg0JUVDJUE3JTgwJTIwJUVDJTgyJUFDJUVDJUE3JTg0fGVufDB8fDB8fHww"
-                            class="bd-placeholder-img card-img-top" width="100%" height="225" alt="Thumbnail">
-                        <div class="card-body">
-                            <h5 class="fw-bolder" style="font-size: 1rem;">태백산맥</h5>
-                            <span style="font-size: 0.875rem;">조정래</span>
-                        </div>
+            </div>
+
+            <div class="col">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+                    style="background-image: url('https://gptrpg.net/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fgptrpg-net.appspot.com%2Fpublic%2Fupload%2F2024-12-01%2F80315c39-7676-44bb-8195-7804c7658433&w=3840&q=75');">
+                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                            <a href="스토리_상세_페이지_URL" class="text-white text-decoration-none">스토리 제목</a>
+                        </h3>
+                        <h5>작성자</h5>
+                        <ul class="d-flex list-unstyled mt-auto">
+                            <li class="me-auto">
+                                <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
+                                    class="rounded-circle border border-white">
+                            </li>
+                            <li class="d-flex align-items-center me-3">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#geo-fill" />
+                                </svg>
+                                <small>조회수</small>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#calendar3" />
+                                </svg>
+                                <small>3000</small>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <img src="https://plus.unsplash.com/premium_photo-1723709016897-3cc15635e618?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8JUVDJTlFJUFDJUVCJUFGJUI4JUVDJTlFJTg4JUVCJThBJTk0JTIwJUVBJUIwJTk1JUVDJTk1JTg0JUVDJUE3JTgwJTIwJUVDJTgyJUFDJUVDJUE3JTg0fGVufDB8fDB8fHww"
-                            class="bd-placeholder-img card-img-top" width="100%" height="225" alt="Thumbnail">
-                        <div class="card-body">
-                            <h5 class="fw-bolder" style="font-size: 1rem;">태백산맥</h5>
-                            <span style="font-size: 0.875rem;">조정래</span>
-                        </div>
+            </div>
+
+            <div class="col">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+                    style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSPQ6K6ENWQCzpkQt3Vv7_q8U-UIObIadUTSLCbOKXWb7fP381hx3v6OM&s');">
+                    <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
+                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                            <a href="스토리_상세_페이지_URL" class="text-white text-decoration-none">스토리 제목</a>
+                        </h3>
+                        <h5>작성자</h5>
+                        <ul class="d-flex list-unstyled mt-auto">
+                            <li class="me-auto">
+                                <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
+                                    class="rounded-circle border border-white">
+                            </li>
+                            <li class="d-flex align-items-center me-3">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#geo-fill" />
+                                </svg>
+                                <small>조회수</small>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#calendar3" />
+                                </svg>
+                                <small>5000</small>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
