@@ -4,21 +4,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mojimoji</title>
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{css/bootstrap.min.css}">
-    <!-- Bootstrap JS -->
     <script defer src="../static/js/bootstrap.bundle.min.js" th:src="@{js/bootstrap.bundle.min.js}"></script>
 </head>
 <body>
-    <header class="text-white fixed-top" th:insert="~{fragments/header :: header}"></header>
+    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="container-fluid vh-100 d-flex justify-content-start align-items-center ps-5">
-        <div class="text-start">
+        <div>
             <h1 class="display-4 fw-bolder">한번도 경험하지 못한<br>한자 학습!</h1>
             <button class="btn btn-custom text-white fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;">
                 스토리 시작
             </button>
         </div>
+        <!-- 이미지 배치 -->
+        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png" class="position-absolute bottom-0 w-100">
     </div>
+
+
     <div class="album py-5 bg-body-tertiary">
         <div class="container">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
