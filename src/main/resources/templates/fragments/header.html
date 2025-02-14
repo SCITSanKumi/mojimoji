@@ -1,42 +1,35 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<script>
-
-</script>
-
-<div th:fragment="header">
-    <header class="p-3 mb-3 border-bottom">
-        <div class="container">
-            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-                    もじもじ
+<nav th:fragment="header" class="navbar navbar-expand-lg navbar-light bg-white border-bottom container-fluid p-3 mb-3">
+    <!-- 브랜드 로고 -->
+    <a href="/" class="navbar-brand">もじもじ</a>
+    <!-- 모바일 토글 버튼 -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- 네비게이션 링크 -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a href="#" class="nav-link">스토리 시작</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">스토리 구경하기</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">이용방법</a></li>
+            <!-- 모바일 화면에서 드롭다운 항목을 개별 nav-item으로 표시 -->
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link">마이 페이지</a></li>
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link">내 스토리</a></li>
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link">한자 컬렉션</a></li>
+            <li class="nav-item d-lg-none"><a href="#" class="nav-link text-danger">로그아웃</a></li>
+            <!-- 데스크톱에서는 드롭다운 메뉴 유지 -->
+            <li class="nav-item dropdown d-none d-lg-block">
+                <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
-
-                <ul class="nav col-12 col-lg-auto ms-auto mb-2 justify-content-center mb-md-0">
-                    <li><a th:href="@{/game}" class="nav-link px-2 link-body-emphasis">스토리 시작</a></li>
-                    <li><a th:href="@{/board/story/list}" class="nav-link px-2 link-body-emphasis">스토리 구경하기</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">이용방법</a></li>
+                <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#">마이 페이지</a></li>
+                    <li><a class="dropdown-item" href="#">내 스토리</a></li>
+                    <li><a class="dropdown-item" href="#">한자 컬렉션</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#">로그아웃</a></li>
                 </ul>
-
-                <div class="dropdown text-end">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                    </a>
-                    <ul class="dropdown-menu text-small">
-                        <li><a class="dropdown-item" th:href="@{/mypage}">마이 페이지</a></li>
-                        <li><a class="dropdown-item" th:href="@{/board/mystory/myStoryList}">내 스토리</a></li>
-                        <li><a class="dropdown-item" th:href="@{/kanji/collection}">한자 컬렉션</a></li>
-                        <li><a class="dropdown-item" th:href="@{/user/login}">로그인</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">로그아웃</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </header>
-</div>
-
-</html>
+            </li>
+        </ul>
+    </div>
+</nav>
