@@ -1,5 +1,7 @@
 -- 기존 관련 테이블 모두 삭제 (새 구조용 테이블 포함)
 -- (참고: DROP TABLE IF EXISTS 구문은 개발 중 스키마를 재설정할 때 사용)
+
+
 DROP TABLE IF EXISTS Shared_Book_Replies;
 DROP TABLE IF EXISTS Shared_Books;
 DROP TABLE IF EXISTS Used_Book_Kanjis;
@@ -10,7 +12,6 @@ DROP TABLE IF EXISTS Kanji_Collections;
 DROP TABLE IF EXISTS Community_Posts;
 DROP TABLE IF EXISTS Kanjis;
 DROP TABLE IF EXISTS Users;
-
 
 ------------------------------------------------------------
 -- Users 테이블

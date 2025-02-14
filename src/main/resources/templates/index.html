@@ -7,21 +7,38 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{css/bootstrap.min.css}">
     <script defer src="../static/js/bootstrap.bundle.min.js" th:src="@{js/bootstrap.bundle.min.js}"></script>
+    <!-- JQuery -->
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(function () {
+
+            $('#toGame').on('click', function () {
+
+                let login = confirm('로그인 중?')
+
+                if (login) {
+                    location.href = '/game';
+                    return;
+                } else {
+                    location.href = '/user/login';
+                }
+
+            });
+        })
+    </script>
 </head>
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="container-fluid vh-100 d-flex justify-content-start align-items-center ps-5">
         <div>
             <h1 class="display-4 fw-bolder">한번도 경험하지 못한<br>한자 학습!</h1>
-            <button class="btn btn-custom text-white fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;">
+            <button class="btn btn-custom text-white fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;" id="toGame">
                 스토리 시작
             </button>
         </div>
         <!-- 이미지 배치 -->
         <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png" class="position-absolute bottom-0 w-100">
     </div>
-
-
     <div class="album py-5 bg-body-tertiary">
         <div class="container">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
@@ -114,5 +131,4 @@
     </div>
     <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
-
 </html>

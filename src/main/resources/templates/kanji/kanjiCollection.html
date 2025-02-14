@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(function () {
+            $('.toKanjiDetail').on('click', function () {
+                location.href = '/kanji/detail';
+            });
+        })
+    </script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>한자 수집북</h2>
+    <table style="border-collapse: collapse;">
+        <tr>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자1</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자2</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자3</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자4</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자5</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자1</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자2</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자3</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자4</div>
+            </td>
+            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
+                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
+                    한자5</div>
+            </td>
+        </tr>
+
+
+    </table>
+</body>
+
+</html>
