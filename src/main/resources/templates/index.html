@@ -5,6 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(function () {
+
+            $('#toGame').on('click', function () {
+
+                let login = confirm('로그인 중?')
+
+                if (login) {
+                    location.href = '/game';
+                    return;
+                } else {
+                    location.href = '/user/login';
+                }
+
+            });
+        })
+    </script>
 </head>
 
 <body>
@@ -17,7 +35,7 @@
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-left text-dark">
                 <h1 class="display-4 fw-bolder">한번도 경험하지 못한 한자 학습!</h1>
-                <button class="btn btn-dark btn-lg">스토리 시작하기</button>
+                <button class="btn btn-dark btn-lg" id="toGame">스토리 시작하기</button>
             </div>
         </div>
     </header>
