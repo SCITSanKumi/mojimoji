@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(function () {
+            $('#toKanjiCollection').on('click', function () {
+                location.href = '/kanji/collection';
+            });
+        })
+    </script>
+    <title>Document</title>
+    <style>
+        #toKanjiCollection {
+            background-color: gray;
+        }
+
+        div {
+            width: 200px;
+            height: 400px;
+            background-color: white;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body id="toKanjiCollection">
+    <div>
+        한자 디테일카드
+    </div>
+</body>
+
+</html>
