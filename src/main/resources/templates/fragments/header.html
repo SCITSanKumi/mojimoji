@@ -1,3 +1,6 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+</html>
 <nav th:fragment="header" class="navbar navbar-expand-lg navbar-light bg-white border-bottom container-fluid p-3 mb-3">
     <!-- 브랜드 로고 -->
     <a href="/" class="navbar-brand">もじもじ</a>
@@ -9,24 +12,27 @@
     <!-- 네비게이션 링크 -->
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a href="#" class="nav-link">스토리 시작</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">스토리 구경하기</a></li>
+            <li class="nav-item"><a th:href="@{/myPage}" class="nav-link">스토리 시작</a></li>
+            <li class="nav-item"><a th:href="@{/board/story/list}" class="nav-link">스토리 구경하기</a></li>
             <li class="nav-item"><a href="#" class="nav-link">이용방법</a></li>
             <!-- 모바일 화면에서 드롭다운 항목을 개별 nav-item으로 표시 -->
-            <li class="nav-item d-lg-none"><a href="#" class="nav-link">마이 페이지</a></li>
-            <li class="nav-item d-lg-none"><a href="#" class="nav-link">내 스토리</a></li>
-            <li class="nav-item d-lg-none"><a href="#" class="nav-link">한자 컬렉션</a></li>
+            <li class="nav-item d-lg-none"><a th:href="@{/myPage}" class="nav-link">마이 페이지</a></li>
+            <li class="nav-item d-lg-none"><a th:href="@{/board/myStory/list}" class="nav-link">내 스토리</a></li>
+            <li class="nav-item d-lg-none"><a th:href="@{/kanji/collection}" class="nav-link">한자 컬렉션</a></li>
             <li class="nav-item d-lg-none"><a href="#" class="nav-link text-danger">로그아웃</a></li>
             <!-- 데스크톱에서는 드롭다운 메뉴 유지 -->
             <li class="nav-item dropdown d-none d-lg-block">
-                <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
                     <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="#">마이 페이지</a></li>
-                    <li><a class="dropdown-item" href="#">내 스토리</a></li>
-                    <li><a class="dropdown-item" href="#">한자 컬렉션</a></li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" th:href="@{/myPage}">마이 페이지</a></li>
+                    <li><a class="dropdown-item" th:href="@{/board/myStory/list}">내 스토리</a></li>
+                    <li><a class="dropdown-item" th:href="@{/kanji/collection}">한자 컬렉션</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
                     <li><a class="dropdown-item text-danger" href="#">로그아웃</a></li>
                 </ul>
             </li>

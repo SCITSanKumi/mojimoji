@@ -18,13 +18,13 @@ public class BoardController {
         return "/board/story/storyDetail";
     }
 
-    @GetMapping("/mystory/myStoryList")
+    @GetMapping("/myStory/list")
     public String myStoryList() {
-        return "/board/mystory/myStoryList";
+        return "/board/myStory/myStoryList";
     }
 
-    @GetMapping("/mystory/myStoryDetail")
+    @GetMapping("/myStory/detail")
     public String myStoryDetail() {
-        return "/board/mystory/myStoryDetail";
+        return "/board/myStory/myStoryDetail";
     }
 }

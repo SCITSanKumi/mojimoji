@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,10 @@
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script>
         $(function () {
+
+            $('.toStoryDetail').on('click', function () {
+                location.href = '/board/story/detail';
+            });
 
             $('#toGame').on('click', function () {
 
@@ -24,20 +29,25 @@
                 }
 
             });
+
+
         })
     </script>
 </head>
+
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="container-fluid vh-100 d-flex justify-content-start align-items-center ps-5">
         <div>
             <h1 class="display-4 fw-bolder">한번도 경험하지 못한<br>한자 학습!</h1>
-            <button class="btn btn-custom text-white fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;" id="toGame">
+            <button class="btn btn-custom text-white fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;"
+                id="toGame">
                 스토리 시작
             </button>
         </div>
         <!-- 이미지 배치 -->
-        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png" class="position-absolute bottom-0 w-100">
+        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png"
+            class="position-absolute bottom-0 w-100">
     </div>
     <div class="album py-5 bg-body-tertiary">
         <div class="container">
@@ -45,7 +55,8 @@
                 <div class="col">
                     <div class="card shadow-sm">
                         <img src="https://plus.unsplash.com/premium_photo-1723709016897-3cc15635e618?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8JUVDJTlFJUFDJUVCJUFGJUI4JUVDJTlFJTg4JUVCJThBJTk0JTIwJUVBJUIwJTk1JUVDJTk1JTg0JUVDJUE3JTgwJTIwJUVDJTgyJUFDJUVDJUE3JTg0fGVufDB8fDB8fHww"
-                            class="bd-placeholder-img card-img-top" width="100%" height="225" alt="Thumbnail">
+                            class="bd-placeholder-img card-img-top toStoryDetail" width="100%" height="225"
+                            alt="Thumbnail">
                         <div class="card-body">
                             <h5 class="fw-bolder" style="font-size: 1rem;">태백산맥</h5>
                             <span style="font-size: 0.875rem;">조정래</span>
@@ -55,7 +66,8 @@
                 <div class="col">
                     <div class="card shadow-sm">
                         <img src="https://plus.unsplash.com/premium_photo-1723709016897-3cc15635e618?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8JUVDJTlFJUFDJUVCJUFGJUI4JUVDJTlFJTg4JUVCJThBJTk0JTIwJUVBJUIwJTk1JUVDJTk1JTg0JUVDJUE3JTgwJTIwJUVDJTgyJUFDJUVDJUE3JTg0fGVufDB8fDB8fHww"
-                            class="bd-placeholder-img card-img-top" width="100%" height="225" alt="Thumbnail">
+                            class="bd-placeholder-img card-img-top toStoryDetail" width="100%" height="225"
+                            alt="Thumbnail">
                         <div class="card-body">
                             <h5 class="fw-bolder" style="font-size: 1rem;">태백산맥</h5>
                             <span style="font-size: 0.875rem;">조정래</span>
@@ -65,7 +77,8 @@
                 <div class="col">
                     <div class="card shadow-sm">
                         <img src="https://plus.unsplash.com/premium_photo-1723709016897-3cc15635e618?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8JUVDJTlFJUFDJUVCJUFGJUI4JUVDJTlFJTg4JUVCJThBJTk0JTIwJUVBJUIwJTk1JUVDJTk1JTg0JUVDJUE3JTgwJTIwJUVDJTgyJUFDJUVDJUE3JTg0fGVufDB8fDB8fHww"
-                            class="bd-placeholder-img card-img-top" width="100%" height="225" alt="Thumbnail">
+                            class="bd-placeholder-img card-img-top toStoryDetail" width="100%" height="225"
+                            alt="Thumbnail">
                         <div class="card-body">
                             <h5 class="fw-bolder" style="font-size: 1rem;">태백산맥</h5>
                             <span style="font-size: 0.875rem;">조정래</span>
@@ -131,4 +144,5 @@
     </div>
     <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
+
 </html>
