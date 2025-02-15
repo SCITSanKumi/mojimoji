@@ -1,22 +1,190 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <title>회원가입</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{css/bootstrap.min.css}">
+    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{js/bootstrap.bundle.min.js}"></script>
+    <!-- JQuery -->
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(function () {
+            let isNicknameValid = false;
+            let isUsernameValid = false;
+            let isUsernameUnique = false;
+            let isEmailValid = false;
+            let isPasswordValid = false;
+
+            // 닉네임 유효성 검사
+            $("#nickname").on("input", function () {
+                let nickname = $("#nickname").val().trim();
+
+                if (nickname.length < 3) {
+                    $("#nicknameFeedback").text("닉네임은 최소 3자 이상이어야 합니다.");
+                    isNicknameValid = false;
+                } else {
+                    $("#nicknameFeedback").text("");
+                    isNicknameValid = true;
+                }
+            });
+
+            // 아이디 유효성 검사
+            $("#username").on("input", function () {
+                let username = $("#username").val().trim();
+                let usernameRegex = /^[a-zA-Z0-9]+$/;
+
+                isUsernameUnique = false; // 아이디가 변경되면 중복 체크를 다시 해야함
+
+                if (!usernameRegex.test(username)) {
+                    $("#usernameFeedback").text("아이디는 영문자나 숫자만 포함할 수 있습니다.");
+                    isUsernameValid = false;
+                } else if (username.length < 5) {
+                    $("#usernameFeedback").text("아이디는 최소 5자 이상이어야 합니다.");
+                    isUsernameValid = false;
+                } else {
+                    $("#usernameFeedback").text("");
+                    isUsernameValid = true;
+                }
+            });
+
+            // 아이디 중복 체크
+            $("#checkUsername").click(function () {
+                if (!isUsernameValid) {
+                    $("#usernameFeedback").text("아이디를 먼저 입력해주세요.");
+                    return;
+                }
+
+                let username = $("#username").val().trim();
+
+                $.ajax({
+                    url: "/user/id-check",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ username: username }),
+                    success: function (resp) {
+                        if (resp) {
+                            $("#usernameFeedback").text("사용 가능한 아이디입니다.").removeClass("text-danger").addClass("text-success");
+                            isUsernameUnique = true;
+                        } else {
+                            $("#usernameFeedback").text("이미 사용 중인 아이디입니다.").removeClass("text-success").addClass("text-danger");
+                            isUsernameUnique = false;
+                        }
+                    },
+                    error: function () {
+                        $("#usernameFeedback").text("오류가 발생했습니다. 다시 시도해주세요.").removeClass("text-success").addClass("text-danger");
+                        isUsernameUnique = false;
+                    }
+                });
+            });
+
+            // 이메일 유효성 검사
+            $("#email").on("input", function () {
+                let email = $(this).val();
+                let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    $("#emailFeedback").text("유효한 이메일 주소를 입력해주세요.");
+                    isEmailValid = false;
+                } else {
+                    $("#emailFeedback").text("");
+                    isEmailValid = true;
+                }
+            });
+
+            // 비밀번호 확인 검사
+            $("#password, #passwordConfirm").on("input", function () {
+                let password = $("#password").val();
+                let passwordConfirm = $("#passwordConfirm").val();
+
+                if (password.length < 6) {
+                    $("#passwordFeedback").text("비밀번호는 최소 6자 이상이어야 합니다.");
+                    isPasswordValid = false;
+                } else if (password !== passwordConfirm) {
+                    $("#passwordFeedback").text("비밀번호가 일치하지 않습니다.");
+                    isPasswordValid = false;
+                } else {
+                    $("#passwordFeedback").text("");
+                    isPasswordValid = true;
+                }
+            });
+
+            // 회원가입 폼 제출
+            $("#signupForm").submit(function (event) {
+                if (!isNicknameValid || !isUsernameValid || !isUsernameUnique || !isEmailValid || !isPasswordValid) {
+                    alert("입력 정보를 다시 확인해주세요.");
+                    return false; // 폼 제출 방지
+                }
+            });
+        });
+    </script>
 </head>
-
 <body>
-    <h2>회원가입</h2>
-    <form th:action="@{/user/sign-up}" method="post">
-        <input type="text" name="nickname" id="nickname" placeholder="닉네임">
-        <input type="text" name="username" placeholder="아이디">
-        <input type="email" name="email" placeholder="이메일">
-        <input type="password" name="password" placeholder="비밀번호">
-        <input type="submit" value="회원가입">
-    </form>
-</body>
+    <div class="d-flex align-items-center justify-content-center vh-100 bg-light">
+        <form method="post" th:action="@{/user/sign-up}" id="signupForm" class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle" style="max-width: 400px; width: 100%;">
+            <h1 class="h2 fw-bold mb-4">회원가입</h1>
 
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="홍길동">
+                <label for="nickname">닉네임</label>
+            </div>
+            <small id="nicknameFeedback" class="text-danger d-block mb-2"></small>
+
+            <div class="input-group mb-2">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="hong">
+                    <label for="username">아이디</label>
+                </div>
+                <button class="btn btn-outline-primary" type="button" id="checkUsername">중복 체크</button>
+            </div>
+            <small id="usernameFeedback" class="text-danger d-block mb-2"></small>
+
+            <div class="form-floating mb-2">
+                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                <label for="email">이메일 주소</label>
+            </div>
+            <small id="emailFeedback" class="text-danger d-block mb-2"></small>
+
+            <div class="form-floating mb-2">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                <label for="password">비밀번호</label>
+            </div>
+
+            <div class="form-floating mb-2">
+                <input type="password" class="form-control" id="passwordConfirm" placeholder="Confirm Password">
+                <label for="passwordConfirm">비밀번호 확인</label>
+            </div>
+            <small id="passwordFeedback" class="text-danger d-block mb-4"></small>
+
+            <button class="btn w-100 py-2 text-white mb-3" type="submit" style="background-color: #EE697D;">회원가입</button>
+
+            <p class="mb-3">
+                이미 계정이 있으신가요?
+                <a th:href="@{/user/sign-in}" class="text-decoration-none text-primary fw-bold">로그인</a>
+            </p>
+
+            <div class="d-flex align-items-center my-3">
+                <hr class="flex-grow-1">
+                <span class="px-2 text-muted">또는</span>
+                <hr class="flex-grow-1">
+            </div>
+
+            <div class="d-flex justify-content-center gap-2 mt-3">
+                <a href="#" class="btn btn-light rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/color/48/google-logo.png" width="28" />
+                </a>
+                <a href="#" class="btn btn-primary rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/ios-filled/48/ffffff/facebook.png" width="28" />
+                </a>
+                <a href="#" class="btn btn-dark rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/ios-filled/48/ffffff/github.png" width="28" />
+                </a>
+                <a href="#" class="btn btn-secondary rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/ios-filled/48/ffffff/mac-os.png" width="28" />
+                </a>
+            </div>
+        </form>
+    </div>
+</body>
 </html>

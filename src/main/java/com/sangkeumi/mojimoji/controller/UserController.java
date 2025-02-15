@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sangkeumi.mojimoji.dto.user.IdCheck;
-import com.sangkeumi.mojimoji.dto.user.UserSignup;
+import com.sangkeumi.mojimoji.dto.user.*;
 import com.sangkeumi.mojimoji.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,17 +22,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Tag(name = "User API", description = "유저 관련 API")
 public class UserController {
-
+    
     private final UserService userService;
 
     // 로그인 페이지 이동
-    @GetMapping("/login")
-    public String login() {
+    @GetMapping("/sign-in")
+    public String signIn() {
         return "/user/signIn";
     }
 
-    @GetMapping("/regist")
-    public String regist() {
+    @GetMapping("/sign-up")
+    public String signUp() {
         return "/user/signUp";
     }
 
@@ -49,12 +48,11 @@ public class UserController {
         }
     }
 
-    @PostMapping("/id-check")
     @ResponseBody
+    @PostMapping("/id-check")
     @Operation(summary = "id-check API", description = "아이디 중복 체크")
     public boolean idCheck(@RequestBody IdCheck idCheck) {
         boolean result = userService.existByUsername(idCheck.username());
         return result; // true 면 중복아님 사용가능 , false 면 중복 사용 불가
     }
-
 }

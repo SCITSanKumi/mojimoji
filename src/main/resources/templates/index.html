@@ -10,36 +10,18 @@
     <script defer src="../static/js/bootstrap.bundle.min.js" th:src="@{js/bootstrap.bundle.min.js}"></script>
     <!-- JQuery -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script>
-        $(function () {
-
-            $('#toGame').on('click', function () {
-
-                let login = confirm('로그인 중?')
-
-                if (login) {
-                    location.href = '/game';
-                    return;
-                } else {
-                    location.href = '/user/login';
-                }
-
-            });
-        })
-    </script>
 </head>
-
 <body>
+    <!-- main 화면 -->
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-    <div class="container-fluid vh-100 d-flex justify-content-start align-items-center ps-5">
+    <div class="container-fluid vh-100 d-flex justify-content-start align-items-center p-5">
         <div>
-            <h1 class="display-4 fw-bolder">한번도 경험하지 못한<br>한자 학습!</h1>
-            <button class="btn btn-custom text-white fw-bolder fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;" id="toGame"
+            <div class="display-4 fw-bolder">한번도 경험하지 못한<br>한자 학습!</div>
+            <a class="btn text-white fw-bolder fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;" th:href="@{/game}">
                 스토리 시작
-            </button>
+            </a>
         </div>
-        <!-- 이미지 배치 -->
-        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png" class="position-absolute bottom-0 col-10">
+        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png" class="position-absolute bottom-0 col-10 offset-1">
     </div>
     <!-- 스토리 top3 -->
     <div class="container px-4 py-5" id="custom-cards">
@@ -106,7 +88,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                     style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSPQ6K6ENWQCzpkQt3Vv7_q8U-UIObIadUTSLCbOKXWb7fP381hx3v6OM&s');">
