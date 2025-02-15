@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,17 +28,20 @@
         })
     </script>
 </head>
+
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="container-fluid vh-100 d-flex justify-content-start align-items-center ps-5">
         <div>
             <h1 class="display-4 fw-bolder">한번도 경험하지 못한<br>한자 학습!</h1>
-            <button class="btn btn-custom text-white fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;" id="toGame">
+            <button class="btn btn-custom text-white fs-4 px-4 py-3 mt-3" style="background-color: #EE697D;"
+                id="toGame">
                 스토리 시작
             </button>
         </div>
         <!-- 이미지 배치 -->
-        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png" class="position-absolute bottom-0 w-100">
+        <img th:src="@{/image/mountains.png}" src="../static/image/mountains.png"
+            class="position-absolute bottom-0 w-100">
     </div>
     <div class="album py-5 bg-body-tertiary">
         <div class="container">
@@ -131,4 +135,5 @@
     </div>
     <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
+
 </html>
