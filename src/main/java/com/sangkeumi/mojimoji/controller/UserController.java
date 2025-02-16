@@ -44,7 +44,7 @@ public class UserController {
             return "redirect:/";
             // 회원가입 실패하면 다시 회원가입 페이지로
         } else {
-            return "/user/signUp";
+            return "redirect:/user/sign-up";
         }
     }
 

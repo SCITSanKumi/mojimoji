@@ -8,7 +8,6 @@ public class MyPageContoller {
 
     @GetMapping("/mypage")
     public String mypage() {
-
-        return "mypage";
+        return "/mypage";
     }
 }
