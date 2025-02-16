@@ -2,19 +2,19 @@
 -- 1. Users 테이블 (기존 더미 데이터)
 --------------------------------------------------------------------
 INSERT INTO Users VALUES 
-(DEFAULT, 'test1','1234','지익준','test1@gamil.com','ROLE_USER','INACTIVE',null,
+(DEFAULT, 'test1','$2a$10$e/7N06Z5kEOgjoIiQ91NhuIAIfe4rVEmGD/JnQDzVFuYGegZmJMii','지익준','test1@gmail.com','ROLE_USER','INACTIVE',null,
 '2025-02-13 10:56:14.092749','2025-02-13 10:56:14.092749'),
-(DEFAULT, 'test2','1234','장진식','test2@gamil.com','ROLE_USER','INACTIVE',null,
+(DEFAULT, 'test2','$2a$10$e/7N06Z5kEOgjoIiQ91NhuIAIfe4rVEmGD/JnQDzVFuYGegZmJMii','장진식','test2@gmail.com','ROLE_USER','INACTIVE',null,
 '2025-01-12 10:56:14.092749','2025-02-13 10:56:14.092749'),
-(DEFAULT, 'test3','1234','차백준','test3@gamil.com','ROLE_USER','INACTIVE',null,
+(DEFAULT, 'test3','$2a$10$e/7N06Z5kEOgjoIiQ91NhuIAIfe4rVEmGD/JnQDzVFuYGegZmJMii','차백준','test3@gmail.com','ROLE_USER','INACTIVE',null,
 '2025-02-10 10:56:14.092749','2025-02-13 10:56:14.092749'),
-(DEFAULT, 'test4','1234','임영택','test4@gamil.com','ROLE_USER','INACTIVE',null,
+(DEFAULT, 'test4','$2a$10$e/7N06Z5kEOgjoIiQ91NhuIAIfe4rVEmGD/JnQDzVFuYGegZmJMii','임영택','test4@gmail.com','ROLE_USER','INACTIVE',null,
 '2025-01-09 10:56:14.092749','2025-02-13 10:56:14.092749'),
-(DEFAULT, 'test5','1234','황진주','test5@gamil.com','ROLE_USER','INACTIVE',null,
+(DEFAULT, 'test5','$2a$10$e/7N06Z5kEOgjoIiQ91NhuIAIfe4rVEmGD/JnQDzVFuYGegZmJMii','황진주','test5@gmail.com','ROLE_USER','INACTIVE',null,
 '2025-02-04 10:56:14.092749','2025-02-13 10:56:14.092749'),
-(DEFAULT, 'test6','1234','고든 램지','test6@gamil.com','ROLE_USER','INACTIVE',null,
+(DEFAULT, 'test6','$2a$10$e/7N06Z5kEOgjoIiQ91NhuIAIfe4rVEmGD/JnQDzVFuYGegZmJMii','고든램지','test6@gmail.com','ROLE_USER','INACTIVE',null,
 '2025-01-22 10:56:14.092749','2025-02-13 10:56:14.092749'),
-(DEFAULT, 'test7','1234','사야','test7@gamil.com','ROLE_USER','INACTIVE',null,
+(DEFAULT, 'test7','$2a$10$e/7N06Z5kEOgjoIiQ91NhuIAIfe4rVEmGD/JnQDzVFuYGegZmJMii','사야','test7@gmail.com','ROLE_USER','INACTIVE',null,
 '2025-01-31 10:56:14.092749','2025-02-13 10:56:14.092749');
 
 

@@ -17,47 +17,54 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final LoginSuccessHandler loginSuccessHandler;
-    private final LoginFailureHandler loginFailureHandler;
+        private final LoginSuccessHandler loginSuccessHandler;
+        private final LoginFailureHandler loginFailureHandler;
 
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(
-                                "/",
-                                "/user/login",
-                                "/user/regist",
-                                "/js/**", "/css/**", "/image/**")
-                        .permitAll().anyRequest().authenticated())
-                .formLogin(
-                        form -> form
-                                .loginPage(
-                                        "/user/login")
-                                .loginProcessingUrl(
-                                        "/user/loginProc")
-                                .successHandler(
-                                        loginSuccessHandler)
-                                .failureHandler(
-                                        loginFailureHandler)
-                                .usernameParameter(
-                                        "username")
-                                .passwordParameter(
-                                        "password")
-                                .permitAll())
-                .logout(logout -> logout.logoutUrl(
-                        "/user/logout")
-                        .logoutSuccessUrl(
-                                "/")
-                        .invalidateHttpSession(
-                                true)
-                        .clearAuthentication(true))
-                .csrf(csrf -> csrf.disable())
-                .build();
-    }
+        @Bean
+        SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                return http
+                                .authorizeHttpRequests((auth) -> auth
+                                                .requestMatchers(
+                                                                "/",
+                                                                "/swagger-ui.html",
+                                                                "/swagger-ui/**",
+                                                                "/api-docs/**",
+                                                                "/user/login",
+                                                                "/user/regist",
+                                                                "/user/id-check",
+                                                                "/user/nickname-check",
+                                                                "/user/email-check",
+                                                                "/user/sign-up",
+                                                                "/js/**", "/css/**", "/image/**")
+                                                .permitAll().anyRequest().authenticated())
+                                .formLogin(
+                                                form -> form
+                                                                .loginPage(
+                                                                                "/user/login")
+                                                                .loginProcessingUrl(
+                                                                                "/user/sign-in")
+                                                                .successHandler(
+                                                                                loginSuccessHandler)
+                                                                .failureHandler(
+                                                                                loginFailureHandler)
+                                                                .usernameParameter(
+                                                                                "username")
+                                                                .passwordParameter(
+                                                                                "password")
+                                                                .permitAll())
+                                .logout(logout -> logout.logoutUrl(
+                                                "/user/logout")
+                                                .logoutSuccessUrl(
+                                                                "/")
+                                                .invalidateHttpSession(
+                                                                true)
+                                                .clearAuthentication(true))
+                                .csrf(csrf -> csrf.disable())
+                                .build();
+        }
 
-    @Bean
-    BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        BCryptPasswordEncoder bCryptPasswordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 }

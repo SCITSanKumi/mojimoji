@@ -19,15 +19,23 @@
             <li class="nav-item d-lg-none"><a href="#" class="nav-link text-danger">로그아웃</a></li>
             <!-- 데스크톱에서는 드롭다운 메뉴 유지 -->
             <li class="nav-item dropdown d-none d-lg-block">
-                <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
                     <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
                     <li><a class="dropdown-item" href="#">마이 페이지</a></li>
                     <li><a class="dropdown-item" href="#">내 스토리</a></li>
                     <li><a class="dropdown-item" href="#">한자 컬렉션</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#">로그아웃</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <th:block sec:authorize="isAnonymous()">
+                        <li><a class="dropdown-item" href="#" th:href="@{/user/login}">로그인</a></li>
+                    </th:block>
+                    <th:block sec:authorize="isAuthenticated()">
+                        <li><a class="dropdown-item text-danger" href="#" th:href="@{/user/logout}">로그아웃</a></li>
+                    </th:block>
                 </ul>
             </li>
         </ul>

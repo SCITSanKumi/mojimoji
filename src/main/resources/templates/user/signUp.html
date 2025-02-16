@@ -1,22 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>mojimoji</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script defer th:src="@{/js/signUp.js}"></script>
 </head>
 
 <body>
-    <h2>회원가입</h2>
-    <form th:action="@{/user/sign-up}" method="post">
-        <input type="text" name="nickname" id="nickname" placeholder="닉네임">
-        <input type="text" name="username" placeholder="아이디">
-        <input type="email" name="email" placeholder="이메일">
-        <input type="password" name="password" placeholder="비밀번호">
-        <input type="submit" value="회원가입">
-    </form>
+    <div class="signup-card">
+        <!-- 로고나 상단 텍스트 -->
+        <h1><a href="/" style="text-decoration: none; color: black;">もじもじ</a></h1>
+
+
+        <!-- 회원가입 폼 -->
+        <form th:action="@{/user/sign-up}" method="post">
+            <div class="form-group">
+                <label for="nickname" class="form-label">닉네임</label>
+                <input type="text" name="nickname" id="nickname" class="form-input" placeholder="Enter your name">
+                <div id="nicknameCheck" class="nicknameCheck"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="username" class="form-label">아이디</label>
+                <input type="text" name="username" id="username" class="form-input" placeholder="Enter your ID">
+                <div id="idCheck" class="idCheck"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" name="email" id="email" class="form-input" placeholder="이메일 주소">
+                <div id="emailCheck" class="emailCheck"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" name="password" id="password" class="form-input"
+                    placeholder="Type your password">
+                <div id="pwCheck" class="pwCheck"></div>
+            </div>
+
+            <!-- 이용약관 체크박스 -->
+            <!--
+            <div class="form-check">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">By creating an account you agree to the <a href="#">Terms and Conditions</a>, and <a
+                        href="#">Privacy Policy</a>.</label>
+            </div>
+            -->
+
+            <input type="button" class="btn-submit" value="회원가입" id="sign-up-btn">
+        </form>
+
+        <!-- 하단 링크 -->
+        <div class="footer-text">
+            이미 회원이세요?
+            <a th:href="@{/user/login}">로그인 하기</a>
+        </div>
+        <div class="hr-sect">or</div>
+        <p>SNS로 회원가입</p>
+
+        <!-- 소셜 로그인 버튼 예시 (필요 없다면 제거 가능) -->
+
+        <div class="social-login">
+            <div class="social-btn">Google</div>
+            <div class="social-btn">Facebook</div>
+            <div class="social-btn">Apple</div>
+        </div>
+    </div>
+    <div id="toast" class="toast"></div>
 </body>
 
 </html>
