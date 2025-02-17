@@ -3,74 +3,88 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>mojimoji</title>
-    <link rel="stylesheet" th:href="@{/css/login.css}">
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}">
+    <link th:href="@{/css/login.css}">
+    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- JQuery -->
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script defer th:src="@{/js/signUp.js}"></script>
 </head>
 
 <body>
-    <div class="signup-card">
-        <!-- 로고나 상단 텍스트 -->
-        <h1><a href="/" style="text-decoration: none; color: black;">もじもじ</a></h1>
+    <div class="d-flex align-items-center justify-content-center vh-100 bg-light">
+        <form method="post" th:action="@{/user/sign-up}" id="signupForm"
+            class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle"
+            style="max-width: 400px; width: 100%;">
+            <a href="/" class="navbar-brand" th:href="@{/}">
+                <h1 class="h3 fw-bold mb-4">もじもじ</h1>
+            </a>
+            <h1 class="h5 fw-bold mb-4">회원가입</h1>
+
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="홍길동">
+                <label for="nickname">닉네임</label>
+            </div>
+            <small id="nicknameCheck" class="text-danger d-block mb-2"></small>
+
+            <div class="input-group mb-2">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="hong">
+                    <label for="username">아이디</label>
+                </div>
+            </div>
+            <small id="idCheck" class="text-danger d-block mb-2"></small>
+
+            <div class="form-floating mb-2">
+                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                <label for="email">이메일 주소</label>
+            </div>
+            <small id="emailCheck" class="text-danger d-block mb-2"></small>
+
+            <div class="form-floating mb-2">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                <label for="password">비밀번호</label>
+            </div>
+            <small id="pwCheck" class="text-danger d-block mb-2"></small>
 
 
-        <!-- 회원가입 폼 -->
-        <form th:action="@{/user/sign-up}" method="post">
-            <div class="form-group">
-                <label for="nickname" class="form-label">닉네임</label>
-                <input type="text" name="nickname" id="nickname" class="form-input" placeholder="Enter your name">
-                <div id="nicknameCheck" class="nicknameCheck"></div>
+            <button class="btn w-100 py-2 text-white mb-3" type="button" id="sign-up-btn"
+                style="background-color: #EE697D;">회원가입</button>
+
+            <p class="mb-3">
+                이미 계정이 있으신가요?
+                <a th:href="@{/user/sign-in}" class="text-decoration-none text-primary fw-bold">로그인</a>
+            </p>
+
+            <div class="d-flex align-items-center my-3">
+                <hr class="flex-grow-1">
+                <span class="px-2 text-muted">또는</span>
+                <hr class="flex-grow-1">
             </div>
 
-            <div class="form-group">
-                <label for="username" class="form-label">아이디</label>
-                <input type="text" name="username" id="username" class="form-input" placeholder="Enter your ID">
-                <div id="idCheck" class="idCheck"></div>
+            <div class="d-flex justify-content-center gap-2 mt-3">
+                <a href="#" class="btn btn-light rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/color/48/google-logo.png" width="28" />
+                </a>
+                <a href="#" class="btn btn-primary rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/ios-filled/48/ffffff/facebook.png" width="28" />
+                </a>
+                <a href="#" class="btn btn-dark rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/ios-filled/48/ffffff/github.png" width="28" />
+                </a>
+                <a href="#" class="btn btn-secondary rounded-circle p-2 shadow">
+                    <img src="https://img.icons8.com/ios-filled/48/ffffff/mac-os.png" width="28" />
+                </a>
             </div>
-
-            <div class="form-group">
-                <label for="email" class="form-label">이메일</label>
-                <input type="email" name="email" id="email" class="form-input" placeholder="이메일 주소">
-                <div id="emailCheck" class="emailCheck"></div>
+            <div id="toast" class="toast"
+                style="position: fixed; bottom: 20px; left: 50%; transform: translate(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px; border-radius: 5px; ">
             </div>
-
-            <div class="form-group">
-                <label for="password" class="form-label">비밀번호</label>
-                <input type="password" name="password" id="password" class="form-input"
-                    placeholder="Type your password">
-                <div id="pwCheck" class="pwCheck"></div>
-            </div>
-
-            <!-- 이용약관 체크박스 -->
-            <!--
-            <div class="form-check">
-                <input type="checkbox" id="terms" required>
-                <label for="terms">By creating an account you agree to the <a href="#">Terms and Conditions</a>, and <a
-                        href="#">Privacy Policy</a>.</label>
-            </div>
-            -->
-
-            <input type="button" class="btn-submit" value="회원가입" id="sign-up-btn">
         </form>
-
-        <!-- 하단 링크 -->
-        <div class="footer-text">
-            이미 회원이세요?
-            <a th:href="@{/user/sign-in}">로그인 하기</a>
-        </div>
-        <div class="hr-sect">or</div>
-        <p>SNS로 회원가입</p>
-
-        <!-- 소셜 로그인 버튼 예시 (필요 없다면 제거 가능) -->
-
-        <div class="social-login">
-            <div class="social-btn">Google</div>
-            <div class="social-btn">Facebook</div>
-            <div class="social-btn">Apple</div>
-        </div>
     </div>
-    <div id="toast" class="toast"></div>
 </body>
 
 </html>

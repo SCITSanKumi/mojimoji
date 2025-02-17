@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sangkeumi.mojimoji.dto.user.UserSignup;
+import com.sangkeumi.mojimoji.dto.user.*;
 import com.sangkeumi.mojimoji.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,5 +63,4 @@ public class UserController {
     public boolean emailCheck(@RequestParam(name = "email") String email) {
         return userService.existByEmail(email); // true 면 중복아님 사용가능 , false 면 중복 사용 불가
     }
-
 }
