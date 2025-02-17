@@ -31,7 +31,7 @@
                         <hr class="dropdown-divider">
                     </li>
                     <th:block sec:authorize="isAnonymous()">
-                        <li><a class="dropdown-item" href="#" th:href="@{/user/login}">로그인</a></li>
+                        <li><a class="dropdown-item" href="#" th:href="@{/user/sign-in}">로그인</a></li>
                     </th:block>
                     <th:block sec:authorize="isAuthenticated()">
                         <li><a class="dropdown-item text-danger" href="#" th:href="@{/user/logout}">로그아웃</a></li>

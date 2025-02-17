@@ -26,12 +26,12 @@ public class UserController {
     private final UserService userService;
 
     // 로그인 페이지 이동
-    @GetMapping("/login")
+    @GetMapping("/sign-in")
     public String login() {
         return "/user/signIn";
     }
 
-    @GetMapping("/regist")
+    @GetMapping("/sign-up")
     public String regist() {
         return "/user/signUp";
     }
