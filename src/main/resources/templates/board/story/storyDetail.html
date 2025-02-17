@@ -6,33 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script>
-        $(function () {
-            $('#toStoryList').on('click', function () {
-                location.href = '/board/story/list';
-            });
-        })
-    </script>
     <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}">
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <!-- JQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 </head>
+
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-    <button style="float: right;" id="toStoryList">목록으로</button>
-    <h2>태백산맥</h2>
-    <fieldset style="text-align: left;">
-        <pre>
-                        어느날 나는 잠에서 깬 뒤 소스라치게 놀라고 만다.
-                        어젯밤 나는 분명 자신의 안방에서 잠에 들었다.
-                        그러나 지금 나는 어둡고 침침한 숲속 한 가운데 있다.
-                        이게 도대체 어떻게 된 일일까.
-                        아무리 생각해도 이유를 알 수 없다. 그때 근처에서 괴상한 울음소리가 들린다.
-                        나는 본능적으로 어딘가로 도망쳐야 한다고 생각했다.
-                    </pre>
-    </fieldset>
+    <div class="container mt-5 pt-5">
+        <button style="float: right;" id="toStoryList">목록으로</button>
+        <h1 th:text="${sharedStoryInfo.title}">책제목</h1>
+        <div th:each="sharedStory : ${sharedStoryContent}">
+            <p th:text="${sharedStory.content}"></p>
+            <hr>
+        </div>
+    </div>
+
 </body>
 
 </html>
