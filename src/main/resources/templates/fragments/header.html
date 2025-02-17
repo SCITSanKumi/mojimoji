@@ -1,6 +1,3 @@
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
-</html>
 <nav th:fragment="header" class="navbar navbar-expand-lg navbar-light bg-white border-bottom container-fluid p-3 mb-3">
     <!-- 브랜드 로고 -->
     <a href="/" class="navbar-brand">もじもじ</a>
@@ -12,7 +9,7 @@
     <!-- 네비게이션 링크 -->
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a th:href="@{/myPage}" class="nav-link">스토리 시작</a></li>
+            <li class="nav-item"><a th:href="@{/game/play}" class="nav-link">스토리 시작</a></li>
             <li class="nav-item"><a th:href="@{/board/story/list}" class="nav-link">스토리 구경하기</a></li>
             <li class="nav-item"><a href="#" class="nav-link">이용방법</a></li>
             <!-- 모바일 화면에서 드롭다운 항목을 개별 nav-item으로 표시 -->
