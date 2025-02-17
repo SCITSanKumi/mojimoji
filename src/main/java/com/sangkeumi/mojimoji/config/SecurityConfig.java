@@ -40,7 +40,7 @@ public class SecurityConfig {
                                 .formLogin(
                                                 form -> form
                                                                 .loginPage(
-                                                                                "/user/login")
+                                                                                "/user/sign-in")
                                                                 .loginProcessingUrl(
                                                                                 "/user/sign-in")
                                                                 .successHandler(
