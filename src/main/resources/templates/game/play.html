@@ -52,6 +52,7 @@
     </style>
 </head>
 <body>
+    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="novel-container">
         <h2>비주얼 노블</h2>
         <div class="story-box" id="storyBox">
@@ -63,7 +64,7 @@
             <input type="text" id="userInput" class="form-control" placeholder="다음 대사를 입력하세요...">
             <button class="btn btn-primary" id="submitBtn">입력</button>
         </div>
-        
+
         <button class="btn btn-secondary mt-2" id="historyBtn" data-bs-toggle="modal" data-bs-target="#historyModal">이전 이야기 보기</button>
     </div>
 
@@ -88,7 +89,7 @@
         $(document).ready(function() {
             let currentText = "";
             let history = [];
-            
+
             function typeWriterEffect(text, element) {
                 element.html("");
                 let i = 0;
@@ -101,7 +102,7 @@
                 }
                 typing();
             }
-            
+
             $("#submitBtn").click(function() {
                 let userText = $("#userInput").val();
                 if (userText.trim() !== "") {
@@ -111,7 +112,7 @@
                     $("#userInput").val("");
                 }
             });
-            
+
             $("#historyBtn").click(function() {
                 let historyText = history.map(text => "<p>" + text + "</p>").join("");
                 $("#modalStoryBox").html(historyText);
