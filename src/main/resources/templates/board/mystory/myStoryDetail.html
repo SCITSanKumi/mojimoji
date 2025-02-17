@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <link rel="stylesheet" href="../../../static/css/story_detail.css">
+
     <script>
         $(function () {
             $('.toMyStoryList').on('click', function () {
@@ -35,6 +37,47 @@
                         나는 본능적으로 어딘가로 도망쳐야 한다고 생각했다.
                     </pre>
     </fieldset>
+    <!-- 댓글 입력 -->
+    <div class="comment-section">
+        <h5>댓글</h5>
+        <input type="text" id="comment-input" class="comment-box" placeholder="Share your thoughts">
+        <br>
+        <button class="btn btn-dark mt-2" id="add-comment">댓글 등록</button>
+        
+        <div class="comment-list" id="comment-list">
+            <div class="comment"><strong>철수:</strong> 스토리 재밌어요 </div>
+            <div class="comment"><strong>영희:</strong> 스토리 흥미로워요 </div>
+            <div class="comment"><strong>보람:</strong> 스토리 노잼이에요</div>
+            <div class="comment"><strong>철구:</strong> 노벨문학상 받아도 되겠어요</div>
+            <div class="comment"><strong>현상:</strong> 혹시 작가님이세요?</div>
+            <div class="comment"><strong>예신:</strong> 꿀잼!</div>
+
+        </div>
+        
+    </div>
+    <!-- 우하단 정보 -->
+    <div class="user-info">
+        <h5>조정례</h5>
+        <p><strong>태백산맥</strong></p>
+        <p>👍 11.3k 👀 25.6k</p>
+        <p>작성일: 2025/02/05</p>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#add-comment').click(function () {
+            let commentText = $('#comment-input').val().trim();
+            if (commentText) {
+                let newComment = '<div class="comment"><strong>익명:</strong> ' + commentText + '</div>';
+                $('#comment-list').append(newComment);
+                $('#comment-input').val('');
+            }
+        });
+    });
+</script>
+
+
 </body>
 
 </html>
