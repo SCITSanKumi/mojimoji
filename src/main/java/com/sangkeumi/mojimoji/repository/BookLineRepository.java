@@ -11,6 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface BookLineRepository extends JpaRepository<BookLine, Long> {
-    List<BookLine> findTop10ByBookAndRoleNotOrderByCreatedAtDesc(Book book, String role);
     Optional<BookLine> findTopByBookAndRoleOrderByCreatedAtDesc(Book book, String role);
+    List<BookLine> findTop10ByBookAndRoleOrderByCreatedAtDesc(Book book, String role);
 }

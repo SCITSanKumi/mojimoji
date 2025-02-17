@@ -29,12 +29,6 @@ public class BookLine {
     private Book book;
 
     /**
-     * 책 내에서의 순서를 나타내는 필드
-     */
-    @Column(nullable = false)
-    private int sequence;
-
-    /**
      * 사용자의 대답인지 openAI의 대답인지 ("user", "assistant", 또는 "system")
      */
     @Column(nullable = false)
@@ -47,10 +41,10 @@ public class BookLine {
     private String content;
 
     /**
-     * 해당 줄이 플레이된 턴 수
+     * 책 내에서의 순서를 나타내는 필드
      */
-    @Column(name = "played_turns", nullable = false)
-    private int playedTurns;
+    @Column(nullable = false)
+    private int sequence;
 
     /**
      * 해당 줄이 책의 끝인지 여부
@@ -64,13 +58,6 @@ public class BookLine {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    /**
-     * 최종 수정일시
-     */
-    @Column(name = "updated_at", nullable = false)
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
 
     // 양방향 관계
 

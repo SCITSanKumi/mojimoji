@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.*;
 
 import lombok.RequiredArgsConstructor;
@@ -24,42 +25,49 @@ public class GameService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${openai.api-key}")
-    private final String openAiApiKey;
+    private String openAiApiKey;
     private final String openAiUrl = "https://api.openai.com/v1/chat/completions";
 
-    public String getChatResponse(Long bookId, String userMessage, String username) {
-        // 사용자별 최신 시스템 메시지 조회(없으면 새로 생성)
-        Book book =
-            bookRepository.findById(bookId)
-            .orElse(bookRepository.save(
-                Book.builder()
-                    .user(userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found")))
-                    .build()
-                ));
-        BookLine systemMessage =
-            bookLineRepository.findTopByBookAndRoleOrderByCreatedAtDesc(book, "system")
-            .orElse(bookLineRepository.save(
-                BookLine.builder()
-                    .book(book)
-                    .role("system")
-                    .content(generateCustomSystemMessage())
-                    .sequence(0) // 초기 시스템 메시지의 시퀀스 설정
-                    .build()
-                ));
+    /**
+     * RW 트랜잭션에서 book 조회 또는 생성
+     */
+    @Transactional
+    private Book getOrCreateBook(Long bookId, String username) {
+        return bookRepository.findById(bookId)
+            .orElseGet(() -> {
+                log.info("Book not found, creating a new one...");
+                return bookRepository.save(Book.builder()
+                    .user(userRepository.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("User not found")))
+                    .title("먼가먼가")
+                    .build());
+            });
+    }
 
-        // 사용자 대화 내역 조회 (최근 10개만 가져옴)
-        List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleNotOrderByCreatedAtDesc(book, "system");
-        Collections.reverse(history); // 최신 메시지가 먼저 오도록 정렬되어 있으므로 다시 뒤집음
+    /**
+     * OpenAI API와의 상호작용 및 저장 로직
+     */
+    @Transactional // RW 트랜잭션 (readOnly = false 기본값)
+    public String getChatResponse(Long bookId, String userMessage, String username) {
+        Book book = getOrCreateBook(bookId, username);
+
+        // 최신 시스템 메시지 조회 또는 생성
+        BookLine systemMessage = bookLineRepository.findTopByBookAndRoleOrderByCreatedAtDesc(book, "system")
+            .orElseGet(() -> bookLineRepository.save(BookLine.builder()
+                .book(book)
+                .role("system")
+                .content(generateCustomSystemMessage())
+                .sequence(0)
+                .isEnded(false)
+                .build()));
+
+        // 최근 10개 메시지 조회
+        List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleOrderByCreatedAtDesc(book, "assistant");
+        Collections.reverse(history);
 
         List<Map<String, String>> messages = new ArrayList<>();
-
-        // 시스템 메시지 추가
         messages.add(Map.of("role", "system", "content", systemMessage.getContent()));
-
-        // 기존 대화 내역 추가
-        history.forEach(msg -> messages.add(Map.of("role", msg.getRole(), "content", msg.getContent())));
-
-        // 사용자 메시지 추가
+        history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
         messages.add(Map.of("role", "user", "content", userMessage));
 
         log.info("Messages: {}", messages);
@@ -77,26 +85,41 @@ public class GameService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<Map> responseEntity = restTemplate.exchange(
-            openAiUrl, HttpMethod.POST, requestEntity, Map.class);
+        ResponseEntity<Map> responseEntity =
+            restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, Map.class);
 
-        // API 응답 검증 및 예외 처리
+        // 응답 파싱
         Map<String, Object> responseBody = responseEntity.getBody();
         List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
         Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
         String assistantReply = (String) message.get("content");
 
         // 사용자 입력과 AI 응답 저장
-        int nextSequence = history.size() + 1; // 다음 시퀀스 번호 계산
-        bookLineRepository.save(BookLine.builder().book(book).role("user").content(userMessage).sequence(nextSequence).build());
-        bookLineRepository.save(BookLine.builder().book(book).role("assistant").content(assistantReply).sequence(nextSequence + 1).build());
+        int nextSequence = history.isEmpty() ? 1 : history.get(history.size() - 1).getSequence() + 2;
+
+        bookLineRepository.save(BookLine.builder()
+            .book(book)
+            .role("user")
+            .content(userMessage)
+            .sequence(nextSequence)
+            .isEnded(false)
+            .build());
+
+        bookLineRepository.save(BookLine.builder()
+            .book(book)
+            .role("assistant")
+            .content(assistantReply)
+            .sequence(nextSequence + 1)
+            .isEnded(false)
+            .build());
 
         return assistantReply;
     }
 
-    // 게임 마스터 역할을 부여하는 프롬프트
+    /**
+     * 게임 마스터 역할을 부여하는 프롬프트
+     */
     private String generateCustomSystemMessage() {
-        // 사용자에게 특정 설정을 기반으로 다른 시스템 메시지를 생성할 수 있음
         return """
             당신은 이 게임의 게임 마스터입니다. 사용자를 위한 특별한 모험을 안내해야 합니다.
             이 게임은 사용자가 한자 하나를 입력하면, 그 한자의 의미에 맞는 행동이 일어나고, 이야기가 전개됩니다.

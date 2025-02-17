@@ -3,11 +3,9 @@ package com.sangkeumi.mojimoji.controller;
 import java.security.Principal;
 import java.util.Map;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.sangkeumi.mojimoji.entity.User;
 import com.sangkeumi.mojimoji.service.GameService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,5 +28,13 @@ public class GameController {
         @RequestBody Map<String, String> request,
         Principal principal) {
         return gameService.getChatResponse(bookId, request.get("message"), principal.getName());
+    }
+
+    @PostMapping("/sendTest")
+    @ResponseBody
+    public String sendMessageTest(
+        @RequestParam(name = "bookId") Long bookId,
+        @RequestBody Map<String, String> request) {
+        return gameService.getChatResponse(bookId, request.get("message"), "test1");
     }
 }
