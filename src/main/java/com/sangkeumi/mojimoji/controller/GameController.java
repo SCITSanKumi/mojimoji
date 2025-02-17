@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/game")
 public class GameController {
 
-    @GetMapping({ "", "/" })
+    @GetMapping("/play")
     public String game() {
-
-        return "game";
+        return "/game/play";
     }
 }
