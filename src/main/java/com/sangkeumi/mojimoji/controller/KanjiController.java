@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class KanjiController {
 
     @GetMapping("/collection")
-    public String collection() {
+    public String kanjiCollection() {
         return "/kanji/kanjiCollection";
     }
 
     @GetMapping("/detail")
-    public String detail() {
+    public String kanjiDetail() {
         return "/kanji/kanjiDetail";
     }
 }
