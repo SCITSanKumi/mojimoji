@@ -46,21 +46,21 @@ public class UserController {
     @GetMapping("/nickname-check")
     @ResponseBody
     @Operation(summary = "닉네임 중복 체크", description = "닉네임이 이미 사용중인지 확인한다.")
-    public boolean nicknameCheck(@RequestParam String nickname) {
+    public boolean nicknameCheck(@RequestParam(name = "nickname") String nickname) {
         return userService.existByNickname(nickname); // true 면 중복아님 사용가능 , false 면 중복 사용 불가
     }
 
     @GetMapping("/id-check")
     @ResponseBody
     @Operation(summary = "아이디 중복 체크", description = "아이디가 이미 사용중인지 확인한다.")
-    public boolean idCheck(@RequestParam String username) {
+    public boolean idCheck(@RequestParam(name = "username") String username) {
         return userService.existByUsername(username); // true 면 중복아님 사용가능 , false 면 중복 사용 불가
     }
 
     @GetMapping("/email-check")
     @ResponseBody
     @Operation(summary = "이메일 중복 체크", description = "이메일이 이미 사용중인지 확인한다.")
-    public boolean emailCheck(@RequestParam String email) {
+    public boolean emailCheck(@RequestParam(name = "email") String email) {
         return userService.existByEmail(email); // true 면 중복아님 사용가능 , false 면 중복 사용 불가
     }
 
