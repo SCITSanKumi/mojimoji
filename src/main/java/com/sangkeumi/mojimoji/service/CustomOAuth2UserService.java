@@ -48,6 +48,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+
         /**
          * 1) DefaultOAuth2UserService를 통해 기본적인 사용자 정보(UserInfo)를 가져옴.
          * - Access Token으로 소셜 API 호출
@@ -153,6 +154,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
          * - CustomOAuth2User: 소셜 attributes + DB User 엔티티를 함께 보관
          * - SecurityContext에 저장되어, 인증된 Principal로 동작
          */
-        return new CustomOAuth2User(oAuth2User.getAttributes(), userEntity);
+        return new CustomOAuth2User(userEntity, oAuth2User.getAttributes());
     }
 }
