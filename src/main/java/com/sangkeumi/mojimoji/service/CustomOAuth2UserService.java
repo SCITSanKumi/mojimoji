@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.sangkeumi.mojimoji.dto.user.CustomOAuth2User;
-import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.entity.SocialAccount;
 import com.sangkeumi.mojimoji.entity.User;
 import com.sangkeumi.mojimoji.entity.User.UserStatus;
