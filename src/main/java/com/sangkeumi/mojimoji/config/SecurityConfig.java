@@ -94,7 +94,7 @@ public class SecurityConfig {
                                                                 // → 소셜 프로필(DB 저장 등) 커스텀 로직
                                                                 .userService(customOAuth2UserService))
                                                 // 로그인 성공 시 이동할 URL, true면 항상 해당 URL로 이동
-                                                .defaultSuccessUrl("/oauth2/success", true))
+                                                .defaultSuccessUrl("/", true))
 
                                 // 4) 로그아웃 설정
                                 .logout(logout -> logout
