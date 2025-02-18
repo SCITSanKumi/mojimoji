@@ -18,9 +18,10 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
-public class LoginUserDetails implements UserDetails {
+public class LoginUserDetails implements UserDetails, MyPrincipal {
     private static final long serialVersionUID = 1L;
 
+    private Long userId;
     private String username;
     private String password;
     private String nickname;
@@ -47,6 +48,11 @@ public class LoginUserDetails implements UserDetails {
     // 닉네임
     public String getNickname() {
         return this.nickname;
+    }
+
+    @Override
+    public Long getUserId() {
+        return this.userId;
     }
 
     public static LoginUserDetails toDTO(User user) {
