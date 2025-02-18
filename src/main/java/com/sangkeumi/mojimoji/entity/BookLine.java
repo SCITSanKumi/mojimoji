@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "Book_Lines")
+@Table(name = "book_lines")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -45,12 +45,6 @@ public class BookLine {
      */
     @Column(nullable = false)
     private int sequence;
-
-    /**
-     * 해당 줄이 책의 끝인지 여부
-     */
-    @Column(name = "is_ended", nullable = false)
-    private boolean isEnded;
 
     /**
      * 생성일시

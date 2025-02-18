@@ -42,6 +42,12 @@ public class Book {
     private String thumbnailUrl;
 
     /**
+     * 게임이 끝났는지 여부
+     */
+    @Column(name = "is_ended", nullable = false)
+    private boolean isEnded;
+
+    /**
      * 책의 생성일시
      */
     @Column(name = "created_at", nullable = false, updatable = false)
