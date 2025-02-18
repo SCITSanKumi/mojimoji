@@ -57,6 +57,7 @@ public class LoginUserDetails implements UserDetails, MyPrincipal {
 
     public static LoginUserDetails toDTO(User user) {
         return LoginUserDetails.builder()
+                .userId(user.getUserId())
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
