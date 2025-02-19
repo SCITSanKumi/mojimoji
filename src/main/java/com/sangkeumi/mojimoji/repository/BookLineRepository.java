@@ -12,5 +12,6 @@ import java.util.Optional;
 @Repository
 public interface BookLineRepository extends JpaRepository<BookLine, Long> {
     Optional<BookLine> findTopByBookAndRoleOrderBySequenceDesc(Book book, String role);
+
     List<BookLine> findTop10ByBookAndRoleOrderBySequenceDesc(Book book, String role);
 }
