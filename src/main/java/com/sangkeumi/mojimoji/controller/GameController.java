@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
 import com.sangkeumi.mojimoji.entity.Kanji;
 import com.sangkeumi.mojimoji.entity.KanjiCollection;
 import com.sangkeumi.mojimoji.entity.UsedBookKanji;
@@ -32,7 +32,6 @@ public class GameController {
     private final UsedBookKanjiService usedBookKanjiService;
     private final KanjiService kanjiService;
     private final KanjiCollectionService kanjiCollectionService;
-    private final UserService userService;
 
     @GetMapping("/play")
     public String game() {
@@ -62,16 +61,8 @@ public class GameController {
     @PostMapping("/addCollection")
     public boolean addCollection(@RequestParam(name = "kanjiId") Long kanjiId,
             @RequestParam(name = "userId") Long userId) {
-
-        Kanji kanji = kanjiService.getKanji(kanjiId);
-        User user = userService.getUser(userId);
-
-        KanjiCollection kanjiCollection = new KanjiCollection((long) 9, kanji, user,
-                null, null);
-
-        log.info("한자컬렉션{}", kanjiCollection.toString());
-
-        boolean result = kanjiCollectionService.addCollection(kanjiCollection);
+        AddKanjiCollection addKanjiCollection = new AddKanjiCollection(userId, kanjiId);
+        boolean result = kanjiCollectionService.addCollection(addKanjiCollection);
 
         // boolean result = true;
         return result;
