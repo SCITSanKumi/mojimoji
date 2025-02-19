@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
@@ -25,26 +26,55 @@ public class BoardService {
         private final SharedBookRepository sharedBookRepository;
         private final BookLineRepository bookLineRepository;
 
+        public List<SharedStoriesListResponse> searchAndSortSharedBooks(String searchWord, String searchItem,
+                        String sortOption) {
+                Sort sort;
+                if ("date".equalsIgnoreCase(sortOption)) {
+                        sort = Sort.by(Sort.Direction.DESC, "createdAt");
+                } else if ("viewCount".equalsIgnoreCase(sortOption)) {
+                        sort = Sort.by(Sort.Direction.DESC, "hitCount");
+                } else {
+                        sort = Sort.by(Sort.Direction.DESC, "gaechu");
+                }
+
+                List<SharedBook> sharedBooks;
+
+                if (searchWord != null && !searchWord.trim().isEmpty()) {
+                        // 검색어가 있는 경우
+                        if ("title".equalsIgnoreCase(searchItem)) {
+                                // 제목 기준 검색
+                                sharedBooks = sharedBookRepository.findByBook_TitleContainingIgnoreCase(searchWord,
+                                                sort);
+                        } else { // 작성자(닉네임) 기준 검색
+                                sharedBooks = sharedBookRepository
+                                                .findByBook_User_NicknameContainingIgnoreCase(searchWord, sort);
+                        }
+                } else {
+                        // 검색어가 없는 경우 전체 조회 (정렬 적용)
+                        sharedBooks = sharedBookRepository.findAll(sort);
+                }
+
+                // SharedBook(Entity) -> SharedStroiesListResponse(DTO)로 변환
+                return sharedBooks.stream()
+                                .map(sharedBook -> new SharedStoriesListResponse(
+                                                sharedBook.getBook().getBookId(),
+                                                sharedBook.getBook().getTitle(),
+                                                sharedBook.getBook().getThumbnailUrl(),
+                                                sharedBook.getBook().getUser().getNickname(),
+                                                sharedBook.getBook().getUser().getProfileUrl(),
+                                                sharedBook.getHitCount(),
+                                                sharedBook.getGaechu(),
+                                                sharedBook.getCreatedAt()))
+                                .collect(Collectors.toList());
+        }
+
         /**
          * 공유된 스토리를 전부 조회하는 메서드
          * 
          * @return
          */
         public List<SharedStoriesListResponse> findAllSharedBooks() {
-                List<SharedBook> sharedStories = sharedBookRepository.findAll();
-                // SharedBook(Entity) -> SharedStoriesListResponse(DTO)로 변환
-                return sharedStories.stream()
-                                .map(sharedBook -> new SharedStoriesListResponse(
-                                                sharedBook.getBook().getBookId(), // Book 객체의 bookId
-                                                sharedBook.getBook().getTitle(), // Book 객체의 title
-                                                sharedBook.getBook().getThumbnailUrl(), // Book 객체의 thumbnailUrl
-                                                sharedBook.getBook().getUser().getNickname(), // Book 객체의 User 객체의
-                                                                                              // nickname
-                                                sharedBook.getBook().getUser().getProfileUrl(), // Book 객체의 User 객체의
-                                                                                                // profileUrl
-                                                sharedBook.getHitCount(),
-                                                sharedBook.getGaechu()))
-                                .collect(Collectors.toList());
+                return searchAndSortSharedBooks("", "title", "recommendation");
         }
 
         /**

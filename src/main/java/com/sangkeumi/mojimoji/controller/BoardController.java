@@ -29,17 +29,23 @@ public class BoardController {
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
      * 
+     * @param searchWord 검색어
+     * @param searchItem 검색 대상, 기본값은 "title"
+     * @param sortOption 정렬 옵션, 기본값은 "date"
      * @param model
      * @return
      */
     @GetMapping("/story/list")
-    public String storylist(Model model) {
-        // 공유된 스토리 목록을 조회
-        List<SharedStoriesListResponse> sharedStoryList = boardService.findAllSharedBooks();
-
-        // 조회된 공유 스토리 목록을 모델에 추가
+    public String storyList(
+            @RequestParam(name = "searchWord", required = false) String searchWord,
+            @RequestParam(name = "searchItem", required = false, defaultValue = "title") String searchItem,
+            @RequestParam(name = "sortOption", required = false, defaultValue = "date") String sortOption,
+            Model model) {
+        List<SharedStoriesListResponse> sharedStoryList = boardService.searchAndSortSharedBooks(searchWord, searchItem,
+                sortOption);
         model.addAttribute("sharedStoryList", sharedStoryList);
-
+        model.addAttribute("searchWord", searchWord);
+        model.addAttribute("searchItem", searchItem);
         return "board/story/storyList";
     }
 

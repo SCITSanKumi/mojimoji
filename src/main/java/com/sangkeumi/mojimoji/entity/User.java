@@ -113,6 +113,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SharedBookReply> sharedBookReplies;
 
+    /**
+     * 유저의 소셜 로그인 목록
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialAccount> socialAccounts;
+
     public enum UserStatus {
         ACTIVE, INACTIVE, BANNED, PENDING, DELETED
     }

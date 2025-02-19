@@ -26,7 +26,7 @@ public class UserController {
     private final UserService userService;
 
     // 로그인 페이지 이동
-    @GetMapping("/sign-in")
+    @GetMapping("/login")
     public String login() {
         return "/user/signIn";
     }

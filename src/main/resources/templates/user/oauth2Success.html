@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth Success</title>
+</head>
+
+<body>
+    <script>
+        // 메인 창(팝업을 연 창)에 접근
+        if (window.opener) {
+            // 메인 창을 "/" 로 이동
+            window.opener.location.href = "/";
+            // 팝업 창 닫기
+            window.close();
+        } else {
+            // 혹시 팝업이 아닌 직접 창이라면 그냥 "/" 이동
+            window.location.href = "/";
+        }
+    </script>
+</body>
+
+</html>
