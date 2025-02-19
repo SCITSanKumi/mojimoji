@@ -48,6 +48,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+
         /**
          * 1) DefaultOAuth2UserService를 통해 기본적인 사용자 정보(UserInfo)를 가져옴.
          * - Access Token으로 소셜 API 호출
@@ -56,8 +57,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
+        // 2-1) Access Token/Refresh Token 추출
+        String accessToken = userRequest.getAccessToken().getTokenValue();
+        // refresh_token은 표준 OAuth2 응답에 항상 포함되지 않을 수 있으므로 추가 파라미터 확인
+        String refreshToken = (String) userRequest.getAdditionalParameters().get("refresh_token");
+
         /**
-         * 2) provider, providerUserId, attributes 추출
+         * 2-2) provider, providerUserId, attributes 추출
          * - provider: 어떤 소셜인지 (예: "google", "kakao")
          * - providerUserId: 보통 "sub" 필드(구글 OIDC의 고유 식별자)
          * - attributes: 소셜에서 내려준 사용자 정보 (ex: {sub=..., email=..., name=...})
@@ -106,6 +112,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 newSocial.setProvider(provider);
                 newSocial.setProviderUserId(providerUserId);
                 newSocial.setUser(existingUser);
+                newSocial.setAccessToken(accessToken); // ★ 토큰 저장
+                newSocial.setRefreshToken(refreshToken); // ★ 토큰 저장
                 socialAccountRepository.save(newSocial);
 
                 log.info("기존 User와 연결된 새로운 SocialAccount 생성: provider={}, providerUserId={}, social_account_id={}",
@@ -134,6 +142,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 newSocial.setProvider(provider);
                 newSocial.setProviderUserId(providerUserId);
                 newSocial.setUser(newUser);
+                // 필요하다면 액세스 토큰이 갱신될 때마다 업데이트
+                newSocial.setAccessToken(accessToken); // ★ 토큰 저장
+                newSocial.setRefreshToken(refreshToken); // ★ 토큰 저장
                 socialAccountRepository.save(newSocial);
 
                 log.info("새로운 SocialAccount 생성: social_account_id={}, provider={}, providerUserId={}",
@@ -153,6 +164,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
          * - CustomOAuth2User: 소셜 attributes + DB User 엔티티를 함께 보관
          * - SecurityContext에 저장되어, 인증된 Principal로 동작
          */
-        return new CustomOAuth2User(oAuth2User.getAttributes(), userEntity);
+        return new CustomOAuth2User(userEntity, oAuth2User.getAttributes());
     }
 }

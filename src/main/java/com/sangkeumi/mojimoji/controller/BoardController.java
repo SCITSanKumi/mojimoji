@@ -2,15 +2,22 @@ package com.sangkeumi.mojimoji.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
+import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyRequest;
+import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyResponse;
+import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.service.BoardService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +32,34 @@ import lombok.extern.slf4j.Slf4j;
 public class BoardController {
 
     private final BoardService boardService;
+
+    /**
+     * 댓글 추가
+     * 
+     * @param principal
+     * @param request
+     * @return
+     */
+    @PostMapping("/story/comment")
+    @ResponseBody
+    public SharedStoryReplyResponse addComment(@AuthenticationPrincipal MyPrincipal principal,
+            @RequestBody SharedStoryReplyRequest request) {
+        // 컨트롤러에서 MyPrincipal을 주입받아 userId 추출
+        Long userId = principal.getUserId();
+        return boardService.addComment(userId, request);
+    }
+
+    /**
+     * 댓글 목록 조회
+     * 
+     * @param sharedBookId
+     * @return
+     */
+    @GetMapping("/story/comment")
+    @ResponseBody
+    public List<SharedStoryReplyResponse> getComments(@RequestParam(name = "sharedBookId") Long sharedBookId) {
+        return boardService.getComments(sharedBookId);
+    }
 
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드

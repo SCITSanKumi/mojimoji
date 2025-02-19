@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record SharedStoryInfoResponse(
+        Long sharedBookId,
         Long bookId,
         Long userId,
         String title,
