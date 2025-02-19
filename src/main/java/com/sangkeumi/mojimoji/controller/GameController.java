@@ -1,6 +1,8 @@
 package com.sangkeumi.mojimoji.controller;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -40,11 +42,13 @@ public class GameController {
         try {
             Long bookId = Long.parseLong(request.get("bookId").toString());
             String message = request.get("request").toString();
-            String response = gameService.getChatResponse(bookId, message);
+            CompletableFuture<String> response = gameService.getChatResponse(bookId, message);
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response.get());
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body("bookId 형식이 잘못되었습니다.");
+        } catch (InterruptedException | ExecutionException e) {
+            return ResponseEntity.status(500).body("비동기 작업 처리 중 오류가 발생했습니다.");
         }
     }
 }

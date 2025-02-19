@@ -9,6 +9,7 @@ import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -25,7 +27,7 @@ public class GameService {
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Value("${openai.api-key}")
     private String openAiApiKey;
@@ -64,9 +66,10 @@ public class GameService {
 
     /**
      * 사용자 입력을 받아 OpenAI API와 상호작용하는 메서드
+     * 비동기 호출을 사용하여 API 요청 처리
      */
     @Transactional
-    public String getChatResponse(Long bookId, String userMessage) {
+    public CompletableFuture<String> getChatResponse(Long bookId, String userMessage) {
         Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
@@ -80,12 +83,45 @@ public class GameService {
 
         log.info("Messages: {}", messages);
 
+        // 비동기 호출
+        CompletableFuture<String> assistantReply = getChatResponseFromApi(messages);
+
+        int nextSequence = history.isEmpty() ? 1 : history.get(history.size() - 1).getSequence() + 2;
+
+        bookLineRepository.save(BookLine.builder()
+            .book(book)
+            .role("user")
+            .content(userMessage)
+            .sequence(nextSequence)
+            .build()
+        );
+
+        // 비동기 결과를 기다리기 전에 먼저 저장한 후 비동기 결과를 받음
+        assistantReply.thenAccept(reply -> {
+            bookLineRepository.save(BookLine.builder()
+                .book(book)
+                .role("assistant")
+                .content(reply)
+                .sequence(nextSequence + 1)
+                .build()
+            );
+        });
+
+        // 비동기 처리가 완료될 때까지 기다리거나 클라이언트에게 결과를 바로 반환하는 방법을 선택할 수 있음
+        return assistantReply;  // 비동기 결과를 리턴
+    }
+
+    /**
+     * OpenAI API와 상호작용하는 비동기 메서드
+     */
+    @Async  // 비동기 처리
+    public CompletableFuture<String> getChatResponseFromApi(List<Map<String, String>> messages) {
         // OpenAI API 요청
         Map<String, Object> requestBody = Map.of(
             "model", "gpt-4-turbo",
             "messages", messages,
-            "max_tokens", 500,
-            "temperature", 0.75
+            "max_tokens", 300,
+            "temperature", 0.5
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -98,27 +134,7 @@ public class GameService {
         Map<String, Object> responseBody = responseEntity.getBody();
         List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
         Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-        String assistantReply = (String) message.get("content");
-
-        int nextSequence = history.isEmpty() ? 1 : history.get(history.size() - 1).getSequence() + 2;
-
-        bookLineRepository.save(BookLine.builder()
-            .book(book)
-            .role("user")
-            .content(userMessage)
-            .sequence(nextSequence)
-            .build()
-        );
-
-        bookLineRepository.save(BookLine.builder()
-            .book(book)
-            .role("assistant")
-            .content(assistantReply)
-            .sequence(nextSequence + 1)
-            .build()
-        );
-
-        return assistantReply;
+        return CompletableFuture.completedFuture((String) message.get("content"));
     }
 
     /**
