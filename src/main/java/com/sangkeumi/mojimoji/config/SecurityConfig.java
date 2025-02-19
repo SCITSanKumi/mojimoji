@@ -41,7 +41,7 @@ public class SecurityConfig {
 
         /**
          * Spring Security의 필터 체인(보안 설정)을 구성하는 메서드.
-         * 
+         *
          * @param http HttpSecurity 객체 (Security 설정의 핵심 API)
          * @return SecurityFilterChain (스프링 시큐리티가 사용하는 필터 체인)
          * @throws Exception 예외 발생 시
@@ -94,7 +94,7 @@ public class SecurityConfig {
                                                                 // → 소셜 프로필(DB 저장 등) 커스텀 로직
                                                                 .userService(customOAuth2UserService))
                                                 // 로그인 성공 시 이동할 URL, true면 항상 해당 URL로 이동
-                                                .defaultSuccessUrl("/oauth2/success", true))
+                                                .defaultSuccessUrl("/", true))
 
                                 // 4) 로그아웃 설정
                                 .logout(logout -> logout

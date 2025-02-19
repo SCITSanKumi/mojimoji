@@ -29,7 +29,7 @@ public class SocialAccount {
     /**
      * Users 테이블과 N:1 관계 (user_id 컬럼이 FK)
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
