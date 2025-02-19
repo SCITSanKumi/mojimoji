@@ -19,11 +19,12 @@
     <!-- JQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 </head>
+
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <br><br><br><br>
     <h2>수집현황</h2>
-    <div style="display: inline-block; width: 200px; height: 200px; float: right;">
+    <div style=" width: 200px; height: 200px; float: right;">
         <p>xxx1111님의 마이페이지</p>
         <p>최종접속일 : 2025/02/06</p>
         <a th:href="@{/board/myStory/list}" style="text-decoration: none;">작성한 스토리 : 329개</a>
@@ -66,4 +67,5 @@
         </table>
     </fieldset>
 </body>
+
 </html>

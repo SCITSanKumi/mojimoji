@@ -3,10 +3,12 @@ package com.sangkeumi.mojimoji.service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.sangkeumi.mojimoji.dto.user.CustomUser;
 import com.sangkeumi.mojimoji.dto.user.UserSignup;
 import com.sangkeumi.mojimoji.entity.User;
 import com.sangkeumi.mojimoji.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,4 +60,11 @@ public class UserService {
         return !result;
     }
 
+    @Transactional
+    public CustomUser getUserDto(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        // 여기서 user.getNickname() 등 Lazy 필드 접근 가능 (트랜잭션 내)
+        return new CustomUser(user.getUserId(), user.getNickname(), user.getEmail());
+    }
 }

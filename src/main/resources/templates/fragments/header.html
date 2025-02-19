@@ -24,6 +24,13 @@
                     <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
+                    <th:block sec:authorize="isAuthenticated()">
+                        <li><a class="dropdown-item text-danger" href="#"><span
+                                    sec:authentication="principal.nickname"></span></a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                    </th:block>
                     <li><a class="dropdown-item" th:href="@{/mypage}">마이 페이지</a></li>
                     <li><a class="dropdown-item" th:href="@{/board/myStory/list}">내 스토리</a></li>
                     <li><a class="dropdown-item" th:href="@{/kanji/collection}">한자 컬렉션</a></li>
@@ -31,7 +38,7 @@
                         <hr class="dropdown-divider">
                     </li>
                     <th:block sec:authorize="isAnonymous()">
-                        <li><a class="dropdown-item" href="#" th:href="@{/user/sign-in}">로그인</a></li>
+                        <li><a class="dropdown-item" href="#" th:href="@{/user/login}">로그인</a></li>
                     </th:block>
                     <th:block sec:authorize="isAuthenticated()">
                         <li><a class="dropdown-item text-danger" href="#" th:href="@{/user/logout}">로그아웃</a></li>
