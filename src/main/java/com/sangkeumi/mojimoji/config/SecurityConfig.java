@@ -24,21 +24,20 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .authorizeHttpRequests((auth) -> auth
-                // .requestMatchers(
-                //     "/",
-                //     "/swagger-ui.html",
-                //     "/swagger-ui/**",
-                //     "/api-docs/**",
-                //     "/user/login",
-                //     "/user/regist",
-                //     "/user/id-check",
-                //     "/user/nickname-check",
-                //     "/user/email-check",
-                //     "/user/sign-up",
-                //     "/js/**", "/css/**", "/image/**")
-                // .permitAll()
-                // .anyRequest().authenticated())
-                .anyRequest().permitAll())
+                .requestMatchers(
+                    "/",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/api-docs/**",
+                    "/user/login",
+                    "/user/regist",
+                    "/user/id-check",
+                    "/user/nickname-check",
+                    "/user/email-check",
+                    "/user/sign-up",
+                    "/js/**", "/css/**", "/image/**")
+                .permitAll()
+                .anyRequest().authenticated())
             .formLogin(form -> form
                 .loginPage("/user/sign-in")
                 .loginProcessingUrl("/user/sign-in")

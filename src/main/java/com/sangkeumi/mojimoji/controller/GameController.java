@@ -18,25 +18,33 @@ public class GameController {
 
     @GetMapping("/screen")
     public String game() {
-        return "/game/screen";
+        return "game/screen";
     }
 
-    @ResponseBody
     @PostMapping("/start")
     public ResponseEntity<Map<String, Object>> startGame() {
         Long bookId = gameService.startGame();
+
         return ResponseEntity.ok(Map.of(
             "bookId", bookId,
             "message", "게임이 시작되었습니다!"
         ));
     }
 
-    @ResponseBody
     @PostMapping("/send")
-    public String sendMessage(@RequestBody Map<String, Object> request) {
-        Long bookId = Long.valueOf(request.get("bookId").toString());
-        String message = request.get("request").toString();
-        String response = gameService.getChatResponse(bookId, message);
-        return response;
+    public ResponseEntity<String> sendMessage(@RequestBody Map<String, Object> request) {
+        if (!request.containsKey("bookId") || !request.containsKey("request")) {
+            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
+        }
+
+        try {
+            Long bookId = Long.parseLong(request.get("bookId").toString());
+            String message = request.get("request").toString();
+            String response = gameService.getChatResponse(bookId, message);
+
+            return ResponseEntity.ok(response);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("bookId 형식이 잘못되었습니다.");
+        }
     }
 }
