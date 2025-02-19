@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.sangkeumi.mojimoji.dto.game.MessageSendRequest;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
@@ -69,8 +70,10 @@ public class GameService {
      * 비동기 호출을 사용하여 API 요청 처리
      */
     @Transactional
-    public CompletableFuture<String> getChatResponse(Long bookId, String userMessage) {
-        Book book = bookRepository.findById(bookId)
+    public CompletableFuture<String> getChatResponse(MessageSendRequest request) {
+        log.info("request: {}", request);
+
+        Book book = bookRepository.findById(request.bookId())
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
         List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleOrderBySequenceDesc(book, "assistant");
@@ -79,7 +82,7 @@ public class GameService {
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", generateCustomSystemMessage()));
         history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
-        messages.add(Map.of("role", "user", "content", userMessage));
+        messages.add(Map.of("role", "user", "content", request.message()));
 
         log.info("Messages: {}", messages);
 
@@ -91,7 +94,7 @@ public class GameService {
         bookLineRepository.save(BookLine.builder()
             .book(book)
             .role("user")
-            .content(userMessage)
+            .content(request.message())
             .sequence(nextSequence)
             .build()
         );
@@ -120,8 +123,8 @@ public class GameService {
         Map<String, Object> requestBody = Map.of(
             "model", "gpt-4-turbo",
             "messages", messages,
-            "max_tokens", 300,
-            "temperature", 0.5
+            "max_tokens", 500,
+            "temperature", 0.6
         );
 
         HttpHeaders headers = new HttpHeaders();
