@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(function () {
+            $("button").click(function () {
+                let btnId = $(this).attr("id");
+                let id = btnId.replace("btn", "");
+
+                let kanjiId = $("#kanjiId" + id).attr("value");
+                let korKunyomi = $("#korKunyomi" + id).val();
+                let korOnyomi = $("#korOnyomi" + id).val();
+
+
+                if (korKunyomi.trim().length == 0 || korOnyomi.trim().length == 0) {
+                    alert("한글훈독과 한글음독을 입력해주세요.");
+                    $("#korKunyomi" + id).val("");
+                    $("#korOnyomi" + id).val("");
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/game/quiz",
+                    data: {
+                        "korKunyomi": korKunyomi,
+                        "korOnyomi": korOnyomi,
+                        "kanjiId": kanjiId
+                    },
+                    success: function (resp) {
+
+                        if (resp) {
+                            $(`#${btnId}`).text("정답입니다.");
+                            let question = confirm("정답입니다. 컬렉션에 추가하시겠습니까?");
+                            $(`#${btnId}`).attr("disabled", true);
+
+                            if (question) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/game/addCollection",
+                                    data: {
+                                        "kanjiId": kanjiId,
+                                        "userId": 1
+                                    },
+                                    success: function (resp) {
+                                        if (resp) {
+                                            alert("컬렉션에 추가되었습니다.");
+                                        }
+                                    }
+                                })
+                            } else {
+                                alert("컬렉션에 추가되지 않았습니다.");
+                            }
+                        } else {
+                            alert("오답입니다.");
+                            $(`#${btnId}`).text("오답입니다.");
+                            $(`#${btnId}`).attr("disabled", true);
+                        }
+                    }
+                })
+
+
+            })
+        })
+
+    </script>
+</head>
+
+<body>
+    <h2>한자퀴즈</h2>
+
+    <th:block th:each=" usedBookKanji, status : ${usedBookKanjiList}"><br>
+        <div>
+            <span th:text="${status.count} + '번. ' + ${usedBookKanji.kanji.kanji}" th:id="'kanjiId' + ${status.count}"
+                th:value="
+                ${usedBookKanji.kanji.kanjiId}"></span><br>
+
+            한글훈독 <input type="text" th:id="korKunyomi + ${status.count}">
+            한글음독 <input type="text" th:id="korOnyomi + ${status.count}">
+
+            <button th:id="${'btn' + status.count}">[[${status.count}]]번 제출</button>
+        </div>
+
+</body>
+
+
+
+</html>
