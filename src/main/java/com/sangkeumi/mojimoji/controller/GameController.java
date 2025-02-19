@@ -8,14 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import com.sangkeumi.mojimoji.dto.game.MessageSendRequest;
 import com.sangkeumi.mojimoji.service.GameService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/game")
 @RequiredArgsConstructor
+@Tag(name = "Game API", description = "게임 관련 API")
 public class GameController {
+
     private final GameService gameService;
 
     @GetMapping("/screen")
@@ -24,6 +29,7 @@ public class GameController {
     }
 
     @PostMapping("/start")
+    @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
     public ResponseEntity<Map<String, Object>> startGame() {
         Long bookId = gameService.startGame();
 
@@ -34,21 +40,10 @@ public class GameController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendMessage(@RequestBody Map<String, Object> request) {
-        if (!request.containsKey("bookId") || !request.containsKey("request")) {
-            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
-        }
+    @Operation(summary = "OpenAI 대답 요청", description = "OpenAI 대답 요청을 처리합니다.")
+    public ResponseEntity<String> sendMessage(@RequestBody MessageSendRequest request) throws InterruptedException, ExecutionException {
+        CompletableFuture<String> response = gameService.getChatResponse(request);
 
-        try {
-            Long bookId = Long.parseLong(request.get("bookId").toString());
-            String message = request.get("request").toString();
-            CompletableFuture<String> response = gameService.getChatResponse(bookId, message);
-
-            return ResponseEntity.ok(response.get());
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("bookId 형식이 잘못되었습니다.");
-        } catch (InterruptedException | ExecutionException e) {
-            return ResponseEntity.status(500).body("비동기 작업 처리 중 오류가 발생했습니다.");
-        }
+        return ResponseEntity.ok(response.get());
     }
 }
