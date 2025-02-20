@@ -107,14 +107,26 @@ public class BoardController {
      * @return
      */
     @GetMapping("/story/detail")
-    public String storyDetail(@RequestParam(name = "bookId") Long bookId, Model model) {
-        // 공유된 스토리의 내용 조회
-        List<SharedStoryContentResponse> sharedStoryContent = boardService.getSharedStoryContent(bookId);
-
+    public String storyDetail(@RequestParam(name = "bookId") Long bookId, Model model,
+            @AuthenticationPrincipal MyPrincipal principal) {
         // 공유된 스토리의 정보 조회
         SharedStoryInfoResponse sharedStoryInfo = boardService.getSharedStoryInfo(bookId);
 
-        // 공유된 스토리의 내용과 정보를 모델에 추가
+        // 로그인한 사용자가 없거나, 현재 글의 작성자와 다르면 조회수 증가 처리
+        if (sharedStoryInfo != null) {
+            Long authorId = sharedStoryInfo.userId();
+            Long currentUserId = (principal != null) ? principal.getUserId() : null;
+            if (currentUserId == null || !authorId.equals(currentUserId)) {
+                boardService.incrementHitCount(bookId);
+                // 조회수 증가 후, 새로 증가된 값을 반영하기 위해 다시 공유 스토리 정보 조회
+                sharedStoryInfo = boardService.getSharedStoryInfo(bookId);
+            }
+        }
+
+        // 공유된 스토리의 내용 조회
+        List<SharedStoryContentResponse> sharedStoryContent = boardService.getSharedStoryContent(bookId);
+
+        // 모델에 데이터 추가
         model.addAttribute("sharedStoryContent", sharedStoryContent);
         model.addAttribute("sharedStoryInfo", sharedStoryInfo);
 

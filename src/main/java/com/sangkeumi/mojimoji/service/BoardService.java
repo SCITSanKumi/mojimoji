@@ -38,6 +38,21 @@ public class BoardService {
         private final SharedBookReplyRepository sharedBookReplyRepository;
 
         /**
+         * 조회수 증가
+         * 
+         * @param bookId
+         */
+        @Transactional
+        public void incrementHitCount(Long bookId) {
+                Optional<SharedBook> optionalSharedBook = sharedBookRepository.findByBook_bookId(bookId);
+                if (optionalSharedBook.isPresent()) {
+                        SharedBook sharedBook = optionalSharedBook.get();
+                        sharedBook.setHitCount(sharedBook.getHitCount() + 1);
+                        sharedBookRepository.save(sharedBook);
+                }
+        }
+
+        /**
          * 댓글 삭제
          * 
          * @param sharedBookReplyId
