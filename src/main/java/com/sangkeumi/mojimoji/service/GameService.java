@@ -2,15 +2,15 @@ package com.sangkeumi.mojimoji.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sangkeumi.mojimoji.dto.game.MessageSendRequest;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+import java.time.Duration;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -28,13 +32,13 @@ public class GameService {
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     @Value("${openai.api-key}")
     private String openAiApiKey;
     private final String openAiUrl = "https://api.openai.com/v1/chat/completions";
 
-    /** 게임을 시작하는 메서드 (OpenAI 호출 없음) */
+    /** 게임 시작 메서드 */
     @Transactional
     public Long startGame() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -63,10 +67,9 @@ public class GameService {
         return book.getBookId();
     }
 
-    /** 사용자 입력을 받아 OpenAI API와 상호작용하는 메서드 */
-    @Transactional
-    public CompletableFuture<String> getChatResponse(MessageSendRequest request) {
-        Book book = bookRepository.findById(request.bookId())
+    /** OpenAI API와 스트리밍 통신을 위한 Flux<String> */
+    public Flux<String> getChatResponseStream(Long bookId, String message) {
+        Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
         List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleOrderBySequenceDesc(book, "assistant");
@@ -75,63 +78,82 @@ public class GameService {
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", generateCustomSystemMessage()));
         history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
-        messages.add(Map.of("role", "user", "content", request.message()));
+        messages.add(Map.of("role", "user", "content", message));
 
         log.info("Messages: {}", messages);
 
-        // 비동기 호출
-        CompletableFuture<String> assistantReply = getChatResponseFromApi(messages);
-
         int nextSequence = history.isEmpty() ? 1 : history.get(history.size() - 1).getSequence() + 2;
 
+        // 사용자 입력 저장
         bookLineRepository.save(BookLine.builder()
             .book(book)
             .role("user")
-            .content(request.message())
+            .content(message)
             .sequence(nextSequence)
             .build()
         );
 
-        // 비동기 결과를 기다리기 전에 먼저 저장한 후 비동기 결과를 받음
-        assistantReply.thenAccept(reply -> {
-            bookLineRepository.save(BookLine.builder()
-                .book(book)
-                .role("assistant")
-                .content(reply)
-                .sequence(nextSequence + 1)
-                .build()
-            );
-        });
-
-        // 비동기 처리가 완료될 때까지 기다리거나 클라이언트에게 결과를 바로 반환하는 방법을 선택할 수 있음
-        return assistantReply;  // 비동기 결과를 리턴
+        // OpenAI API 스트리밍 응답을 가져오고, Flux<String> 형태로 반환
+        return getChatResponseFromApi(messages)
+            .delayElements(Duration.ofMillis(50)) // 50ms 간격으로 데이터를 한 글자씩 보냄
+            .doOnNext(reply -> bookLineRepository.save(
+                BookLine.builder()
+                    .book(book)
+                    .role("assistant")
+                    .content(reply)
+                    .sequence(nextSequence + 1)
+                    .build()
+            ));
     }
 
-    /**  OpenAI API와 상호작용하는 비동기 메서드 */
-    @Async  // 비동기 처리
-    public CompletableFuture<String> getChatResponseFromApi(List<Map<String, String>> messages) {
-        // OpenAI API 요청
-        Map<String, Object> requestBody = Map.of(
+    /** OpenAI API 스트리밍 요청 처리 */
+
+public Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
+    return webClient.post()
+        .uri(openAiUrl)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiApiKey)
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(Map.of(
             "model", "gpt-4-turbo",
             "messages", messages,
             "max_tokens", 500,
-            "temperature", 0.6
-        );
+            "temperature", 0.6,
+            "stream", true
+        ))
+        .retrieve()
+        .bodyToFlux(String.class) // 🔹 문자열로 직접 받음
+        .filter(response -> !response.equals("data: [DONE]")) // 🔹 "DONE" 메시지 무시
+        .map(response -> response.replaceFirst("data:", "").trim()) // 🔹 "data:" 제거
+        .filter(content -> !content.isEmpty()) // 🔹 빈 데이터 필터링
+        .map(content -> {
+            try {
+                Map<String, Object> json = new ObjectMapper().readValue(content, Map.class);
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) json.get("choices");
+                if (choices != null && !choices.isEmpty()) {
+                    Map<String, Object> delta = (Map<String, Object>) choices.get(0).get("delta");
+                    if (delta != null && delta.containsKey("content")) {
+                        return delta.get("content").toString();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // 🔹 JSON 파싱 오류 디버깅
+            }
+            return "";
+        })
+        .filter(content -> !content.isEmpty()) // 🔹 빈 값 필터링
+        .bufferUntil(content -> content.endsWith(".") || content.endsWith(",") || content.endsWith("?") || content.endsWith("!")) // 🔹 문장 단위로 묶음
+        .map(chunks -> {
+            String joined = String.join("", chunks).trim();
+            return joined.endsWith(" ") ? joined : joined + " "; // 🔹 문장 끝에 공백 추가
+        })
+        // .delayElements(Duration.ofMillis(150)) // 🔹 속도 조절
+        .log(); // 🔹 디버깅용 로그 추가
+}
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + openAiApiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<Map> responseEntity = restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, Map.class);
 
-        Map<String, Object> responseBody = responseEntity.getBody();
-        List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
-        Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-        return CompletableFuture.completedFuture((String) message.get("content"));
-    }
 
-    /** 게임 시작 시의 안내 메시지 생성 */
+    /** 게임 시작 안내 메시지 */
     private String generateGameIntroMessage() {
         return "용사의 모험이 시작됩니다! 한자를 입력하여 이야기를 진행하세요.";
     }

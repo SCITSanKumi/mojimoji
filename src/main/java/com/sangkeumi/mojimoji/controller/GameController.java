@@ -2,8 +2,6 @@ package com.sangkeumi.mojimoji.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,9 +15,10 @@ import com.sangkeumi.mojimoji.service.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
+import reactor.core.publisher.Flux;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 
 @Controller
 @RequestMapping("/game")
@@ -49,19 +48,16 @@ public class GameController {
         ));
     }
 
-    @PostMapping("/send")
-    @Operation(summary = "OpenAI 대답 요청", description = "OpenAI 대답 요청을 처리합니다.")
-    public ResponseEntity<String> sendMessage(@RequestBody MessageSendRequest request) throws InterruptedException, ExecutionException {
-        CompletableFuture<String> response = gameService.getChatResponse(request);
-
-        return ResponseEntity.ok(response.get());
+    @ResponseBody
+    @PostMapping(value = "/send-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> sendMessageStream(@RequestBody MessageSendRequest request) {
+        log.info("Received request for streaming: {}", request);
+        return gameService.getChatResponseStream(request.bookId(), request.message());
     }
 
     @GetMapping("/quiz")
     public String quiz(Model model) {
-
         List<UsedBookKanji> usedBookkanjiList = usedBookKanjiService.selectAll();
-
         model.addAttribute("usedBookKanjiList", usedBookkanjiList);
         return "/game/quiz";
     }
@@ -71,9 +67,7 @@ public class GameController {
     public boolean quiz(@RequestParam(name = "korOnyomi") String korOnyomi,
             @RequestParam(name = "korKunyomi") String korKunyomi,
             @RequestParam(name = "kanjiId") Long kanjiId) {
-
-        boolean result = kanjiService.checkAnswer(korOnyomi, korKunyomi, kanjiId);
-        return result;
+        return kanjiService.checkAnswer(korOnyomi, korKunyomi, kanjiId);
     }
 
     @ResponseBody
@@ -81,9 +75,6 @@ public class GameController {
     public boolean addCollection(@RequestParam(name = "kanjiId") Long kanjiId,
             @RequestParam(name = "userId") Long userId) {
         AddKanjiCollection addKanjiCollection = new AddKanjiCollection(userId, kanjiId);
-        boolean result = kanjiCollectionService.addCollection(addKanjiCollection);
-
-        // boolean result = true;
-        return result;
+        return kanjiCollectionService.addCollection(addKanjiCollection);
     }
 }
