@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -90,8 +92,9 @@ public class BoardService {
          * @return
          */
         @Transactional
-        public List<SharedStoryReplyResponse> getComments(Long sharedBookId) {
-                return sharedBookReplyRepository.findBySharedBook_SharedBookId(sharedBookId)
+        public List<SharedStoryReplyResponse> getComments(Long sharedBookId, int page, int size) {
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+                return sharedBookReplyRepository.findBySharedBook_SharedBookId(sharedBookId, pageable)
                                 .stream()
                                 .map(reply -> new SharedStoryReplyResponse(
                                                 reply.getSharedBookReplyId(),

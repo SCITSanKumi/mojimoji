@@ -69,8 +69,11 @@ public class BoardController {
      */
     @GetMapping("/story/comment")
     @ResponseBody
-    public List<SharedStoryReplyResponse> getComments(@RequestParam(name = "sharedBookId") Long sharedBookId) {
-        return boardService.getComments(sharedBookId);
+    public List<SharedStoryReplyResponse> getCommentsWithPagination(
+            @RequestParam(name = "sharedBookId") Long sharedBookId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        return boardService.getComments(sharedBookId, page, size);
     }
 
     /**
