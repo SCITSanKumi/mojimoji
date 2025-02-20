@@ -10,11 +10,18 @@ import org.springframework.stereotype.Service;
 import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
+import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyRequest;
+import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyResponse;
 import com.sangkeumi.mojimoji.entity.BookLine;
 import com.sangkeumi.mojimoji.entity.SharedBook;
+import com.sangkeumi.mojimoji.entity.SharedBookReply;
+import com.sangkeumi.mojimoji.entity.User;
 import com.sangkeumi.mojimoji.repository.BookLineRepository;
+import com.sangkeumi.mojimoji.repository.SharedBookReplyRepository;
 import com.sangkeumi.mojimoji.repository.SharedBookRepository;
+import com.sangkeumi.mojimoji.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +32,71 @@ public class BoardService {
 
         private final SharedBookRepository sharedBookRepository;
         private final BookLineRepository bookLineRepository;
+        private final UserRepository userRepository;
+        private final SharedBookReplyRepository sharedBookReplyRepository;
 
+        /**
+         * 댓글 추가
+         * 
+         * @param userId
+         * @param request
+         * @return
+         */
+        @Transactional
+        public SharedStoryReplyResponse addComment(Long userId, SharedStoryReplyRequest request) {
+                // 전달받은 sharedBookId로 SharedBook 조회
+                SharedBook sharedBook = sharedBookRepository.findById(request.sharedBookId())
+                                .orElseThrow(() -> new RuntimeException("공유된 스토리를 찾을 수 없습니다."));
+
+                // User 엔티티 조회
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("작성자를 찾을 수 없습니다."));
+
+                // 댓글 Entity 생성 및 저장
+                SharedBookReply reply = SharedBookReply.builder()
+                                .sharedBook(sharedBook)
+                                .user(user)
+                                .content(request.content())
+                                .build();
+                SharedBookReply savedReply = sharedBookReplyRepository.save(reply);
+
+                return new SharedStoryReplyResponse(
+                                savedReply.getSharedBookReplyId(),
+                                sharedBook.getSharedBookId(),
+                                user.getUserId(),
+                                user.getNickname(),
+                                savedReply.getContent(),
+                                savedReply.getCreatedAt());
+        }
+
+        /**
+         * 댓글 목록 조회
+         * 
+         * @param sharedBookId
+         * @return
+         */
+        @Transactional
+        public List<SharedStoryReplyResponse> getComments(Long sharedBookId) {
+                return sharedBookReplyRepository.findBySharedBook_SharedBookId(sharedBookId)
+                                .stream()
+                                .map(reply -> new SharedStoryReplyResponse(
+                                                reply.getSharedBookReplyId(),
+                                                reply.getSharedBook().getSharedBookId(),
+                                                reply.getUser().getUserId(),
+                                                reply.getUser().getNickname(),
+                                                reply.getContent(),
+                                                reply.getCreatedAt()))
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * 공유된 스토리 목록 검색 및 정렬 메서드
+         * 
+         * @param searchWord
+         * @param searchItem
+         * @param sortOption
+         * @return
+         */
         public List<SharedStoriesListResponse> searchAndSortSharedBooks(String searchWord, String searchItem,
                         String sortOption) {
                 Sort sort;
@@ -106,6 +177,7 @@ public class BoardService {
                 if (sharedBookOpt.isPresent()) {
                         SharedBook sharedBook = sharedBookOpt.get();
                         SharedStoryInfoResponse storyInfo = SharedStoryInfoResponse.builder()
+                                        .sharedBookId(sharedBook.getSharedBookId())
                                         .bookId(sharedBook.getBook().getBookId())
                                         .userId(sharedBook.getBook().getUser().getUserId())
                                         .title(sharedBook.getBook().getTitle())

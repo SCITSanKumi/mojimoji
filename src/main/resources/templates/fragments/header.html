@@ -9,7 +9,7 @@
     <!-- 네비게이션 링크 -->
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a th:href="@{/game/play}" class="nav-link">스토리 시작</a></li>
+            <li class="nav-item"><a th:href="@{/game/screen}" class="nav-link">스토리 시작</a></li>
             <li class="nav-item"><a th:href="@{/board/story/list}" class="nav-link">스토리 구경하기</a></li>
             <li class="nav-item"><a href="#" class="nav-link">이용방법</a></li>
             <!-- 모바일 화면에서 드롭다운 항목을 개별 nav-item으로 표시 -->
@@ -25,12 +25,17 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
                     <th:block sec:authorize="isAuthenticated()">
-                        <li><a class="dropdown-item text-danger" href="#" th:text="${nickname} +'님'">로그아웃</a></li>
+                        <li><a class="dropdown-item text-danger" href="#"><span
+                                    sec:authentication="principal.nickname"></span></a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                     </th:block>
                     <li><a class="dropdown-item" th:href="@{/mypage}">마이 페이지</a></li>
                     <li><a class="dropdown-item" th:href="@{/board/myStory/list}">내 스토리</a></li>
                     <li><a class="dropdown-item" th:href="@{/kanji/collection}">한자 컬렉션</a></li>
                     <li>
+                        <hr class="dropdown-divider">
                     </li>
                     <th:block sec:authorize="isAnonymous()">
                         <li><a class="dropdown-item" href="#" th:href="@{/user/login}">로그인</a></li>

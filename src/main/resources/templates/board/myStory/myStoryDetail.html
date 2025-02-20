@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>태백산맥</title>
-    
+
     <!-- Bootstrap (로컬 파일 불러오기) -->
     <link rel="stylesheet" href="../../../static/css/bootstrap.min.css">
 
@@ -26,7 +26,8 @@
 
         /* 댓글 목록 스타일 */
         .comment-list {
-            max-height: 200px; /* 스크롤 가능 */
+            max-height: 200px;
+            /* 스크롤 가능 */
             overflow-y: auto;
         }
 
@@ -54,17 +55,17 @@
     </nav>
 
     <!-- 메인 컨텐츠 -->
-<div class="container mt-4">
-<!-- 제목과 삭제 버튼을 같은 줄에 배치 (간격 조정) -->
-<div class="d-flex justify-content-between align-items-center mb-2">
-    <h2 class="fw-bold mb-0">태백산맥</h2>
-    <button class="btn btn-danger btn-lg fw-bold fs-5">삭제</button>
-</div>
+    <div class="container mt-4">
+        <!-- 제목과 삭제 버튼을 같은 줄에 배치 (간격 조정) -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="fw-bold mb-0">태백산맥</h2>
+            <button class="btn btn-danger btn-lg fw-bold fs-5">삭제</button>
+        </div>
 
-<!-- 소설 본문 -->
-<div class="card story-box p-3">
-    <div class="card-body bg-light">
-        <pre>
+        <!-- 소설 본문 -->
+        <div class="card story-box p-3">
+            <div class="card-body bg-light">
+                <pre>
 어느날 박혜선은 잠에서 깬 뒤 소스라치게 놀라고 만다.
 어젯밤 박혜선은 분명 자신의 안방에서 잠에 들었다.
 그러나 지금 그는 어둡고 침침한 숲속 한 가운데 있다.
@@ -72,43 +73,43 @@
 아무리 생각해도 이유를 알 수 없다. 그때 근처에서 괴상한 울음소리가 들린다.
 박혜선은 본능적으로 어딘가로 도망쳐야 한다고 생각했다.
         </pre>
-    </div>
-</div>
-
-    <div class="row mt-4 align-items-center">
-        <!-- 댓글 섹션 -->
-        <div class="col-md-8">
-            <h5>댓글</h5>
-            
-            <!-- 입력창과 버튼을 함께 배치 -->
-            <div class="input-group">
-                <input type="text" id="comment-input" class="form-control" placeholder="Share your thoughts">
-                <button class="btn btn-dark" id="add-comment">댓글 등록</button>
             </div>
-            
-            <!-- 댓글 목록 (스크롤 가능) -->
-            <ul class="list-group comment-list mt-3" id="comment-list">
-                <li class="list-group-item"><strong>철수:</strong> 스토리 재밌어요</li>
-                <li class="list-group-item"><strong>영희:</strong> 스토리 흥미로워요</li>
-                <li class="list-group-item"><strong>보람:</strong> 스토리 노잼이에요</li>
-                <li class="list-group-item"><strong>철구:</strong> 노벨문학상 받아도 되겠어요</li>
-                <li class="list-group-item"><strong>현상:</strong> 혹시 작가님이세요?</li>
-                <li class="list-group-item"><strong>예신:</strong> 꿀잼!</li>
-            </ul>
         </div>
-    
-        <!-- 작성자 정보 (조금 아래로 내리기 위해 mt-4 추가) -->
-        <div class="col-md-4 mt-4">
-            <div class="card user-info">
-                <div class="card-header text-center bg-light fw-bold">조정래</div>
-                <div class="card-body text-center">
-                    <p><strong>태백산맥</strong></p>
-                    <p>👍 11.3k 👀 25.6k</p>
-                    <p>작성일: 2025/02/05</p>
+
+        <div class="row mt-4 align-items-center">
+            <!-- 댓글 섹션 -->
+            <div class="col-md-8">
+                <h5>댓글</h5>
+
+                <!-- 입력창과 버튼을 함께 배치 -->
+                <div class="input-group">
+                    <input type="text" id="comment-input" class="form-control" placeholder="Share your thoughts">
+                    <button class="btn btn-dark" id="add-comment">댓글 등록</button>
+                </div>
+
+                <!-- 댓글 목록 (스크롤 가능) -->
+                <ul class="list-group comment-list mt-3" id="comment-list">
+                    <li class="list-group-item"><strong>철수:</strong> 스토리 재밌어요</li>
+                    <li class="list-group-item"><strong>영희:</strong> 스토리 흥미로워요</li>
+                    <li class="list-group-item"><strong>보람:</strong> 스토리 노잼이에요</li>
+                    <li class="list-group-item"><strong>철구:</strong> 노벨문학상 받아도 되겠어요</li>
+                    <li class="list-group-item"><strong>현상:</strong> 혹시 작가님이세요?</li>
+                    <li class="list-group-item"><strong>예신:</strong> 꿀잼!</li>
+                </ul>
+            </div>
+
+            <!-- 작성자 정보 (조금 아래로 내리기 위해 mt-4 추가) -->
+            <div class="col-md-4 mt-4">
+                <div class="card user-info">
+                    <div class="card-header text-center bg-light fw-bold">조정래</div>
+                    <div class="card-body text-center">
+                        <p><strong>태백산맥</strong></p>
+                        <p>👍 11.3k 👀 25.6k</p>
+                        <p>작성일: 2025/02/05</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
     <!-- 푸터 -->
@@ -116,22 +117,23 @@
         주식회사 모지모지 © 2025. All rights reserved. 대표이사 김현
     </footer>
 
-    <script>
-        $(document).ready(function () {
-            $('#add-comment').click(function () {
-                let commentText = $('#comment-input').val().trim();
-                if (commentText) {
-                    let newComment = '<li class="list-group-item"><strong>익명:</strong> ' + commentText + '</li>';
-                    $('#comment-list').append(newComment);
-                    $('#comment-input').val('');
+        <script>
+            $(document).ready(function () {
+                $('#add-comment').click(function () {
+                    let commentText = $('#comment-input').val().trim();
+                    if (commentText) {
+                        let newComment = '<li class="list-group-item"><strong>익명:</strong> ' + commentText + '</li>';
+                        $('#comment-list').append(newComment);
+                        $('#comment-input').val('');
 
-                    // 댓글이 추가될 때 자동 스크롤 다운
-                    let commentList = document.getElementById("comment-list");
-                    commentList.scrollTop = commentList.scrollHeight;
-                }
+                        // 댓글이 추가될 때 자동 스크롤 다운
+                        let commentList = document.getElementById("comment-list");
+                        commentList.scrollTop = commentList.scrollHeight;
+                    }
+                });
             });
-        });
-    </script>
+        </script>
 
 </body>
+
 </html>

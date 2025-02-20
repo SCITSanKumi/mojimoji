@@ -2,22 +2,8 @@ package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "Book_Lines")
@@ -43,10 +29,10 @@ public class BookLine {
     private Book book;
 
     /**
-     * 책 내에서의 순서를 나타내는 필드
+     * 사용자의 대답인지 openAI의 대답인지 ("user", "assistant", 또는 "system")
      */
     @Column(nullable = false)
-    private int sequence;
+    private String role;
 
     /**
      * 해당 줄의 내용 (텍스트)
@@ -55,16 +41,10 @@ public class BookLine {
     private String content;
 
     /**
-     * 해당 줄이 플레이된 턴 수
+     * 책 내에서의 순서를 나타내는 필드
      */
-    @Column(name = "played_turns", nullable = false)
-    private int playedTurns;
-
-    /**
-     * 해당 줄이 책의 끝인지 여부
-     */
-    @Column(name = "is_ended", nullable = false)
-    private boolean isEnded;
+    @Column(nullable = false)
+    private int sequence;
 
     /**
      * 생성일시
@@ -72,13 +52,6 @@ public class BookLine {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    /**
-     * 최종 수정일시
-     */
-    @Column(name = "updated_at", nullable = false)
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
 
     // 양방향 관계
 
