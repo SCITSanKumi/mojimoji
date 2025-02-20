@@ -102,76 +102,78 @@
     <script>
         $(document).ready(function() {
             let history = [];
-            let bookId = null;  // bookId를 저장할 변수
+            let bookId = null;
 
-            function typeWriterEffect(text, element) {
-                element.html("");
-                let i = 0;
-                function typing() {
-                    if (i < text.length) {
-                        element.append(text.charAt(i));
-                        i++;
-                        setTimeout(typing, 50);
-                    }
-                }
-                typing();
+            function updateStory(text) {
+                $("#storyBox .dialogue").append(text);
             }
 
-            // 게임 시작 버튼 클릭 시
             $("#startGameBtn").click(function() {
-                $.ajax({
-                    url: '/game/start',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    success: function(response) {
-                        // 게임 시작 응답에서 bookId를 받아와서 변수에 저장
-                        bookId = response.bookId;
-
-                        $("#startGameBtn").hide();
-                        $(".dialogue-container").show();
-                        $(".input-group, #historyBtn").show();
-                        typeWriterEffect("용사의 모험이 시작됩니다! 한자를 입력하여 이야기를 진행하세요.", $("#storyBox .dialogue"));
-                    },
-                    error: function() {
-                        alert("게임 시작 중 오류가 발생했습니다.");
-                    }
+                $.post("/game/start", function(response) {
+                    bookId = response.bookId;
+                    $("#startGameBtn").hide();
+                    $(".dialogue-container, .input-group, #historyBtn").show();
+                    updateStory("용사의 모험이 시작됩니다! 한자를 입력하세요.<br>");
+                }).fail(function() {
+                    alert("게임 시작 중 오류가 발생했습니다.");
                 });
             });
 
-            // 대사 입력 버튼 클릭 시
             $("#submitBtn").click(function() {
                 let userText = $("#userInput").val();
                 if (userText.trim() !== "" && bookId !== null) {
-                    $.ajax({
-                        url: '/game/send',
-                        method: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            "bookId": bookId,  // 저장된 bookId를 함께 전송
-                            "message": userText
-                        }),
-                        success: function(response) {
-                            // 응답은 단순 문자열이므로 바로 사용합니다.
-                            history.push(response);
-                            typeWriterEffect(response, $("#storyBox .dialogue"));
-                            $("#userInput").val("");
+                    $("#storyBox .dialogue").text("");  // 대화 초기화
+
+                    fetch("/game/send-stream", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
                         },
-                        error: function() {
-                            alert("대사 입력 중 오류가 발생했습니다.");
+                        body: JSON.stringify({ bookId: bookId, message: userText })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("서버 응답 오류");
                         }
-                    });
+
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder("utf-8");
+
+                        function read() {
+                            reader.read().then(({ done, value }) => {
+                                if (done) {
+                                    console.log("스트리밍 종료");
+                                    return;
+                                }
+
+                                let text = decoder.decode(value);
+
+                                // 🔹 "data:" 제거 후 출력
+                                text.split("\n").forEach(line => {
+                                    if (line.startsWith("data:")) {
+                                        $("#storyBox .dialogue").append(line.replace("data:", "").trim());
+                                    }
+                                });
+
+                                read();  // 계속 읽기
+                            });
+                        }
+
+                        read();  // 최초 실행
+                    })
+                    .catch(error => console.error("스트리밍 오류:", error));
+
+                    $("#userInput").val("");
                 } else {
                     alert("게임이 시작되지 않았거나, 대사가 비어있습니다.");
                 }
             });
 
-            // 이전 이야기 보기 버튼 클릭 시
+
             $("#historyBtn").click(function() {
-                let historyText = history.map(text => "<p>" + text + "</p>").join("");
-                $("#modalStoryBox").html(historyText);
+                $("#modalStoryBox").html(history.map(text => `<p>${text}</p>`).join(""));
             });
         });
     </script>
 </body>
-
 </html>
