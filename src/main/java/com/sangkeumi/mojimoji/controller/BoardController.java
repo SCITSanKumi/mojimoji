@@ -35,7 +35,7 @@ public class BoardController {
 
     /**
      * 댓글 추가
-     * 
+     *
      * @param principal
      * @param request
      * @return
@@ -51,7 +51,7 @@ public class BoardController {
 
     /**
      * 댓글 목록 조회
-     * 
+     *
      * @param sharedBookId
      * @return
      */
@@ -63,7 +63,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     * 
+     *
      * @param searchWord 검색어
      * @param searchItem 검색 대상, 기본값은 "title"
      * @param sortOption 정렬 옵션, 기본값은 "date"
@@ -86,7 +86,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리의 상세 페이지를 반환하는 메서드
-     * 
+     *
      * @param bookId
      * @param model
      * @return
@@ -108,11 +108,11 @@ public class BoardController {
 
     @GetMapping("/myStory/list")
     public String myStoryList() {
-        return "/board/myStory/myStoryList";
+        return "board/myStory/myStoryList";
     }
 
     @GetMapping("/myStory/detail")
     public String myStoryDetail() {
-        return "/board/myStory/myStoryDetail";
+        return "board/myStory/myStoryDetail";
     }
 }
