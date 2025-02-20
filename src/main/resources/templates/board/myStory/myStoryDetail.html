@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>태백산맥</title>
 
-    <!-- Bootstrap (로컬 파일 불러오기) -->
-    <link rel="stylesheet" href="../../../static/css/bootstrap.min.css">
 
-    <!-- jQuery (로컬 파일 불러오기) -->
-    <script src="../../../static/js/jquery-3.7.1.min.js"></script>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+        <!-- Bootstrap Bundle JS -->
+        <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+        <!-- jQuery -->
+        <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
-    <!-- Bootstrap JS (로컬 파일 불러오기) -->
-    <script defer src="../../../static/js/bootstrap.bundle.min.js"></script>
 
     <style>
         /* 본문 스타일 */
@@ -24,12 +25,14 @@
             margin-top: 20px;
         }
 
+
         /* 댓글 목록 스타일 */
         .comment-list {
             max-height: 200px;
             /* 스크롤 가능 */
             overflow-y: auto;
         }
+
 
         /* 사용자 정보 박스 스타일 */
         .user-info {
@@ -40,7 +43,9 @@
     </style>
 </head>
 
+
 <body class="bg-light">
+
 
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-light bg-white border-bottom">
@@ -54,6 +59,7 @@
         </div>
     </nav>
 
+
     <!-- 메인 컨텐츠 -->
     <div class="container mt-4">
         <!-- 제목과 삭제 버튼을 같은 줄에 배치 (간격 조정) -->
@@ -61,6 +67,7 @@
             <h2 class="fw-bold mb-0">태백산맥</h2>
             <button class="btn btn-danger btn-lg fw-bold fs-5">삭제</button>
         </div>
+
 
         <!-- 소설 본문 -->
         <div class="card story-box p-3">
@@ -76,16 +83,19 @@
             </div>
         </div>
 
+
         <div class="row mt-4 align-items-center">
             <!-- 댓글 섹션 -->
             <div class="col-md-8">
                 <h5>댓글</h5>
+
 
                 <!-- 입력창과 버튼을 함께 배치 -->
                 <div class="input-group">
                     <input type="text" id="comment-input" class="form-control" placeholder="Share your thoughts">
                     <button class="btn btn-dark" id="add-comment">댓글 등록</button>
                 </div>
+
 
                 <!-- 댓글 목록 (스크롤 가능) -->
                 <ul class="list-group comment-list mt-3" id="comment-list">
@@ -97,6 +107,7 @@
                     <li class="list-group-item"><strong>예신:</strong> 꿀잼!</li>
                 </ul>
             </div>
+
 
             <!-- 작성자 정보 (조금 아래로 내리기 위해 mt-4 추가) -->
             <div class="col-md-4 mt-4">
@@ -112,10 +123,13 @@
         </div>
 
 
+
+
     <!-- 푸터 -->
     <footer class="text-center py-4 mt-4 bg-white border-top">
         주식회사 모지모지 © 2025. All rights reserved. 대표이사 김현
     </footer>
+
 
         <script>
             $(document).ready(function () {
@@ -126,6 +140,7 @@
                         $('#comment-list').append(newComment);
                         $('#comment-input').val('');
 
+
                         // 댓글이 추가될 때 자동 스크롤 다운
                         let commentList = document.getElementById("comment-list");
                         commentList.scrollTop = commentList.scrollHeight;
@@ -134,6 +149,8 @@
             });
         </script>
 
+
 </body>
+
 
 </html>

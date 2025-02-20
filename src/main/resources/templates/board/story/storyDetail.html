@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>태백산맥</title>
-    
-    <!-- Bootstrap (로컬 파일 불러오기) -->
-    <link rel="stylesheet" href="../../../static/css/bootstrap.min.css">
-
-    <!-- jQuery (로컬 파일 불러오기) -->
-    <script src="../../../static/js/jquery-3.7.1.min.js"></script>
-
-    <!-- Bootstrap JS (로컬 파일 불러오기) -->
-    <script defer src="../../../static/js/bootstrap.bundle.min.js"></script>
-
+    <title>Document</title>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+        <!-- Bootstrap Bundle JS -->
+        <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+        <!-- jQuery -->
+        <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script defer th:src="@{/js/reply.js}"></script>
     <style>
         /* 본문 스타일 */
         .story-box {
@@ -24,11 +23,13 @@
             margin-top: 20px;
         }
 
+
         /* 댓글 목록 스타일 */
         .comment-list {
             max-height: 200px; /* 스크롤 가능 */
             overflow-y: auto;
         }
+
 
         /* 사용자 정보 박스 스타일 */
         .user-info {
@@ -39,7 +40,9 @@
     </style>
 </head>
 
+
 <body class="bg-light">
+
 
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-light bg-white border-bottom">
@@ -53,17 +56,19 @@
         </div>
     </nav>
 
+
     <!-- 메인 컨텐츠 -->
 <div class="container mt-4">
 <!-- 제목과 삭제 버튼을 같은 줄에 배치 (간격 조정) -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h2 class="fw-bold mb-0">태백산맥</h2>
+    <h2 class="fw-bold mb-0" th:text="${story.title}">태백산맥</h2>
 </div>
 
-<!-- 소설 본문 -->
+
+<!-- 스토리 본문 -->
 <div class="card story-box p-3">
     <div class="card-body bg-light">
-        <pre>
+        <pre th:text="${story.content}">
 어느날 박혜선은 잠에서 깬 뒤 소스라치게 놀라고 만다.
 어젯밤 박혜선은 분명 자신의 안방에서 잠에 들었다.
 그러나 지금 그는 어둡고 침침한 숲속 한 가운데 있다.
@@ -74,36 +79,35 @@
     </div>
 </div>
 
+
     <div class="row mt-4 align-items-center">
         <!-- 댓글 섹션 -->
         <div class="col-md-8">
             <h5>댓글</h5>
-            
+           
             <!-- 입력창과 버튼을 함께 배치 -->
             <div class="input-group">
-                <input type="text" id="comment-input" class="form-control" placeholder="Share your thoughts">
+                <input type="text" id="comment-input" class="form-control" placeholder="댓글을 입력하세요">
                 <button class="btn btn-dark" id="add-comment">댓글 등록</button>
             </div>
-            
+           
             <!-- 댓글 목록 (스크롤 가능) -->
             <ul class="list-group comment-list mt-3" id="comment-list">
-                <li class="list-group-item"><strong>철수:</strong> 스토리 재밌어요</li>
-                <li class="list-group-item"><strong>영희:</strong> 스토리 흥미로워요</li>
-                <li class="list-group-item"><strong>보람:</strong> 스토리 노잼이에요</li>
-                <li class="list-group-item"><strong>철구:</strong> 노벨문학상 받아도 되겠어요</li>
-                <li class="list-group-item"><strong>현상:</strong> 혹시 작가님이세요?</li>
-                <li class="list-group-item"><strong>예신:</strong> 꿀잼!</li>
+                <li class="list-group-item" th:each="comment : ${comments}">
+                    <strong th:text="${comment.author}">작성자</strong>:
+                    <span th:text="${comment.content}">댓글 내용</span>
+                </li>
             </ul>
         </div>
-    
+   
         <!-- 작성자 정보 (조금 아래로 내리기 위해 mt-4 추가) -->
         <div class="col-md-4 mt-4">
             <div class="card user-info">
-                <div class="card-header text-center bg-light fw-bold">조정래</div>
+                <div class="card-header text-center bg-light fw-bold" th:text="${story.author}">조정래</div>
                 <div class="card-body text-center">
-                    <p><strong>태백산맥</strong></p>
+                    <p><strong th:text="${story.title}">태백산맥</strong></p>
                     <p>👍 11.3k 👀 25.6k</p>
-                    <p>작성일: 2025/02/05</p>
+                    <p th:text="'작성일: ' + ${story.date}">작성일: 2025/02/05</p>
                 </div>
             </div>
         </div>
@@ -112,18 +116,23 @@
             <input type="text" id="comment-input" class="form-control" placeholder="Share your thoughts">
             <button class="btn btn-dark mt-2" id="add-comment">댓글 등록</button>
 
+
             <!-- 댓글 목록 (스크롤 가능) -->
             <ul class="list-group comment-list mt-3" id="comment-list">
+
 
             </ul>
         </div>
     </div>
 
 
+
+
     <!-- 푸터 -->
     <footer class="text-center py-4 mt-4 bg-white border-top">
         주식회사 모지모지 © 2025. All rights reserved. 대표이사 김현
     </footer>
+
 
     <script>
         $(document).ready(function () {
@@ -134,6 +143,7 @@
                     $('#comment-list').append(newComment);
                     $('#comment-input').val('');
 
+
                     // 댓글이 추가될 때 자동 스크롤 다운
                     let commentList = document.getElementById("comment-list");
                     commentList.scrollTop = commentList.scrollHeight;
@@ -141,6 +151,7 @@
             });
         });
     </script>
+
 
 </body>
 </html>
