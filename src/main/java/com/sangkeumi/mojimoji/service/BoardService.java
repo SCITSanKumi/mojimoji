@@ -36,6 +36,20 @@ public class BoardService {
         private final SharedBookReplyRepository sharedBookReplyRepository;
 
         /**
+         * 댓글 삭제
+         * 
+         * @param sharedBookReplyId
+         */
+        @Transactional
+        public void deleteComment(Long sharedBookReplyId) {
+                if (!sharedBookReplyRepository.existsById(sharedBookReplyId)) {
+                        throw new RuntimeException("해당 댓글이 존재하지 않습니다.");
+                }
+
+                sharedBookReplyRepository.deleteById(sharedBookReplyId);
+        }
+
+        /**
          * 댓글 추가
          * 
          * @param userId

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,17 @@ import lombok.extern.slf4j.Slf4j;
 public class BoardController {
 
     private final BoardService boardService;
+
+    /**
+     * 댓글 삭제
+     * 
+     * @param sharedBookReplyId
+     */
+    @DeleteMapping("/story/comment")
+    @ResponseBody
+    public void deleteComment(@RequestParam(name = "sharedBookReplyId") Long sharedBookReplyId) {
+        boardService.deleteComment(sharedBookReplyId);
+    }
 
     /**
      * 댓글 추가

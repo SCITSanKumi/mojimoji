@@ -41,6 +41,7 @@
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <input type="hidden" id="sharedBookId" th:value="${sharedStoryInfo.sharedBookId}">
+    <input type="hidden" id="currentUserId" th:value="${#authentication.principal.userId}">
     <div class="container mt-5 pt-5">
         <button style="float: right;" id="toStoryList">목록으로</button>
         <h1 th:text="${sharedStoryInfo.title}">책제목</h1>
