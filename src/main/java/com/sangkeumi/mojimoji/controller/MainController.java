@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-public class Maincontroller {
+public class MainController {
 
     private final UserService userService;
 
@@ -29,6 +29,6 @@ public class Maincontroller {
             model.addAttribute("userId", customUser.userId());
             model.addAttribute("nickname", customUser.nickname());
         }
-        return "/index";
+        return "index";
     }
 }

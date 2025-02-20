@@ -1,0 +1,103 @@
+/* 전체 페이지 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+/* 헤더 스타일 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 네비게이션 링크 */
+.nav-links a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+/* 제목 */
+h2 {
+    margin-top: 20px;
+}
+
+/* 본문 박스 (fieldset) 스타일 */
+fieldset {
+    background-color: #dee2e6;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    width: 90%; /* 박스 가로 크기 */
+    height: 250px; /* 박스 세로 크기 */
+    font-size: 18px; /* 텍스트 크기 */
+}
+
+/* 댓글 입력 및 목록을 포함한 컨테이너 */
+.comment-container {
+    display: flex;
+    justify-content: space-between; /* 좌우 정렬 */
+    align-items: flex-start; /* 위쪽 정렬 */
+    width: 100%; /* 전체 너비 사용 */
+}
+
+/* 댓글 섹션 */
+.comment-section {
+    width: 65%;
+}
+
+
+/* 댓글 입력창 스타일 */
+.comment-box {
+    width: 40%; /* 가로 폭 조정 */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: block; /* 블록 요소로 만들어서 왼쪽 정렬 */
+    margin-bottom: 10px;
+}
+
+
+/* 댓글 목록 스타일 (스크롤 가능) */
+.comment-list {
+    width: 40%; /* 가로 폭 조정 */
+    max-height: 150px; /* 일정 높이 이상이면 스크롤 */
+    overflow-y: auto;
+    margin-top: 10px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+
+/* 개별 댓글 스타일 */
+.comment {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.comment:last-child {
+    border-bottom: none;
+}
+
+
+/* 사용자 정보 박스 */
+.user-info {
+    width: 30%;
+    text-align: center;
+}
+
+.user-name {
+    background-color: #e0e0e0;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+}

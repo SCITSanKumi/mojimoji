@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>mojimoji</title>
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
         th:href="@{/css/bootstrap.min.css}">
@@ -38,8 +38,8 @@
             margin-bottom: 10px;
             font-size: 1.2rem;
             display: flex;
-            align-items: flex-end;
-            justify-content: flex-start;
+            align-items: center;
+            justify-content: center;
             position: relative;
         }
 
@@ -53,25 +53,34 @@
             left: 0;
             text-align: left;
         }
+
+        .start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
     </style>
 </head>
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="novel-container">
-        <h2>비주얼 노블</h2>
+        <h2>カミゲ</h2>
         <div class="story-box" id="storyBox">
-            <div class="dialogue-container">
+            <button class="btn btn-primary start-button" id="startGameBtn">게임 시작</button>
+            <div class="dialogue-container" style="display: none;">
                 <p class="dialogue text-white m-0"></p>
             </div>
         </div>
-        <div class="input-group">
+        <div class="input-group" style="display: none;">
             <input type="text" id="userInput" class="form-control" placeholder="다음 대사를 입력하세요...">
             <button class="btn btn-primary" id="submitBtn">입력</button>
         </div>
-
-        <button class="btn btn-secondary mt-2" id="historyBtn" data-bs-toggle="modal" data-bs-target="#historyModal">이전
-            이야기 보기</button>
+        <button class="btn btn-secondary mt-2" id="historyBtn" data-bs-toggle="modal" data-bs-target="#historyModal" style="display: none;">
+            이전 이야기 보기
+        </button>
     </div>
 
     <!-- 모달 창 -->
@@ -83,7 +92,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalStoryBox">
-                    <!-- 이전 이야기 표시 -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
@@ -92,9 +100,9 @@
         </div>
     </div>
     <script>
-        $(document).ready(function () {
-            let currentText = "";
+        $(document).ready(function() {
             let history = [];
+            let bookId = null;  // bookId를 저장할 변수
 
             function typeWriterEffect(text, element) {
                 element.html("");
@@ -109,17 +117,56 @@
                 typing();
             }
 
-            $("#submitBtn").click(function () {
+            // 게임 시작 버튼 클릭 시
+            $("#startGameBtn").click(function() {
+                $.ajax({
+                    url: '/game/start',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    success: function(response) {
+                        // 게임 시작 응답에서 bookId를 받아와서 변수에 저장
+                        bookId = response.bookId;
+
+                        $("#startGameBtn").hide();
+                        $(".dialogue-container").show();
+                        $(".input-group, #historyBtn").show();
+                        typeWriterEffect("용사의 모험이 시작됩니다! 한자를 입력하여 이야기를 진행하세요.", $("#storyBox .dialogue"));
+                    },
+                    error: function() {
+                        alert("게임 시작 중 오류가 발생했습니다.");
+                    }
+                });
+            });
+
+            // 대사 입력 버튼 클릭 시
+            $("#submitBtn").click(function() {
                 let userText = $("#userInput").val();
-                if (userText.trim() !== "") {
-                    history.push(userText);
-                    currentText = userText;
-                    typeWriterEffect(userText, $("#storyBox .dialogue"));
-                    $("#userInput").val("");
+                if (userText.trim() !== "" && bookId !== null) {
+                    $.ajax({
+                        url: '/game/send',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            "bookId": bookId,  // 저장된 bookId를 함께 전송
+                            "message": userText
+                        }),
+                        success: function(response) {
+                            // 응답은 단순 문자열이므로 바로 사용합니다.
+                            history.push(response);
+                            typeWriterEffect(response, $("#storyBox .dialogue"));
+                            $("#userInput").val("");
+                        },
+                        error: function() {
+                            alert("대사 입력 중 오류가 발생했습니다.");
+                        }
+                    });
+                } else {
+                    alert("게임이 시작되지 않았거나, 대사가 비어있습니다.");
                 }
             });
 
-            $("#historyBtn").click(function () {
+            // 이전 이야기 보기 버튼 클릭 시
+            $("#historyBtn").click(function() {
                 let historyText = history.map(text => "<p>" + text + "</p>").join("");
                 $("#modalStoryBox").html(historyText);
             });
