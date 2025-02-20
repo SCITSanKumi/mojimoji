@@ -34,9 +34,7 @@ public class GameService {
     private String openAiApiKey;
     private final String openAiUrl = "https://api.openai.com/v1/chat/completions";
 
-    /**
-     * 게임을 시작하는 메서드 (OpenAI 호출 없음)
-     */
+    /** 게임을 시작하는 메서드 (OpenAI 호출 없음) */
     @Transactional
     public Long startGame() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -65,14 +63,9 @@ public class GameService {
         return book.getBookId();
     }
 
-    /**
-     * 사용자 입력을 받아 OpenAI API와 상호작용하는 메서드
-     * 비동기 호출을 사용하여 API 요청 처리
-     */
+    /** 사용자 입력을 받아 OpenAI API와 상호작용하는 메서드 */
     @Transactional
     public CompletableFuture<String> getChatResponse(MessageSendRequest request) {
-        log.info("request: {}", request);
-
         Book book = bookRepository.findById(request.bookId())
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
@@ -114,9 +107,7 @@ public class GameService {
         return assistantReply;  // 비동기 결과를 리턴
     }
 
-    /**
-     * OpenAI API와 상호작용하는 비동기 메서드
-     */
+    /**  OpenAI API와 상호작용하는 비동기 메서드 */
     @Async  // 비동기 처리
     public CompletableFuture<String> getChatResponseFromApi(List<Map<String, String>> messages) {
         // OpenAI API 요청
@@ -140,16 +131,12 @@ public class GameService {
         return CompletableFuture.completedFuture((String) message.get("content"));
     }
 
-    /**
-     * 게임 시작 시의 안내 메시지 생성
-     */
+    /** 게임 시작 시의 안내 메시지 생성 */
     private String generateGameIntroMessage() {
         return "용사의 모험이 시작됩니다! 한자를 입력하여 이야기를 진행하세요.";
     }
 
-    /**
-     * OpenAI API에 전달할 시스템 메시지 생성
-     */
+    /** OpenAI API에 전달할 시스템 메시지 생성 */
     private String generateCustomSystemMessage() {
         return """
             당신은 이 게임의 게임 마스터입니다. 사용자를 위한 특별한 모험을 안내해야 합니다.
