@@ -29,6 +29,6 @@ public class MainController {
             model.addAttribute("userId", customUser.userId());
             model.addAttribute("nickname", customUser.nickname());
         }
-        return "/index";
+        return "index";
     }
 }

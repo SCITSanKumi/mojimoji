@@ -28,12 +28,12 @@ public class UserController {
     // 로그인 페이지 이동
     @GetMapping("/login")
     public String login() {
-        return "/user/signIn";
+        return "user/signIn";
     }
 
     @GetMapping("/sign-up")
     public String regist() {
-        return "/user/signUp";
+        return "user/signUp";
     }
 
     @PostMapping("/sign-up")
