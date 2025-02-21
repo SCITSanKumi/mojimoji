@@ -52,7 +52,7 @@ public class GameController {
     @PostMapping(value = "/send-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> sendMessageStream(@RequestBody MessageSendRequest request) {
         log.info("Received request for streaming: {}", request);
-        return gameService.getChatResponseStream(request.bookId(), request.message());
+        return gameService.getChatResponseStream(request);
     }
 
     @GetMapping("/quiz")

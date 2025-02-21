@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sangkeumi.mojimoji.dto.game.ChatCompletionChunkResponse;
 import com.sangkeumi.mojimoji.dto.game.MessageSendRequest;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
@@ -20,10 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 import java.time.Duration;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -68,8 +65,8 @@ public class GameService {
     }
 
     /** OpenAI API와 스트리밍 통신을 위한 Flux<String> */
-    public Flux<String> getChatResponseStream(Long bookId, String message) {
-        Book book = bookRepository.findById(bookId)
+    public Flux<String> getChatResponseStream(MessageSendRequest request) {
+        Book book = bookRepository.findById(request.bookId())
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
         List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleOrderBySequenceDesc(book, "assistant");
@@ -78,7 +75,7 @@ public class GameService {
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", generateCustomSystemMessage()));
         history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
-        messages.add(Map.of("role", "user", "content", message));
+        messages.add(Map.of("role", "user", "content", request.message()));
 
         log.info("Messages: {}", messages);
 
@@ -88,70 +85,64 @@ public class GameService {
         bookLineRepository.save(BookLine.builder()
             .book(book)
             .role("user")
-            .content(message)
+            .content(request.message())
             .sequence(nextSequence)
             .build()
         );
 
         // OpenAI API 스트리밍 응답을 가져오고, Flux<String> 형태로 반환
-        return getChatResponseFromApi(messages)
-            .delayElements(Duration.ofMillis(50)) // 50ms 간격으로 데이터를 한 글자씩 보냄
-            .doOnNext(reply -> bookLineRepository.save(
-                BookLine.builder()
-                    .book(book)
-                    .role("assistant")
-                    .content(reply)
-                    .sequence(nextSequence + 1)
-                    .build()
-            ));
+        return getChatResponseFromApi(messages);
+            // .delayElements(Duration.ofMillis(50)) // 50ms 간격으로 데이터를 한 글자씩 보냄
+            // .doOnNext(reply -> bookLineRepository.save(
+            //     BookLine.builder()
+            //         .book(book)
+            //         .role("assistant")
+            //         .content(reply)
+            //         .sequence(nextSequence + 1)
+            //         .build()
+            // ));
     }
 
     /** OpenAI API 스트리밍 요청 처리 */
-
-public Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
-    return webClient.post()
-        .uri(openAiUrl)
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiApiKey)
-        .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(Map.of(
-            "model", "gpt-4-turbo",
-            "messages", messages,
-            "max_tokens", 500,
-            "temperature", 0.6,
-            "stream", true
-        ))
-        .retrieve()
-        .bodyToFlux(String.class) // 🔹 문자열로 직접 받음
-        .filter(response -> !response.equals("data: [DONE]")) // 🔹 "DONE" 메시지 무시
-        .map(response -> response.replaceFirst("data:", "").trim()) // 🔹 "data:" 제거
-        .filter(content -> !content.isEmpty()) // 🔹 빈 데이터 필터링
-        .map(content -> {
-            try {
-                Map<String, Object> json = new ObjectMapper().readValue(content, Map.class);
-                List<Map<String, Object>> choices = (List<Map<String, Object>>) json.get("choices");
-                if (choices != null && !choices.isEmpty()) {
-                    Map<String, Object> delta = (Map<String, Object>) choices.get(0).get("delta");
-                    if (delta != null && delta.containsKey("content")) {
-                        return delta.get("content").toString();
-                    }
+    public Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
+        return webClient.post()
+            .uri(openAiUrl)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiApiKey)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(Map.of(
+                "model", "gpt-4-turbo",
+                "messages", messages,
+                "max_tokens", 500,
+                "temperature", 0.6,
+                "top_p", 0.9,
+                "stream", true
+            ))
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .retrieve()
+            .bodyToFlux(ChatCompletionChunkResponse.class)
+            .onErrorResume(error -> {
+                if (error.getMessage().contains("JsonToken.START_ARRAY")) {
+                    return Flux.empty();
                 }
-            } catch (Exception e) {
-                e.printStackTrace(); // 🔹 JSON 파싱 오류 디버깅
-            }
-            return "";
-        })
-        .filter(content -> !content.isEmpty()) // 🔹 빈 값 필터링
-        .bufferUntil(content -> content.endsWith(".") || content.endsWith(",") || content.endsWith("?") || content.endsWith("!")) // 🔹 문장 단위로 묶음
-        .map(chunks -> {
-            String joined = String.join("", chunks).trim();
-            return joined.endsWith(" ") ? joined : joined + " "; // 🔹 문장 끝에 공백 추가
-        })
-        // .delayElements(Duration.ofMillis(150)) // 🔹 속도 조절
-        .log(); // 🔹 디버깅용 로그 추가
-}
-
-
-
+                else {
+                    return Flux.error(error);
+                }
+            })
+            .flatMap(response -> {
+                var choice = response.getChoices().get(0);
+                if (choice == null || choice.getDelta() == null || choice.getDelta().getContent() == null) {
+                    return Flux.empty();
+                }
+                return Flux.just(choice.getDelta().getContent());
+            })
+            .delayElements(Duration.ofMillis(50))
+            .bufferUntil(content ->
+                content.endsWith(".") || content.endsWith("?") || content.endsWith("!") || content.endsWith(",")
+            ) // 문장이 끝날 때까지 청크를
+            .concatWith(Flux.just(Collections.emptyList()))
+            .map(chunks -> String.join("", chunks))
+            .filter(content -> !content.isBlank()); // 빈 문장은 제외
+        }
 
     /** 게임 시작 안내 메시지 */
     private String generateGameIntroMessage() {
