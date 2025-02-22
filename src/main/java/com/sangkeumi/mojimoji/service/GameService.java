@@ -40,34 +40,38 @@ public class GameService {
 
     /** 게임 시작 메서드 */
     @Transactional
-    public Long startGame() {
+    public GameStartResponse gameStart(Long bookId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
 
-        Book book = bookRepository.saveAndFlush(
-            Book.builder()
-                .user(user)
-                .title("새로운 모험")
-                .isEnded(false)
-                .build()
-        );
+        Book book = bookRepository.findById(bookId)
+            .orElseGet(() -> {
+                Book newBook = bookRepository.saveAndFlush(Book.builder()
+                    .user(user)
+                    .title("새로운 모험")
+                    .isEnded(false)
+                    .build()
+                );
 
-        // 초기 시스템 메시지 저장
-        bookLineRepository.save(BookLine.builder()
-            .book(book)
-            .role("system")
-            .content(messageProvider.getIntroMessage())
-            .sequence(0)
-            .build()
-        );
+                // 초기 메시지 저장
+                bookLineRepository.save(BookLine.builder()
+                    .book(newBook)
+                    .role("assistant")
+                    .content(messageProvider.getIntroMessage())
+                    .sequence(0)
+                    .build()
+                );
 
-        return book.getBookId();
-    }
+                return newBook;
+            });
+
+            return new GameStartResponse(book.getBookId(), messageProvider.getIntroMessage());
+        }
 
     /** OpenAI API와 스트리밍 통신을 위한 Flux<String> */
-    public Flux<String> getChatResponseStream(MessageSendRequest request) {
+    public Flux<String> getChatResponseStream(MessageRequest request) {
         Book book = bookRepository.findById(request.bookId())
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
@@ -130,11 +134,11 @@ public class GameService {
                     return Flux.error(error);
                 }
             })
-            .filter(response -> Optional.ofNullable(response.getChoices().get(0).getDelta().getContent())
+            .filter(response -> Optional.ofNullable(response.getContent())
                 .map(String::trim)
                 .filter(content -> !content.isEmpty())
                 .isPresent()
             )
-            .map(response -> response.getChoices().get(0).getDelta().getContent());
+            .map(response -> response.getContent());
     }
 }
