@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import reactor.core.publisher.Flux;
-import java.time.Duration;
 
 @Service
 @Slf4j
@@ -114,7 +113,6 @@ public class GameService {
                 "messages", messages,
                 "max_tokens", 500,
                 "temperature", 0.6,
-                "top_p", 0.9,
                 "stream", true
             ))
             .accept(MediaType.TEXT_EVENT_STREAM)
@@ -129,19 +127,14 @@ public class GameService {
                 }
             })
             .flatMap(response -> {
-                var choice = response.getChoices().get(0);
-                if (choice == null || choice.getDelta() == null || choice.getDelta().getContent() == null) {
+                var content = response.getChoices().get(0).getDelta().getContent();
+
+                if (content == null || content.isBlank() || content.equals("\n\n")) {
                     return Flux.empty();
                 }
-                return Flux.just(choice.getDelta().getContent());
-            })
-            .delayElements(Duration.ofMillis(50))
-            .bufferUntil(content ->
-                content.endsWith(".") || content.endsWith("?") || content.endsWith("!") || content.endsWith(",")
-            ) // 문장이 끝날 때까지 청크를
-            .concatWith(Flux.just(Collections.emptyList()))
-            .map(chunks -> String.join("", chunks))
-            .filter(content -> !content.isBlank()); // 빈 문장은 제외
+
+                return Flux.just(content);
+            });
         }
 
     /** 게임 시작 안내 메시지 */
