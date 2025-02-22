@@ -11,6 +11,69 @@
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(() => {
+            let history = [];
+            let bookId = null;
+
+            function updateStory(text) {
+                $("#storyBox .dialogue").append(text);
+            }
+
+            $("#startGameBtn").click(() => {
+                $.ajax({
+                    type: "POST",
+                    url: "/game/start",
+                    contentType: "application/x-www-form-urlencoded",
+                    dataType: "json",
+                    data: { bookId: -1 },
+                    success: (response) => {
+                        bookId = response.bookId;
+                        $("#startGameBtn").hide();
+                        $(".dialogue-container, .input-group, #historyBtn").show();
+                        updateStory(response.message);
+                    },
+                    error: () => {
+                        alert("게임 시작 중 오류가 발생했습니다.");
+                    }
+                });
+            });
+
+            $("#submitBtn").click(function() {
+                let userText = $("#userInput").val();
+                if (userText.trim() !== "" && bookId !== null) {
+                    $("#storyBox .dialogue").text("");
+
+                    fetch("/game/send-stream", { // ajax는 스트리밍을 지원하지 않음
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ bookId: bookId, message: userText })
+                    })
+                    .then(res => {
+                        const reader = res.body
+                            .pipeThrough(new TextDecoderStream())
+                            .getReader();
+
+                        reader.read().then(function processText({ done, value }) {
+                            if (done) return console.log("스트리밍 종료");
+
+                            let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
+
+                            console.log({cleanedValue});;
+                            $("#storyBox .dialogue").append(cleanedValue);
+                            reader.read().then(processText);
+                        });
+                    });
+                }
+            });
+
+            $("#historyBtn").click(() => {
+                $("#modalStoryBox").html(history.map(text => `<p>${text}</p>`).join(""));
+            });
+        });
+    </script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -64,7 +127,6 @@
         }
     </style>
 </head>
-
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="novel-container">
@@ -100,61 +162,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            let history = [];
-            let bookId = null;
-
-            function updateStory(text) {
-                $("#storyBox .dialogue").append(text);
-            }
-
-            $("#startGameBtn").click(function() {
-                $.post("/game/start", function(response) {
-                    bookId = response.bookId;
-                    $("#startGameBtn").hide();
-                    $(".dialogue-container, .input-group, #historyBtn").show();
-                    updateStory("용사의 모험이 시작됩니다! 한자를 입력하세요.<br>");
-                }).fail(function() {
-                    alert("게임 시작 중 오류가 발생했습니다.");
-                });
-            });
-
-            $("#submitBtn").click(function() {
-                let userText = $("#userInput").val();
-                if (userText.trim() !== "" && bookId !== null) {
-                    $("#storyBox .dialogue").text("");  // 대화 초기화
-
-                    fetch("/game/send-stream", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ bookId: bookId, message: userText })
-                    })
-                    .then(res => {
-                        const reader = res.body
-                            .pipeThrough(new TextDecoderStream())
-                            .getReader();
-
-                        reader.read().then(function processText({ done, value }) {
-                            if (done) return console.log("스트리밍 종료");
-
-                            let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
-
-                            console.log({cleanedValue});;
-                            $("#storyBox .dialogue").append(cleanedValue);
-                            reader.read().then(processText);
-                        });
-                    });
-                }
-            });
-
-            $("#historyBtn").click(function() {
-                $("#modalStoryBox").html(history.map(text => `<p>${text}</p>`).join(""));
-            });
-        });
-    </script>
 </body>
 </html>

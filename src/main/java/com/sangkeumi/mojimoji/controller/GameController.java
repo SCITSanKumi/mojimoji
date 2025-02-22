@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.sangkeumi.mojimoji.dto.game.MessageSendRequest;
+import com.sangkeumi.mojimoji.dto.game.*;
 import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.service.*;
@@ -39,18 +39,13 @@ public class GameController {
 
     @PostMapping("/start")
     @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
-    public ResponseEntity<Map<String, Object>> startGame() {
-        Long bookId = gameService.startGame();
-
-        return ResponseEntity.ok(Map.of(
-            "bookId", bookId,
-            "message", "게임이 시작되었습니다!"
-        ));
+    public ResponseEntity<GameStartResponse> gameStart(@RequestParam Long bookId) {
+        return ResponseEntity.ok(gameService.gameStart(bookId));
     }
 
     @ResponseBody
     @PostMapping(value = "/send-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> sendMessageStream(@RequestBody MessageSendRequest request) {
+    public Flux<String> sendMessageStream(@RequestBody MessageRequest request) {
         return gameService.getChatResponseStream(request);
     }
 

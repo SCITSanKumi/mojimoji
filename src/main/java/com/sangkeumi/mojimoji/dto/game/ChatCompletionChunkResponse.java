@@ -5,17 +5,21 @@ import java.util.List;
 
 import lombok.*;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="id")
-@Getter
 public class ChatCompletionChunkResponse implements Serializable {
     private String id;
     private List<Choices> choices;
 
+    public String getContent() {
+        return getChoices().get(0).getDelta().getContent();
+    }
+
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @Getter
     public static class Choices{
         private Delta delta;
 
