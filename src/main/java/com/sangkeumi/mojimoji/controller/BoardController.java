@@ -35,48 +35,6 @@ public class BoardController {
     private final BoardService boardService;
 
     /**
-     * 댓글 삭제
-     * 
-     * @param sharedBookReplyId
-     */
-    @DeleteMapping("/story/comment")
-    @ResponseBody
-    public void deleteComment(@RequestParam(name = "sharedBookReplyId") Long sharedBookReplyId) {
-        boardService.deleteComment(sharedBookReplyId);
-    }
-
-    /**
-     * 댓글 추가
-     * 
-     * @param principal
-     * @param request
-     * @return
-     */
-    @PostMapping("/story/comment")
-    @ResponseBody
-    public SharedStoryReplyResponse addComment(@AuthenticationPrincipal MyPrincipal principal,
-            @RequestBody SharedStoryReplyRequest request) {
-        // 컨트롤러에서 MyPrincipal을 주입받아 userId 추출
-        Long userId = principal.getUserId();
-        return boardService.addComment(userId, request);
-    }
-
-    /**
-     * 댓글 목록 조회
-     * 
-     * @param sharedBookId
-     * @return
-     */
-    @GetMapping("/story/comment")
-    @ResponseBody
-    public List<SharedStoryReplyResponse> getCommentsWithPagination(
-            @RequestParam(name = "sharedBookId") Long sharedBookId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
-        return boardService.getComments(sharedBookId, page, size);
-    }
-
-    /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
      * 
      * @param searchWord 검색어
@@ -131,6 +89,48 @@ public class BoardController {
         model.addAttribute("sharedStoryInfo", sharedStoryInfo);
 
         return "board/story/storyDetail";
+    }
+
+    /**
+     * 댓글 목록 조회
+     * 
+     * @param sharedBookId
+     * @return
+     */
+    @GetMapping("/story/comment")
+    @ResponseBody
+    public List<SharedStoryReplyResponse> getCommentsWithPagination(
+            @RequestParam(name = "sharedBookId") Long sharedBookId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        return boardService.getComments(sharedBookId, page, size);
+    }
+
+    /**
+     * 댓글 추가
+     * 
+     * @param principal
+     * @param request
+     * @return
+     */
+    @PostMapping("/story/comment")
+    @ResponseBody
+    public SharedStoryReplyResponse addComment(@AuthenticationPrincipal MyPrincipal principal,
+            @RequestBody SharedStoryReplyRequest request) {
+        // 컨트롤러에서 MyPrincipal을 주입받아 userId 추출
+        Long userId = principal.getUserId();
+        return boardService.addComment(userId, request);
+    }
+
+    /**
+     * 댓글 삭제
+     * 
+     * @param sharedBookReplyId
+     */
+    @DeleteMapping("/story/comment")
+    @ResponseBody
+    public void deleteComment(@RequestParam(name = "sharedBookReplyId") Long sharedBookReplyId) {
+        boardService.deleteComment(sharedBookReplyId);
     }
 
     @GetMapping("/myStory/list")
