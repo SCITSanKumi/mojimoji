@@ -1,5 +1,6 @@
 package com.sangkeumi.mojimoji.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class GameController {
         return "game/screen";
     }
 
+    @ResponseBody
     @PostMapping("/start")
     @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
     public ResponseEntity<GameStartResponse> gameStart(@RequestParam Long bookId) {
@@ -44,9 +46,15 @@ public class GameController {
     }
 
     @ResponseBody
-    @PostMapping(value = "/send-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/send", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> sendMessageStream(@RequestBody MessageRequest request) {
         return gameService.getChatResponseStream(request);
+    }
+
+    @ResponseBody
+    @GetMapping("/state/{bookId}")
+    public ResponseEntity<GameStateResponse> getGameState(@PathVariable Long bookId) {
+        return ResponseEntity.ok(gameService.getGameState(bookId));
     }
 
     @GetMapping("/quiz")

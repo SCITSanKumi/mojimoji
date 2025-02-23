@@ -4,6 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sangkeumi.mojimoji.dto.game.*;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
@@ -18,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import reactor.core.publisher.Flux;
 import reactor.netty.http.client.HttpClient;
 
@@ -25,6 +31,8 @@ import reactor.netty.http.client.HttpClient;
 @Slf4j
 @RequiredArgsConstructor
 public class GameService {
+    private final int defaultHealth = 100;
+
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
@@ -60,6 +68,7 @@ public class GameService {
                     .book(newBook)
                     .role("assistant")
                     .content(messageProvider.getIntroMessage())
+                    .health(defaultHealth)
                     .sequence(0)
                     .build()
                 );
@@ -67,10 +76,11 @@ public class GameService {
                 return newBook;
             });
 
-            return new GameStartResponse(book.getBookId(), messageProvider.getIntroMessage());
-        }
+        return new GameStartResponse(book.getBookId(), messageProvider.getIntroMessage());
+    }
 
     /** OpenAI API와 스트리밍 통신을 위한 Flux<String> */
+    @Transactional
     public Flux<String> getChatResponseStream(MessageRequest request) {
         Book book = bookRepository.findById(request.bookId())
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
@@ -96,19 +106,55 @@ public class GameService {
             .build()
         );
 
-        StringBuilder fullReply = new StringBuilder();
+        StringBuilder contentResponse = new StringBuilder();
+        StringBuilder jsonResponse = new StringBuilder();
+        AtomicBoolean isJsonStarted = new AtomicBoolean(false);
 
-        // OpenAI API 스트리밍 응답을 가져오고, Flux<String> 형태로 반환
         return getChatResponseFromApi(messages)
-            .doOnNext(chunk -> fullReply.append(chunk))
+            .doOnNext(chunk -> {
+                // JSON 시작 감지
+                if (!isJsonStarted.get() && chunk.trim().startsWith("{")) {
+                    isJsonStarted.set(true); // JSON 감지 후 상태 변경
+                }
+
+                // JSON 데이터 수집
+                if (isJsonStarted.get()) {
+                    jsonResponse.append(chunk);
+                } else {
+                    contentResponse.append(chunk);
+                }
+            })
+            .filter(chunk -> !isJsonStarted.get()) // JSON 데이터는 Flux에서 제외
             .doOnComplete(() -> {
-                bookLineRepository.save(BookLine.builder()
-                    .book(book)
-                    .role("assistant")
-                    .content(fullReply.toString())
-                    .sequence(nextSequence + 1)
-                    .build()
-                );
+                Map<String, Object> extractedState = new HashMap<>();
+
+                try {
+                    extractedState = new ObjectMapper().readValue(jsonResponse.toString(), Map.class);
+
+                    // 상태 업데이트
+                    int currentHealth = defaultHealth;
+
+                    if (extractedState.containsKey("health") && extractedState.get("health") instanceof Integer) {
+                        currentHealth = (int)extractedState.get("health");
+                    }
+
+                    if (extractedState.containsKey("isEnded") && extractedState.get("isEnded") instanceof Boolean) {
+                        book.setEnded((boolean)extractedState.get("isEnded"));
+                        bookRepository.save(book);
+                    }
+
+                    // 응답 저장 (JSON 제외)
+                    bookLineRepository.save(BookLine.builder()
+                        .book(book)
+                        .role("assistant")
+                        .content(contentResponse.toString()) // JSON을 제외한 응답만 저장
+                        .health(currentHealth)
+                        .sequence(nextSequence + 1)
+                        .build()
+                    );
+                } catch (JsonProcessingException e) {
+                    log.error("JSON 처리 중 오류 발생: ", e);
+                }
             });
     }
 
@@ -130,9 +176,7 @@ public class GameService {
                 if (error.getMessage().contains("JsonToken.START_ARRAY")) {
                     return Flux.empty();
                 }
-                else {
-                    return Flux.error(error);
-                }
+                return Flux.error(error);
             })
             .filter(response -> Optional.ofNullable(response.getContent())
                 .map(String::trim)
@@ -140,5 +184,15 @@ public class GameService {
                 .isPresent()
             )
             .map(response -> response.getContent());
+    }
+
+    public GameStateResponse getGameState(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+            .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
+
+        BookLine bookLine = bookLineRepository.findTopByBookAndRoleOrderBySequenceDesc(book, "assistant")
+            .orElseThrow(() -> new RuntimeException("해당 bookLine이 존재하지 않습니다."));
+
+        return new GameStateResponse(bookLine.getHealth(), book.isEnded());
     }
 }
