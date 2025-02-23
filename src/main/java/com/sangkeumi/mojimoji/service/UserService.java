@@ -1,5 +1,7 @@
 package com.sangkeumi.mojimoji.service;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -66,5 +68,16 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         // 여기서 user.getNickname() 등 Lazy 필드 접근 가능 (트랜잭션 내)
         return new CustomUser(user.getUserId(), user.getNickname(), user.getEmail());
+    }
+
+    public User getUser(Long userId) {
+
+        Optional<User> temp = userRepository.findById(userId);
+
+        if (temp.isPresent()) {
+            User user = temp.get();
+            return user;
+        }
+        return null;
     }
 }

@@ -41,7 +41,7 @@ public class SecurityConfig {
 
         /**
          * Spring Security의 필터 체인(보안 설정)을 구성하는 메서드.
-         * 
+         *
          * @param http HttpSecurity 객체 (Security 설정의 핵심 API)
          * @return SecurityFilterChain (스프링 시큐리티가 사용하는 필터 체인)
          * @throws Exception 예외 발생 시

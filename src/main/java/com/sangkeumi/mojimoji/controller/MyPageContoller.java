@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 public class MyPageContoller {
+
     @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal MyPrincipal myPrincipalm, Model model) {
 
