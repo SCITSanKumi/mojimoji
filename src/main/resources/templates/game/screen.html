@@ -44,7 +44,7 @@
                 if (userText.trim() !== "" && bookId !== null) {
                     $("#storyBox .dialogue").text("");
 
-                    fetch("/game/send-stream", { // ajax는 스트리밍을 지원하지 않음
+                    fetch("/game/send", { // 스트리밍 요청
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -57,17 +57,38 @@
                             .getReader();
 
                         reader.read().then(function processText({ done, value }) {
-                            if (done) return console.log("스트리밍 종료");
+                            if (done) {
+                                console.log("스트리밍 종료");
+
+                                // 💡 jQuery의 $.ajax()로 게임 상태 확인
+                                $.ajax({
+                                    url: `/game/state/${bookId}`,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function(data) {
+                                        console.log("게임 상태 업데이트", data);
+                                        $("#healthDisplay").text(`체력: ${data.health}`);
+                                        if (data.isEnded) {
+                                            alert("게임이 종료되었습니다!");
+                                        }
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error("게임 상태 조회 실패:", error);
+                                    }
+                                });
+
+                                return;
+                            }
 
                             let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
-
-                            console.log({cleanedValue});;
+                            console.log({cleanedValue});
                             $("#storyBox .dialogue").append(cleanedValue);
                             reader.read().then(processText);
                         });
                     });
                 }
             });
+
 
             $("#historyBtn").click(() => {
                 $("#modalStoryBox").html(history.map(text => `<p>${text}</p>`).join(""));
@@ -131,8 +152,12 @@
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="novel-container">
         <h2>カミゲ</h2>
+        <h4 id="healthDisplay">체력: 100</h4>
         <div class="story-box" id="storyBox">
             <button class="btn btn-primary start-button" id="startGameBtn">게임 시작</button>
+            <!-- 체력 및 게임 상태 표시 -->
+            <div class="mt-2">
+            </div>
             <div class="dialogue-container">
                 <p class="dialogue text-white m-0"></p>
             </div>
