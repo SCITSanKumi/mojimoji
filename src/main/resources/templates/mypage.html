@@ -4,68 +4,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>mojimoji</title>
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script>
-        $(function () {
-            $('.toKanjiColecction').on('click', function () {
-                location.href = '/kanji/collection';
-            });
-        })
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
     <script defer src="../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <!-- JQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <style>
+        .Collection {
+
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            /* 여러 개의 차트를 행/열로 배치 */
+            box-sizing: border-box;
+        }
+
+        .chart-container {
+
+            width: 150px;
+            /* 각 차트 컨테이너 너비 */
+            margin: 20px;
+            position: relative;
+            /* 중앙 텍스트 절대 배치 가능 */
+            padding: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        $(function () {
+            /***********************************************
+                    * 커스텀 플러그인 (중앙 텍스트 표시)
+                    ***********************************************/
+            const centerTextPlugin = {
+                id: 'centerTextPlugin',
+                afterDraw(chart) {
+                    // 1) 플러그인 옵션을 가져온다
+                    const pluginOpts = chart.config.options.plugins.centerTextPlugin || {};
+                    const partial = pluginOpts.partial || 0;
+                    const total = pluginOpts.total || 1;
+                    // ★ 추가: label (원하는 단어)도 가져온다
+                    const label = pluginOpts.label || '전체';
+
+                    // 2) 퍼센트 계산
+                    const percentage = Math.floor((partial / total) * 100);
+
+                    // 3) 중앙 좌표
+                    const { ctx, chartArea: { top, left, width, height } } = chart;
+                    const centerX = left + width / 2;
+                    const centerY = top + height / 2;
+
+                    // 4) 표시할 텍스트 (2줄)
+                    const textLine1 = `${label}`;
+                    const textLine2 = `${partial}/${total}`;  // ← label 사용
+                    const textLine3 = `${percentage}%`;
+
+                    // 5) 실제 그리기
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#333';
+
+                    ctx.font = '16px sans-serif';
+                    ctx.fillText(textLine1, centerX, centerY - 20);
+
+                    ctx.font = '16px sans-serif';
+                    ctx.fillText(textLine2, centerX, centerY + 20);
+
+                    ctx.font = '23px sans-serif';
+                    ctx.fillText(textLine3, centerX, centerY + 50);
+
+                    ctx.restore();
+                }
+            };
+
+
+            /***********************************************
+             * 게이지 차트 생성 함수
+             ***********************************************/
+            function createGaugeChart(canvasId, partial, total, label) {
+                const percentage = Math.floor((partial / total) * 100);
+                const remainValue = 100 - percentage;
+
+                const ctx = document.getElementById(canvasId).getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [
+                            {
+                                data: [percentage, remainValue],
+                                backgroundColor: ['#EE697D', '#ddd'],
+                                borderWidth: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '70%',
+                        rotation: -150,
+                        circumference: 300,
+                        plugins: {
+                            // ★ 여기서 플러그인에 partial, total, label을 넘겨준다
+                            centerTextPlugin: {
+                                partial: partial,
+                                total: total,
+                                label: label  // <-- 새로 추가
+                            },
+                            legend: { display: false },
+                            tooltip: { enabled: false }
+                        },
+                        animation: {
+                            animateRotate: true,
+                            animateScale: false,
+                            onComplete: (anim) => {
+                                anim.chart.config.options.animation = false;
+                            }
+                        }
+                    },
+                    plugins: [centerTextPlugin]
+                });
+            }
+
+
+            /***********************************************
+             * 실제 차트 6개 생성
+             ***********************************************/
+            // 1) (100/200) label='전체'
+            createGaugeChart('gaugeChart1', 134, 2136, '전체');
+
+            // 2) (1495/2136) label='합계'
+            createGaugeChart('gaugeChart2', 50, 1139, 'N1');
+
+            // 3) (170/200) label='수집'
+            createGaugeChart('gaugeChart3', 10, 710, 'N2');
+
+            // 4) (45/100) label='My Data'
+            createGaugeChart('gaugeChart4', 45, 182, 'N3');
+
+            // 5) (9/10) label='누적'
+            createGaugeChart('gaugeChart5', 9, 76, 'N4');
+
+            // 6) (20/100) label='등급'
+            createGaugeChart('gaugeChart6', 20, 29, 'N5');
+
+
+        })
+
+
+
+    </script>
 </head>
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <br><br><br><br>
-    <h2>수집현황</h2>
-    <div style=" width: 200px; height: 200px; float: right;">
-        <p>xxx1111님의 마이페이지</p>
-        <p>최종접속일 : 2025/02/06</p>
-        <a th:href="@{/board/myStory/list}" style="text-decoration: none;">작성한 스토리 : 329개</a>
-    </div><br><br>
-    <div style="display: inline-block; width: 100px; height: 100px; border: 1px solid black;" class="toKanjiColecction">
-        전체 1495/2136</div>
-    <div style="display: inline-block; width: 70px; height: 70px; border: 1px solid black;" class="toKanjiColecction">n1
-        556/1113</div>
-    <div style="display: inline-block; width: 70px; height: 70px; border: 1px solid black;" class="toKanjiColecction">n2
-        332/415</div>
-    <div style="display: inline-block; width: 70px; height: 70px; border: 1px solid black;" class="toKanjiColecction">n3
-        324/324</div>
-    <div style="display: inline-block; width: 70px; height: 70px; border: 1px solid black;" class="toKanjiColecction">n4
-        180/181</div>
-    <div style="display: inline-block; width: 70px; height: 70px; border: 1px solid black;" class="toKanjiColecction">n5
-        103/103</div>
-
-    <br><br><br><br><br><br>
-    <fieldset style="display: inline-block; width: 600px; height: 300px;">
-        <legend>그래프</legend>
-    </fieldset>
-    <fieldset style="display: inline-block; float: right;">
-        <legend>카테고리</legend>
-        <table>
-            <tr>
-                <td style="width: 300px; height: 50px; border: 1px solid black;" class="toKanjiColecction">
-                    수학
-                </td>
-            </tr>
-            <tr>
-                <td style="width: 300px; height: 50px; border: 1px solid black; " class="toKanjiColecction">
-                    동물
-                </td>
-            </tr>
-            <tr>
-                <td style="width: 300px; height: 50px; border: 1px solid black;" class="toKanjiColecction">
-                    신체
-                </td>
-            </tr>
-        </table>
-    </fieldset>
+    <div class="Collection">
+        <h5 style="height: 30px; ">수집현황</h5>
+        <!-- 차트를 담을 컨테이너 (6개) -->
+        <div class="chart-container">
+            <canvas id="gaugeChart1"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="gaugeChart2"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="gaugeChart3"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="gaugeChart4"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="gaugeChart5"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="gaugeChart6"></canvas>
+        </div>
+        <div style=" width: 200px; height: 200px; float: right; ">
+            <span sec:authentication="principal.nickname"></span>
+            <p>최종접속일 : 2025/02/06</p>
+            <a th:href="@{/board/myStory/list}" style="text-decoration: none;">작성한 스토리 : 329개</a>
+        </div>
+    </div>
+    <div class="d-flex align-items-center my-3">
+        <hr class="flex-grow-1">
+    </div>
 </body>
 
 </html>
