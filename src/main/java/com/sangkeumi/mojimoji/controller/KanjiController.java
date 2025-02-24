@@ -10,11 +10,11 @@ public class KanjiController {
 
     @GetMapping("/collection")
     public String kanjiCollection() {
-        return "/kanji/kanjiCollection";
+        return "kanji/kanjiCollection";
     }
 
     @GetMapping("/detail")
     public String kanjiDetail() {
-        return "/kanji/kanjiDetail";
+        return "kanji/kanjiDetail";
     }
 }

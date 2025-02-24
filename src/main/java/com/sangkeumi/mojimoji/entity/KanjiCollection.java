@@ -2,6 +2,7 @@ package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
 
+import groovy.transform.ToString;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 public class KanjiCollection {
     /**

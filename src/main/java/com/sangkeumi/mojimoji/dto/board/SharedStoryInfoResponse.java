@@ -4,14 +4,13 @@ import lombok.Builder;
 
 @Builder
 public record SharedStoryInfoResponse(
-        Long sharedBookId,
-        Long bookId,
-        Long userId,
-        String title,
-        String thumbnailUrl,
-        String nickname,
-        String profileUrl,
-        int hitCount,
-        int gaechu) {
-
+    Long sharedBookId,
+    Long bookId,
+    Long userId,
+    String title,
+    String thumbnailUrl,
+    String nickname,
+    String profileUrl,
+    int hitCount,
+    int gaechu) {
 }

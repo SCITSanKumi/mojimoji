@@ -37,7 +37,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     * 
+     *
      * @param searchWord 검색어
      * @param searchItem 검색 대상, 기본값은 "title"
      * @param sortOption 정렬 옵션, 기본값은 "date"
@@ -60,7 +60,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리의 상세 페이지를 반환하는 메서드
-     * 
+     *
      * @param bookId
      * @param model
      * @return
@@ -176,6 +176,6 @@ public class BoardController {
 
     @GetMapping("/myStory/detail")
     public String myStoryDetail() {
-        return "/board/myStory/myStoryDetail";
+        return "board/myStory/myStoryDetail";
     }
 }
