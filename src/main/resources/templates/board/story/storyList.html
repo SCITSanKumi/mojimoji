@@ -1,290 +1,116 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>스토리 목록</title>
-
-       <!-- Bootstrap CSS -->
-       <link rel="stylesheet" href="../../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-       <!-- Bootstrap Bundle JS -->
-       <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-       <!-- jQuery -->
-       <script src="../../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="../../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- JQuery -->
+    <script src="../../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 </head>
 
-
-<body class="bg-light">
-
-
-    <!-- 네비게이션 바 -->
-    <nav class="navbar navbar-light bg-white border-bottom">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">📖 もじもじ</a>
-            <div>
-                <a href="#" class="text-dark me-3">스토리 시작</a>
-                <a href="#" class="text-dark me-3">스토리 구경하기</a>
-                <a href="#" class="text-dark">이용방법</a>
-            </div>
-        </div>
-    </nav>
-
-
-    <div class="container mt-4">
-        <!-- 상단 필터 및 검색 -->
-        <div class="d-flex align-items-center mb-3 gap-2">
-           
-            <button class="btn btn-dark btn-md fw-bold fs-5 me-auto">내 스토리</button>
-            <select class="form-select w-auto">
-                <option selected>최신순</option>
-                <option>추천순</option>
-                <option>인기순</option>
-            </select>
-            <select class="form-select w-auto">
-                <option selected>제목순</option>
-                <option>작성자순</option>
-            </select>
-            <div class="input-group w-25">
-                <input type="text" class="form-control" placeholder="스토리를 검색하세요">
-                <button class="btn btn-outline-secondary">🔍</button>
+<body>
+    <header th:insert="~{fragments/header :: header}"></header>
+    <div class="container px-4 py-5" id="custom-cards">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-dark">내스토리</button>
+                <form action="/board/story/list" method="get" class="d-flex align-items-center gap-2 flex-nowrap">
+                    <div class="input-group">
+                        <select name="searchItem" class="form-select" style="max-width: 120px;">
+                            <option value="title" th:selected="${searchItem == 'title'}">제목</option>
+                            <option value="user" th:selected="${searchItem == 'user'}">작성자</option>
+                        </select>
+                        <input type="text" name="searchWord" placeholder="검색어를 입력하세요" th:value="${searchWord}"
+                            class="form-control" style="min-width: 400px;">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </div>
+                </form>
             </div>
         </div>
 
-
-        <!-- 스토리 카드 리스트 -->
-        <div class="row row-cols-1 row-cols-md-6 g-4">
-            <!-- 스토리 카드 12개 (6개씩 2줄) -->
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 11.3k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- 스토리 카드 복사 (12개 생성) -->
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" th:src="@{/image/story_image.png}" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 4k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- 같은 카드 10개 추가 -->
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 5k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-           
-            <!-- 추가 카드들 -->
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 3.2k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 1.7k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 1k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 2k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 2.1k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 6kk</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 1.2k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 1.2k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="position-relative">
-                        <img src="../../../static/image/story_image.png" class="card-img-top" alt="스토리 이미지">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark">★ 1.2k</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold mb-1">태백산맥</h6>
-                        <p class="text-muted mb-2">조정래</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-sm">공유</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </div>
-                    </div>
-                </div>
+        <div class="row mt-2">
+            <div class="col-12 text-end">
+                <span class="fw-bold me-2">정렬:</span>
+                <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
+                    class="btn btn-outline-secondary btn-sm me-1">추천순</a>
+                <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='viewCount')}"
+                    class="btn btn-outline-secondary btn-sm me-1">조회순</a>
+                <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
+                    class="btn btn-outline-secondary btn-sm">날짜순</a>
             </div>
         </div>
-
-
-        <!-- 페이지네이션 -->
-        <nav class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#">Previous</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item active"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">4</a></li>
-                <li class="page-item"><a class="page-link" href="#">5</a></li>
-                <li class="page-item"><a class="page-link" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">11</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                </li>
-            </ul>
-        </nav>
-
-
-        <!-- 푸터 -->
-        <footer class="text-center py-4 mt-4 bg-white border-top">
-            주식회사 모지모지 © 2025. All rights reserved. 대표이사 김현
-        </footer>
-
+        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5">
+            <div class="col" th:each="sharedStory : ${sharedStoryList}">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+                    th:style="'background-image: url(' + ${sharedStory.thumbnailUrl} + ');'">
+                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                            <a th:href="@{/board/story/detail(bookId=${sharedStory.bookId})}"
+                                class="text-white text-decoration-none" th:text="${sharedStory.title}">스토리 제목</a>
+                        </h3>
+                        <h5 th:text="${sharedStory.nickname}">작성자</h5>
+                        <ul class="d-flex list-unstyled mt-auto">
+                            <li class="me-auto">
+                                <img th:src="${sharedStory.profileUrl}" alt="Bootstrap" width="32" height="32"
+                                    class="rounded-circle border border-white">
+                            </li>
+                            <li class="d-flex align-items-center me-3">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#geo-fill" />
+                                </svg>
+                                <small>조회수</small>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#calendar3" />
+                                </svg>
+                                <small th:text="${sharedStory.hitCount}">2,000</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                
+            </div>
+            <div class="col" th:each="sharedStory : ${sharedStoryList}">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+                    th:style="'background-image: url(' + ${sharedStory.thumbnailUrl} + ');'">
+                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                            <a th:href="@{/board/story/detail(bookId=${sharedStory.bookId})}"
+                                class="text-white text-decoration-none" th:text="${sharedStory.title}">스토리 제목</a>
+                        </h3>
+                        <h5 th:text="${sharedStory.nickname}">작성자</h5>
+                        <ul class="d-flex list-unstyled mt-auto">
+                            <li class="me-auto">
+                                <img th:src="${sharedStory.profileUrl}" alt="Bootstrap" width="32" height="32"
+                                    class="rounded-circle border border-white">
+                            </li>
+                            <li class="d-flex align-items-center me-3">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#geo-fill" />
+                                </svg>
+                                <small>조회수</small>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#calendar3" />
+                                </svg>
+                                <small th:text="${sharedStory.hitCount}">2,000</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
 
     </div>
 </body>
+
 </html>
