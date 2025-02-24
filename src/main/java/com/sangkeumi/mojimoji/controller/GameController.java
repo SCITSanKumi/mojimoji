@@ -3,12 +3,14 @@ package com.sangkeumi.mojimoji.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.sangkeumi.mojimoji.dto.game.*;
 import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
+import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.service.*;
 
@@ -39,8 +41,8 @@ public class GameController {
     @ResponseBody
     @PostMapping("/start")
     @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
-    public ResponseEntity<GameStartResponse> gameStart(@RequestParam Long bookId) {
-        return ResponseEntity.ok(gameService.gameStart(bookId));
+    public ResponseEntity<GameStartResponse> gameStart(@RequestParam Long bookId, @AuthenticationPrincipal MyPrincipal principal) {
+        return ResponseEntity.ok(gameService.gameStart(bookId, principal));
     }
 
     @ResponseBody

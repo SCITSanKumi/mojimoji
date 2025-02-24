@@ -6,12 +6,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sangkeumi.mojimoji.dto.game.*;
+import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
 import org.springframework.http.*;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -36,10 +36,8 @@ public class GameService {
 
     /** 게임 시작 메서드 */
     @Transactional
-    public GameStartResponse gameStart(Long bookId) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        User user = userRepository.findByUsername(username)
+    public GameStartResponse gameStart(Long bookId, MyPrincipal principal) {
+        User user = userRepository.findById(principal.getUserId())
             .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
 
         Book book = bookRepository.findById(bookId)
