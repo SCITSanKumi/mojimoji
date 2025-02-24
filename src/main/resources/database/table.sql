@@ -29,6 +29,7 @@ CREATE TABLE Users (
     nickname VARCHAR(50) NOT NULL UNIQUE,                   -- 사용자 표시 이름, 중복 불가
     email VARCHAR(100) NOT NULL,                            -- 사용자 이메일 주소
     role VARCHAR(20) NOT NULL DEFAULT 'ROLE_USER',          -- 사용자 권한, 기본값은 'ROLE_USER'
+        CHECK (role IN ('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')),
     status VARCHAR(20) NOT NULL                             -- 사용자 상태: active, inactive, banned, pending, deleted 중 하나
         CHECK (status IN ('ACTIVE', 'INACTIVE', 'BANNED', 'PENDING', 'DELETED')),
     profile_url VARCHAR(255),                               -- 프로필 이미지 URL (선택적)
