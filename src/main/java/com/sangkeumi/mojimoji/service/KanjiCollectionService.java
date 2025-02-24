@@ -1,8 +1,11 @@
 package com.sangkeumi.mojimoji.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
+import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
 import com.sangkeumi.mojimoji.entity.Kanji;
 import com.sangkeumi.mojimoji.entity.KanjiCollection;
 import com.sangkeumi.mojimoji.entity.User;
@@ -47,6 +50,10 @@ public class KanjiCollectionService {
             // 예외 발생 시 false 반환 (필요하다면 로그 남기기)
             return false;
         }
+    }
+
+    public List<JlptCollectionStats> getJlptStats(Long userId) {
+        return kanjiCollectionsRepository.findJlptStatsByUserId(userId);
     }
 
 }

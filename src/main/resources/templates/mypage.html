@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mojimoji</title>
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
@@ -37,124 +36,114 @@
     </style>
 
     <script th:inline="javascript">
-        $(function () {
-            /***********************************************
-                    * 커스텀 플러그인 (중앙 텍스트 표시)
-                    ***********************************************/
-            const centerTextPlugin = {
-                id: 'centerTextPlugin',
-                afterDraw(chart) {
-                    // 1) 플러그인 옵션을 가져온다
-                    const pluginOpts = chart.config.options.plugins.centerTextPlugin || {};
-                    const partial = pluginOpts.partial || 0;
-                    const total = pluginOpts.total || 1;
-                    // ★ 추가: label (원하는 단어)도 가져온다
-                    const label = pluginOpts.label || '전체';
 
-                    // 2) 퍼센트 계산
-                    const percentage = Math.floor((partial / total) * 100);
+        // 1) 스프링에서 넘어온 stats를 자바스크립트 배열로 받기
+        //    (타임리프의 JSON 직렬화를 가정)
+        const statsData = /*[[${stats}]]*/[];
 
-                    // 3) 중앙 좌표
-                    const { ctx, chartArea: { top, left, width, height } } = chart;
-                    const centerX = left + width / 2;
-                    const centerY = top + height / 2;
+        // 2) 등급별 "전체 한자 개수" (예시)
+        const rankTotals = {
+            "전체": 2136,
+            "N1": 1139,
+            "N2": 710,
+            "N3": 182,
+            "N4": 76,
+            "N5": 29
+        };
 
-                    // 4) 표시할 텍스트 (2줄)
-                    const textLine1 = `${label}`;
-                    const textLine2 = `${partial}/${total}`;  // ← label 사용
-                    const textLine3 = `${percentage}%`;
+        // 3) 커스텀 플러그인 (중앙 텍스트)
+        const centerTextPlugin = {
+            id: 'centerTextPlugin',
+            afterDraw(chart) {
+                const opts = chart.config.options.plugins.centerTextPlugin || {};
+                const partial = opts.partial || 0;
+                const total = opts.total || 1;
+                const label = opts.label || 'ALL';
 
-                    // 5) 실제 그리기
-                    ctx.save();
-                    ctx.textAlign = 'center';
-                    ctx.fillStyle = '#333';
-
-                    ctx.font = '16px sans-serif';
-                    ctx.fillText(textLine1, centerX, centerY - 20);
-
-                    ctx.font = '16px sans-serif';
-                    ctx.fillText(textLine2, centerX, centerY + 20);
-
-                    ctx.font = '23px sans-serif';
-                    ctx.fillText(textLine3, centerX, centerY + 50);
-
-                    ctx.restore();
-                }
-            };
-
-
-            /***********************************************
-             * 게이지 차트 생성 함수
-             ***********************************************/
-            function createGaugeChart(canvasId, partial, total, label) {
                 const percentage = Math.floor((partial / total) * 100);
-                const remainValue = 100 - percentage;
 
-                const ctx = document.getElementById(canvasId).getContext('2d');
+                const { ctx, chartArea: { top, left, width, height } } = chart;
+                const centerX = left + width / 2;
+                const centerY = top + height / 2;
 
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        datasets: [
-                            {
-                                data: [percentage, remainValue],
-                                backgroundColor: ['#EE697D', '#ddd'],
-                                borderWidth: 0
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        cutout: '70%',
-                        rotation: -150,
-                        circumference: 300,
-                        plugins: {
-                            // ★ 여기서 플러그인에 partial, total, label을 넘겨준다
-                            centerTextPlugin: {
-                                partial: partial,
-                                total: total,
-                                label: label  // <-- 새로 추가
-                            },
-                            legend: { display: false },
-                            tooltip: { enabled: false }
-                        },
-                        animation: {
-                            animateRotate: true,
-                            animateScale: false,
-                            onComplete: (anim) => {
-                                anim.chart.config.options.animation = false;
-                            }
-                        }
-                    },
-                    plugins: [centerTextPlugin]
-                });
+                // 그릴 텍스트
+                const textLine1 = `${label}`;
+                const textLine2 = `${partial}/${total}`;
+                const textLine3 = `${percentage}%`;
+
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#333';
+
+                ctx.font = '16px sans-serif';
+                ctx.fillText(textLine1, centerX, centerY - 20);
+
+                ctx.font = '16px sans-serif';
+                ctx.fillText(textLine2, centerX, centerY + 20);
+
+                ctx.font = '23px sans-serif';
+                ctx.fillText(textLine3, centerX, centerY + 50);
+
+                ctx.restore();
             }
+        };
 
+        // 4) 게이지 차트 생성 함수
+        function createGaugeChart(canvasId, partial, total, label) {
+            const percentage = Math.floor((partial / total) * 100);
+            const remainValue = 100 - percentage;
 
-            /***********************************************
-             * 실제 차트 6개 생성
-             ***********************************************/
-            // 1) (100/200) label='전체'
-            createGaugeChart('gaugeChart1', 134, 2136, '전체');
+            const ctx = document.getElementById(canvasId).getContext('2d');
 
-            // 2) (1495/2136) label='합계'
-            createGaugeChart('gaugeChart2', 50, 1139, 'N1');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [
+                        {
+                            data: [percentage, remainValue],
+                            backgroundColor: ['#EE697D', '#ddd'],
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '70%',
+                    rotation: -150,
+                    circumference: 300,
+                    plugins: {
+                        centerTextPlugin: {
+                            partial: partial,
+                            total: total,
+                            label: label
+                        },
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: false,
+                        onComplete: (anim) => {
+                            anim.chart.config.options.animation = false;
+                        }
+                    }
+                },
+                plugins: [centerTextPlugin]
+            });
+        }
 
-            // 3) (170/200) label='수집'
-            createGaugeChart('gaugeChart3', 10, 710, 'N2');
+        // 5) 페이지 로딩 후 차트 생성
+        document.addEventListener('DOMContentLoaded', () => {
 
-            // 4) (45/100) label='My Data'
-            createGaugeChart('gaugeChart4', 45, 182, 'N3');
-
-            // 5) (9/10) label='누적'
-            createGaugeChart('gaugeChart5', 9, 76, 'N4');
-
-            // 6) (20/100) label='등급'
-            createGaugeChart('gaugeChart6', 20, 29, 'N5');
-
-
-        })
-
+            // statsData를 순회하며 차트 생성
+            statsData.forEach(stat => {
+                const rank = stat.jlptRank;   // "N1", "N2", ... or "ALL"
+                const collected = stat.collected; // 내가 수집한 한자 개수
+                const total = rankTotals[rank] || 0; // rankTotals에서 가져옴
+                const canvasId = 'gaugeChart' + rank; // 예: gaugeChartN1
+                createGaugeChart(canvasId, collected, total, rank);
+            });
+        });
 
 
     </script>
@@ -166,24 +155,12 @@
     <div class="Collection">
         <h5 style="height: 30px; ">수집현황</h5>
         <!-- 차트를 담을 컨테이너 (6개) -->
-        <div class="chart-container">
-            <canvas id="gaugeChart1"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="gaugeChart2"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="gaugeChart3"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="gaugeChart4"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="gaugeChart5"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="gaugeChart6"></canvas>
-        </div>
+        <th:block th:each="stat : ${stats}">
+            <div class="chart-container">
+                <!-- id를 등급에 따라 다르게 -->
+                <canvas th:id="'gaugeChart' + ${stat.jlptRank}"></canvas>
+            </div>
+        </th:block>
         <div style=" width: 200px; height: 200px; float: right; ">
             <span sec:authentication="principal.nickname"></span>
             <p>최종접속일 : 2025/02/06</p>
