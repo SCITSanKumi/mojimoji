@@ -1,12 +1,9 @@
 package com.sangkeumi.mojimoji.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sangkeumi.mojimoji.dto.game.*;
 import com.sangkeumi.mojimoji.entity.*;
@@ -14,7 +11,6 @@ import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
 import org.springframework.http.*;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -25,7 +21,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import reactor.core.publisher.Flux;
-import reactor.netty.http.client.HttpClient;
 
 @Service
 @Slf4j
@@ -37,14 +32,7 @@ public class GameService {
     private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
     private final GameMessageProvider messageProvider;
-
-    @Value("${openai.api-key}")
-    private String openAiApiKey;
-    private final WebClient webClient = WebClient.builder()
-        .clientConnector(new ReactorClientHttpConnector(HttpClient.create()))
-        .baseUrl("https://api.openai.com/v1/chat/completions")
-        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .build();
+    private final WebClient webClient;
 
     /** 게임 시작 메서드 */
     @Transactional
@@ -161,7 +149,6 @@ public class GameService {
     /** OpenAI API 스트리밍 요청 처리 */
     public Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
         return webClient.post()
-            .header("Authorization", "Bearer " + openAiApiKey)
             .bodyValue(Map.of(
                 "model", "gpt-4-turbo",
                 "temperature", 0.6,
