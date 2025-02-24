@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class MyPageContoller {
 
     private final KanjiCollectionService kanjiCollectionService;

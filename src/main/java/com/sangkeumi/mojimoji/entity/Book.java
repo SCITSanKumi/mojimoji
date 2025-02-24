@@ -47,8 +47,6 @@ public class Book {
     @Column(name = "is_ended", nullable = false)
     private boolean isEnded;
 
-
-
     /**
      * 책의 생성일시
      */

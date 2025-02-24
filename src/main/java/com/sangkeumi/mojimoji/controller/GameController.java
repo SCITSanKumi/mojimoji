@@ -38,8 +38,8 @@ public class GameController {
         return "game/screen";
     }
 
-    @ResponseBody
     @PostMapping("/start")
+    @ResponseBody
     @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
     public ResponseEntity<GameStartResponse> gameStart(@RequestParam Long bookId, @AuthenticationPrincipal MyPrincipal principal) {
         return ResponseEntity.ok(gameService.gameStart(bookId, principal));
@@ -64,16 +64,16 @@ public class GameController {
         return "/game/quiz";
     }
 
-    @ResponseBody
     @PostMapping("/quiz")
+    @ResponseBody
     public boolean quiz(@RequestParam(name = "korOnyomi") String korOnyomi,
             @RequestParam(name = "korKunyomi") String korKunyomi,
             @RequestParam(name = "kanjiId") Long kanjiId) {
         return kanjiService.checkAnswer(korOnyomi, korKunyomi, kanjiId);
     }
 
-    @ResponseBody
     @PostMapping("/addCollection")
+    @ResponseBody
     public boolean addCollection(@RequestParam(name = "kanjiId") Long kanjiId,
             @RequestParam(name = "userId") Long userId) {
         AddKanjiCollection addKanjiCollection = new AddKanjiCollection(userId, kanjiId);

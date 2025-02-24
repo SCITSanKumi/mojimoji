@@ -3,31 +3,15 @@ package com.sangkeumi.mojimoji.dto.game;
 import java.io.Serializable;
 import java.util.List;
 
-import lombok.*;
-
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of="id")
-public class ChatCompletionChunkResponse implements Serializable {
-    private String id;
-    private List<Choices> choices;
+public record ChatCompletionChunkResponse(
+    String id,
+    List<Choices> choices) implements Serializable {
 
     public String getContent() {
-        return getChoices().get(0).getDelta().getContent();
+        return choices.get(0).delta().content();
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Choices{
-        private Delta delta;
-
-        @Getter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Delta{
-            private String content;
-        }
+    public record Choices(Delta delta) {
+        public record Delta(String content) {}
     }
 }
