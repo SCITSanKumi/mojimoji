@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.sangkeumi.mojimoji.dto.mypage.DailyAcquisitionStats;
 import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
 import com.sangkeumi.mojimoji.entity.KanjiCollection;
 
@@ -30,4 +31,15 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
     // ↑ 멀티라인 문자열(JDK 15+) 또는 기존 문자열 결합 사용 가능
     // (문자열 안에 세미콜론은 넣지 않는 것이 안전)
     List<JlptCollectionStats> findJlptStatsByUserId(@Param("userId") Long userId);
+
+    @Query(value = """
+            SELECT
+                CAST(created_at AS DATE) AS acquisition_date,
+                COUNT(*) AS daily_count
+            FROM Kanji_Collections
+            WHERE user_id = :userId
+            GROUP BY CAST(created_at AS DATE)
+            ORDER BY CAST(created_at AS DATE)
+            """, nativeQuery = true)
+    List<DailyAcquisitionStats> findDailyStatsByUserId(@Param("userId") Long userId);
 }

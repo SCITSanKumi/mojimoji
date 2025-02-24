@@ -3,45 +3,44 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mojimoji</title>
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-    <script defer src="../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <!-- JQuery -->
-    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <!-- Bootstrap (예시) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <script defer th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- jQuery (예시) -->
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+
     <style>
         .Collection {
-
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-wrap: wrap;
-            /* 여러 개의 차트를 행/열로 배치 */
             box-sizing: border-box;
         }
 
         .chart-container {
-
             width: 150px;
-            /* 각 차트 컨테이너 너비 */
             margin: 20px;
             position: relative;
-            /* 중앙 텍스트 절대 배치 가능 */
             padding: 10px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Bar 차트 캔버스 감싸는 div에 폭 1000px 설정 */
+        .bar-chart-wrapper {
+            width: 1000px;
         }
     </style>
 
     <script th:inline="javascript">
-
-        // 1) 스프링에서 넘어온 stats를 자바스크립트 배열로 받기
-        //    (타임리프의 JSON 직렬화를 가정)
+        // ---------------------------------------------
+        // 1) JLPT 통계 (게이지 차트) 관련 스크립트
+        // ---------------------------------------------
         const statsData = /*[[${stats}]]*/[];
-
-        // 2) 등급별 "전체 한자 개수" (예시)
         const rankTotals = {
             "전체": 2136,
             "N1": 1139,
@@ -51,7 +50,6 @@
             "N5": 29
         };
 
-        // 3) 커스텀 플러그인 (중앙 텍스트)
         const centerTextPlugin = {
             id: 'centerTextPlugin',
             afterDraw(chart) {
@@ -61,50 +59,40 @@
                 const label = opts.label || 'ALL';
 
                 const percentage = Math.floor((partial / total) * 100);
-
                 const { ctx, chartArea: { top, left, width, height } } = chart;
                 const centerX = left + width / 2;
                 const centerY = top + height / 2;
-
-                // 그릴 텍스트
-                const textLine1 = `${label}`;
-                const textLine2 = `${partial}/${total}`;
-                const textLine3 = `${percentage}%`;
 
                 ctx.save();
                 ctx.textAlign = 'center';
                 ctx.fillStyle = '#333';
 
                 ctx.font = '16px sans-serif';
-                ctx.fillText(textLine1, centerX, centerY - 20);
+                ctx.fillText(label, centerX, centerY - 20);
 
                 ctx.font = '16px sans-serif';
-                ctx.fillText(textLine2, centerX, centerY + 20);
+                ctx.fillText(`${partial}/${total}`, centerX, centerY + 20);
 
                 ctx.font = '23px sans-serif';
-                ctx.fillText(textLine3, centerX, centerY + 50);
+                ctx.fillText(`${percentage}%`, centerX, centerY + 50);
 
                 ctx.restore();
             }
         };
 
-        // 4) 게이지 차트 생성 함수
         function createGaugeChart(canvasId, partial, total, label) {
             const percentage = Math.floor((partial / total) * 100);
             const remainValue = 100 - percentage;
 
             const ctx = document.getElementById(canvasId).getContext('2d');
-
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    datasets: [
-                        {
-                            data: [percentage, remainValue],
-                            backgroundColor: ['#EE697D', '#ddd'],
-                            borderWidth: 0
-                        }
-                    ]
+                    datasets: [{
+                        data: [percentage, remainValue],
+                        backgroundColor: ['#EE697D', '#ddd'],
+                        borderWidth: 0
+                    }]
                 },
                 options: {
                     responsive: true,
@@ -132,44 +120,83 @@
             });
         }
 
-        // 5) 페이지 로딩 후 차트 생성
-        document.addEventListener('DOMContentLoaded', () => {
+        // ---------------------------------------------
+        // 2) 날짜별 Bar 차트 (dailyStats)
+        // ---------------------------------------------
+        const dailyStatsData = /*[[${dailyStats}]]*/[];
+        const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
+        const chartValues = dailyStatsData.map(ds => ds.dailyCount);
 
-            // statsData를 순회하며 차트 생성
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1) JLPT 차트 생성
             statsData.forEach(stat => {
-                const rank = stat.jlptRank;   // "N1", "N2", ... or "ALL"
-                const collected = stat.collected; // 내가 수집한 한자 개수
-                const total = rankTotals[rank] || 0; // rankTotals에서 가져옴
-                const canvasId = 'gaugeChart' + rank; // 예: gaugeChartN1
+                const rank = stat.jlptRank;
+                const collected = stat.collected;
+                const total = rankTotals[rank] || 0;
+                const canvasId = 'gaugeChart' + rank;
                 createGaugeChart(canvasId, collected, total, rank);
             });
+
+            // 2) Bar 차트 생성
+            const ctxBar = document.getElementById('lineChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: '일자별 획득 한자 수',
+                        data: chartValues,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        title: {
+                            display: false
+                        }
+                    }
+                }
+            });
         });
-
-
     </script>
 </head>
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <br><br><br><br>
+
+    <!-- 수집현황 (게이지 차트들) -->
+    <h5>수집현황</h5>
     <div class="Collection">
-        <h5 style="height: 30px; ">수집현황</h5>
-        <!-- 차트를 담을 컨테이너 (6개) -->
         <th:block th:each="stat : ${stats}">
             <div class="chart-container">
-                <!-- id를 등급에 따라 다르게 -->
+                <!-- 등급에 따라 id 동적으로 -->
                 <canvas th:id="'gaugeChart' + ${stat.jlptRank}"></canvas>
             </div>
         </th:block>
-        <div style=" width: 200px; height: 200px; float: right; ">
+        <div style="width: 200px; height: 200px; float: right;">
             <span sec:authentication="principal.nickname"></span>
             <p>최종접속일 : 2025/02/06</p>
             <a th:href="@{/board/myStory/list}" style="text-decoration: none;">작성한 스토리 : 329개</a>
         </div>
     </div>
+
     <div class="d-flex align-items-center my-3">
         <hr class="flex-grow-1">
     </div>
+
+    <!-- 날짜별 Bar 차트 -->
+    <h5>날짜별 등록된 한자 </h5>
+    <div class="bar-chart-wrapper">
+        <canvas id="lineChart"></canvas>
+    </div>
+
 </body>
 
 </html>

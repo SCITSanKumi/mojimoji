@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
+import com.sangkeumi.mojimoji.dto.mypage.DailyAcquisitionStats;
 import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
 import com.sangkeumi.mojimoji.entity.Kanji;
 import com.sangkeumi.mojimoji.entity.KanjiCollection;
@@ -54,6 +55,10 @@ public class KanjiCollectionService {
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {
         return kanjiCollectionsRepository.findJlptStatsByUserId(userId);
+    }
+
+    public List<DailyAcquisitionStats> getDailyStats(Long userId) {
+        return kanjiCollectionsRepository.findDailyStatsByUserId(userId);
     }
 
 }
