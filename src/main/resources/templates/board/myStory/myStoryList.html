@@ -1,47 +1,68 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script>
-        $(function () {
-
-            $('#toMyStoryDetail').on('click', function () {
-                location.href = '/board/myStory/detail';
-            });
-        })
-    </script>
     <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
-        th:href="@{/css/bootstrap.min.css}">
-    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <!-- JQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script defer th:src="@{/js/myStory.js}"></script>
 </head>
 
 <body>
-    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-    <h2>마이 스토리</h2>
-    <fieldset>
-        <legend>스토리 리스트</legend>
-        <table style="border-collapse: collapse;">
-            <tr>
-                <td style="width: 100px; height: 100px;">
-                    <div style="display: inline-block; width: 100px; height: 100px; border: 1px solid black;"
-                        id="toMyStoryDetail">
-                        태백산맥조정래</div>
-                </td>
-            </tr>
-            <tr>
-                <td style="width: 100px; height: 50px; border: 1px solid black;">
-                    <button class="btn btn-success">공유</button>
-                    <button class="btn btn-danger">삭제</button>
-                </td>
-            </tr>
-        </table>
-    </fieldset>
-
+    <header th:insert="~{fragments/header :: header}"></header>
+    <div class="container px-4 py-5" id="custom-cards">
+        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5">
+            <div class="col" th:each="myStory : ${myStoryList}">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+                    th:style="'background-image: url(' + ${myStory.thumbnailUrl} + ');'">
+                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 position-relative">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-primary btn-sm me-2" th:if="${!myStory.shared}"
+                                    th:attr="onclick=|shareStory(${myStory.bookId})|">
+                                    공유
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm me-2"
+                                    th:attr="onclick=|deleteStory(${myStory.bookId})|">
+                                    삭제
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                                <a th:href="@{/board/story/detail(bookId=${myStory.bookId})}"
+                                    class="text-white text-decoration-none" th:text="${myStory.title}">스토리 제목</a>
+                            </h3>
+                        </div>
+                        <h5 th:text="${myStory.nickname}">작성자</h5>
+                        <ul class="d-flex list-unstyled mt-auto">
+                            <li class="me-auto">
+                                <img th:src="${myStory.profileUrl}" alt="프로필 이미지" width="32" height="32"
+                                    class="rounded-circle border border-white">
+                            </li>
+                            <li class="d-flex align-items-center me-3">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#geo-fill" />
+                                </svg>
+                                <small>조회수</small>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <svg class="bi me-2" width="1em" height="1em">
+                                    <use xlink:href="#calendar3" />
+                                </svg>
+                                <small th:text="${myStory.hitCount}">2,000</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
+</html>

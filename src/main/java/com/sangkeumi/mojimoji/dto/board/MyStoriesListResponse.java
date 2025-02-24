@@ -2,10 +2,11 @@ package com.sangkeumi.mojimoji.dto.board;
 
 import java.time.LocalDateTime;
 
-public record SharedStoriesListResponse(
+public record MyStoriesListResponse(
         Long bookId,
         String title,
         String thumbnailUrl,
+        boolean isShared,
         String nickname,
         String profileUrl,
         int hitCount,

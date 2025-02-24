@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sangkeumi.mojimoji.dto.board.MyStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
@@ -133,9 +134,44 @@ public class BoardController {
         boardService.deleteComment(sharedBookReplyId);
     }
 
+    /**
+     * 내 스토리 목록을 보여주는 페이지를 반환하는 메서드
+     * 
+     * @param model
+     * @param principal
+     * @return
+     */
     @GetMapping("/myStory/list")
-    public String myStoryList() {
-        return "/board/myStory/myStoryList";
+    public String myStoryList(Model model, @AuthenticationPrincipal MyPrincipal principal) {
+        Long userId = principal.getUserId();
+        List<MyStoriesListResponse> myStoryList = boardService.getMyBooks(userId);
+        model.addAttribute("myStoryList", myStoryList);
+        return "board/myStory/myStoryList";
+    }
+
+    /**
+     * 공유 버튼을 눌렀을 때
+     * 해당 스토리가 본인 스토리인지 확인 후 공유 처리
+     */
+    @PostMapping("/myStory/share")
+    @ResponseBody
+    public SharedStoryInfoResponse shareStory(@RequestParam(name = "bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        Long userId = principal.getUserId();
+        return boardService.shareBook(bookId, userId);
+    }
+
+    /**
+     * 삭제 버튼을 눌렀을 때 처리
+     * 본인의 스토리만 삭제할 수 있도록 확인 후 삭제
+     */
+    @DeleteMapping("/myStory/delete")
+    @ResponseBody
+    public String deleteMyStory(@RequestParam(name = "bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        Long userId = principal.getUserId();
+        boardService.deleteMyBook(bookId, userId);
+        return "삭제되었습니다.";
     }
 
     @GetMapping("/myStory/detail")

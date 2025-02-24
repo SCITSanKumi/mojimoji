@@ -9,16 +9,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.sangkeumi.mojimoji.dto.board.MyStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyRequest;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyResponse;
+import com.sangkeumi.mojimoji.entity.Book;
 import com.sangkeumi.mojimoji.entity.BookLine;
 import com.sangkeumi.mojimoji.entity.SharedBook;
 import com.sangkeumi.mojimoji.entity.SharedBookReply;
 import com.sangkeumi.mojimoji.entity.User;
 import com.sangkeumi.mojimoji.repository.BookLineRepository;
+import com.sangkeumi.mojimoji.repository.BookRepository;
 import com.sangkeumi.mojimoji.repository.SharedBookReplyRepository;
 import com.sangkeumi.mojimoji.repository.SharedBookRepository;
 import com.sangkeumi.mojimoji.repository.UserRepository;
@@ -36,6 +39,7 @@ public class BoardService {
         private final BookLineRepository bookLineRepository;
         private final UserRepository userRepository;
         private final SharedBookReplyRepository sharedBookReplyRepository;
+        private final BookRepository bookRepository;
 
         /**
          * 공유된 스토리 목록 검색 및 정렬 메서드
@@ -224,4 +228,77 @@ public class BoardService {
                         sharedBookRepository.save(sharedBook);
                 }
         }
+
+        /**
+         * 내 스토리를 전부 조회하는 메서드
+         * 
+         * @param userId
+         * @return
+         */
+        @Transactional
+        public List<MyStoriesListResponse> getMyBooks(Long userId) {
+                List<Book> books = bookRepository.findByUser_UserId(userId);
+                return books.stream()
+                                .map(book -> new MyStoriesListResponse(
+                                                book.getBookId(),
+                                                book.getTitle(),
+                                                book.getThumbnailUrl(),
+                                                book.getSharedBook() != null,
+                                                book.getUser().getNickname(),
+                                                book.getUser().getProfileUrl(),
+                                                book.getSharedBook() != null ? book.getSharedBook().getHitCount() : 0,
+                                                book.getSharedBook() != null ? book.getSharedBook().getGaechu() : 0,
+                                                book.getCreatedAt()))
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * 내 스토리 공유
+         * 
+         * @param bookId
+         * @param userId
+         * @return
+         */
+        @Transactional
+        public SharedStoryInfoResponse shareBook(Long bookId, Long userId) {
+                // 책 조회
+                Book book = bookRepository.findById(bookId)
+                                .orElseThrow(() -> new RuntimeException("해당 책을 찾을 수 없습니다."));
+                // 본인의 책이 아니라면 공유 불가
+                if (!book.getUser().getUserId().equals(userId)) {
+                        throw new RuntimeException("자신의 책만 공유할 수 있습니다.");
+                }
+                // 이미 공유된 상태면 기존 정보 반환
+                if (book.getSharedBook() != null) {
+                        return getSharedStoryInfo(bookId);
+                }
+                // 공유되지 않은 경우 SharedBook 엔티티 생성 후 저장
+                SharedBook sharedBook = SharedBook.builder()
+                                .book(book)
+                                .hitCount(0)
+                                .gaechu(0)
+                                .build();
+                sharedBookRepository.save(sharedBook);
+                return getSharedStoryInfo(bookId);
+        }
+
+        /**
+         * 내 스토리 삭제
+         * 
+         * @param bookId
+         * @param userId
+         */
+        @Transactional
+        public void deleteMyBook(Long bookId, Long userId) {
+                // 책 조회
+                Book book = bookRepository.findById(bookId)
+                                .orElseThrow(() -> new RuntimeException("해당 책을 찾을 수 없습니다."));
+                // 본인의 책이 아니라면 삭제 불가
+                if (!book.getUser().getUserId().equals(userId)) {
+                        throw new RuntimeException("자신의 책만 삭제할 수 있습니다.");
+                }
+                // Cascade 옵션이 설정되어 있으므로, 책 삭제 시 연관된 SharedBook 도 삭제
+                bookRepository.delete(book);
+        }
+
 }
