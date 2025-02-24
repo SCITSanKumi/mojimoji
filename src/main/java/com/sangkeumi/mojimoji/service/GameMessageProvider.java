@@ -72,14 +72,12 @@ public class GameMessageProvider {
             ```
             당신이 '火'를 입력하자, 불꽃이 타오르며 적을 덮쳤다!
             적은 20의 피해를 입었다.
-
             { "health": 80, "isEnded": false }
             ```
 
             ✅ **게임이 끝나는 경우**
             ```
             마왕을 쓰러뜨렸다! 세계는 평화를 되찾았다.
-
             { "health": 100, "isEnded": true }
             ```
 
