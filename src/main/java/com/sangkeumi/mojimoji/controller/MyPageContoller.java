@@ -31,9 +31,15 @@ public class MyPageContoller {
         List<JlptCollectionStats> stats = kanjiCollectionService.getJlptStats(userId);
         // 2) 날짜별 수집 통계 (DailyAcquisitionStats)
         List<DailyAcquisitionStats> dailyStats = kanjiCollectionService.getDailyStats(userId);
+        // 3) 일일 평균
+        Double dailyAvg = kanjiCollectionService.getDailyAverage(userId);
+        if (dailyAvg == null) {
+            dailyAvg = 0.0;
+        }
 
         model.addAttribute("stats", stats);
         model.addAttribute("dailyStats", dailyStats);
+        model.addAttribute("dailyAvg", dailyAvg);
         return "/mypage";
     }
 }

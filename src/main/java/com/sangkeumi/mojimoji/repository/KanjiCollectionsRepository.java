@@ -42,4 +42,17 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
             ORDER BY CAST(created_at AS DATE)
             """, nativeQuery = true)
     List<DailyAcquisitionStats> findDailyStatsByUserId(@Param("userId") Long userId);
+
+    @Query(value = """
+            SELECT ROUND(AVG(sub.daily_count), 2)
+            FROM (
+                SELECT
+                    CAST(created_at AS DATE) AS acquisition_date,
+                    COUNT(*) AS daily_count
+                FROM Kanji_Collections
+                WHERE user_id = :userId
+                GROUP BY CAST(created_at AS DATE)
+            ) AS sub
+            """, nativeQuery = true)
+    Double findDailyAverageByUserId(@Param("userId") Long userId);
 }

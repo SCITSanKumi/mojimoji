@@ -4,43 +4,89 @@
 <head>
     <meta charset="UTF-8">
     <title>mojimoji</title>
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Bootstrap (예시) -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
     <script defer th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
     <!-- jQuery (예시) -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
+    <!-- 스타일 (인라인 제거 후 CSS로 통합) -->
     <style>
+        /* 상단 헤더(수집현황 + 사용자 정보) 영역 */
+        .header-row {
+            display: flex;
+            /* 가로로 배치 */
+            justify-content: space-between;
+            align-items: center;
+            /* 세로 가운데 정렬 */
+            margin: 0 50px 0 50px;
+            /* 좌우 여백 */
+        }
+
+        .header-row h5 {
+            margin: 0;
+            /* h5 기본 마진 제거로 간격 줄임 */
+        }
+
+        .user-info {
+            text-align: right;
+            /* 사용자 정보 오른쪽 정렬 (선택) */
+        }
+
+        /* 게이지 차트 전체 래퍼 */
         .Collection {
             font-family: sans-serif;
-            margin: 0;
-            padding: 20px;
             display: flex;
             flex-wrap: wrap;
             box-sizing: border-box;
+            align-items: flex-end;
+            justify-content: center;
         }
 
+        /* 개별 차트 컨테이너 */
         .chart-container {
-            width: 150px;
-            margin: 20px;
+            width: 180px;
+            margin: -40px 19px 0 8px;
+            /* 차트 사이 간격을 약간 줄임 */
             position: relative;
             padding: 10px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Bar 차트 캔버스 감싸는 div에 폭 1000px 설정 */
+        /* "전체" 차트만 크게 보이도록 */
+        .chart-container.large-chart {
+            width: 250px;
+            /* 가로 크기 */
+            height: 250px;
+            /* 세로 크기 (도넛 차트는 세로도 중요) */
+        }
+
+        /* Bar 차트 상단 제목/일일평균 표시 래퍼 */
+        .bar-chart-row {
+            display: flex;
+            width: 900px;
+            justify-content: space-between;
+            margin: 0 10px 0 10px;
+        }
+
+        /* Bar 차트 감싸는 박스 */
         .bar-chart-wrapper {
-            width: 1000px;
+            width: 900px;
+            margin: 0 10px 0 10px;
+            /* 가운데 정렬 */
         }
     </style>
 
     <script th:inline="javascript">
-        // ---------------------------------------------
-        // 1) JLPT 통계 (게이지 차트) 관련 스크립트
-        // ---------------------------------------------
-        const statsData = /*[[${stats}]]*/[];
+        // ----------------------------
+        // 1) JLPT 통계 (게이지 차트)
+        // ----------------------------
+        const statsData = /*[[${stats}]]*/[];  // 예: [{jlptRank: '전체', collected:123}, {jlptRank: 'N1', ...}, ...]
         const rankTotals = {
             "전체": 2136,
             "N1": 1139,
@@ -50,6 +96,7 @@
             "N5": 29
         };
 
+        // 중앙 텍스트 표시 플러그인
         const centerTextPlugin = {
             id: 'centerTextPlugin',
             afterDraw(chart) {
@@ -80,6 +127,7 @@
             }
         };
 
+        // 게이지 차트 생성 함수
         function createGaugeChart(canvasId, partial, total, label) {
             const percentage = Math.floor((partial / total) * 100);
             const remainValue = 100 - percentage;
@@ -120,15 +168,15 @@
             });
         }
 
-        // ---------------------------------------------
-        // 2) 날짜별 Bar 차트 (dailyStats)
-        // ---------------------------------------------
+        // ----------------------------
+        // 2) 날짜별 Bar 차트
+        // ----------------------------
         const dailyStatsData = /*[[${dailyStats}]]*/[];
         const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
         const chartValues = dailyStatsData.map(ds => ds.dailyCount);
 
         document.addEventListener('DOMContentLoaded', () => {
-            // 1) JLPT 차트 생성
+            // 1) JLPT 게이지 차트들 생성
             statsData.forEach(stat => {
                 const rank = stat.jlptRank;
                 const collected = stat.collected;
@@ -146,8 +194,8 @@
                     datasets: [{
                         label: '일자별 획득 한자 수',
                         data: chartValues,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: '#EE697D',
+                        borderColor: '#EE697D',
                         borderWidth: 1
                     }]
                 },
@@ -168,35 +216,49 @@
 </head>
 
 <body>
+    <!-- 헤더(네비게이션) -->
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <br><br><br><br>
 
-    <!-- 수집현황 (게이지 차트들) -->
-    <h5>수집현황</h5>
+    <!-- 상단: 수집현황 + 사용자 정보를 한 줄에 배치 -->
+    <div class="header-row">
+        <h5>수집현황</h5>
+        <div class="user-info">
+            <span sec:authentication="principal.nickname"></span>
+            <p>최종접속일 : 2025/02/06</p>
+            <a th:href="@{/board/myStory/list}" style="text-decoration: none;">
+                작성한 스토리 : 329개
+            </a>
+        </div>
+    </div>
+
+    <!-- 게이지 차트 목록 -->
     <div class="Collection">
+        <!-- stats: jlptRank, collected -->
         <th:block th:each="stat : ${stats}">
-            <div class="chart-container">
-                <!-- 등급에 따라 id 동적으로 -->
+            <div class="chart-container" th:classappend="${stat.jlptRank} == '전체' ? ' large-chart' : ''">
                 <canvas th:id="'gaugeChart' + ${stat.jlptRank}"></canvas>
             </div>
         </th:block>
-        <div style="width: 200px; height: 200px; float: right;">
-            <span sec:authentication="principal.nickname"></span>
-            <p>최종접속일 : 2025/02/06</p>
-            <a th:href="@{/board/myStory/list}" style="text-decoration: none;">작성한 스토리 : 329개</a>
-        </div>
     </div>
 
     <div class="d-flex align-items-center my-3">
         <hr class="flex-grow-1">
     </div>
 
-    <!-- 날짜별 Bar 차트 -->
-    <h5>날짜별 등록된 한자 </h5>
+    <!-- 날짜별 Bar 차트 제목 + 일일평균 -->
+    <div class="bar-chart-row">
+        <h5>날짜별 등록된 한자</h5>
+        <h5 th:text="'일일평균: ' + ${dailyAvg} + '개'">일일평균: 0개</h5>
+    </div>
+
+    <!-- Bar 차트 영역 -->
     <div class="bar-chart-wrapper">
         <canvas id="lineChart"></canvas>
     </div>
 
+    <!-- 푸터 -->
+    <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
 
 </html>

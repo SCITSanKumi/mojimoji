@@ -61,4 +61,8 @@ public class KanjiCollectionService {
         return kanjiCollectionsRepository.findDailyStatsByUserId(userId);
     }
 
+    public Double getDailyAverage(Long userId) {
+        return kanjiCollectionsRepository.findDailyAverageByUserId(userId);
+    }
+
 }
