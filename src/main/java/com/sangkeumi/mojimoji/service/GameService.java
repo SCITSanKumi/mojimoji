@@ -74,20 +74,25 @@ public class GameService {
         List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleOrderBySequenceDesc(book, "assistant");
         Collections.reverse(history);
 
+        int lastSequence = history.isEmpty() ? 0 : history.get(history.size() - 1).getSequence();
+        int currentHealth = history.isEmpty() ? defaultHealth : history.get(history.size() - 1).getHealth();
+
+        int nextSequence = lastSequence + 1;
+
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", messageProvider.getSystemMessage()));
         history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
+        messages.add(Map.of("role", "assistant", "content", "현재 체력: " + currentHealth));
         messages.add(Map.of("role", "user", "content", request.message()));
 
         log.info("Messages: {}", messages);
-
-        int nextSequence = bookLineRepository.findMaxSequenceByBook(book).orElse(0) + 1;
 
         // 사용자 입력 저장
         bookLineRepository.save(BookLine.builder()
             .book(book)
             .role("user")
             .content(request.message())
+            .health(currentHealth)
             .sequence(nextSequence)
             .build()
         );
@@ -118,10 +123,10 @@ public class GameService {
                     extractedState = new ObjectMapper().readValue(jsonResponse.toString(), Map.class);
 
                     // 상태 업데이트
-                    int currentHealth = defaultHealth;
+                    int updatedHealth = defaultHealth;
 
                     if (extractedState.containsKey("health") && extractedState.get("health") instanceof Integer) {
-                        currentHealth = (int)extractedState.get("health");
+                        updatedHealth = (int)extractedState.get("health");
                     }
 
                     if (extractedState.containsKey("isEnded") && extractedState.get("isEnded") instanceof Boolean) {
@@ -133,8 +138,8 @@ public class GameService {
                     bookLineRepository.save(BookLine.builder()
                         .book(book)
                         .role("assistant")
-                        .content(contentResponse.toString()) // JSON을 제외한 응답만 저장
-                        .health(currentHealth)
+                        .content(contentResponse.toString().trim())
+                        .health(updatedHealth)
                         .sequence(nextSequence + 1)
                         .build()
                     );
