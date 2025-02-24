@@ -6,7 +6,7 @@ function shareStory(bookId) {
         data: { bookId: bookId },
         success: function (response) {
             alert('공유되었습니다.');
-            location.reload();
+            window.location.href = '/board/story/list';
         },
         error: function (xhr) {
             alert('공유 실패: ' + xhr.responseText);
@@ -23,7 +23,7 @@ function deleteStory(bookId) {
         data: { bookId: bookId },
         success: function (response) {
             alert('삭제되었습니다.');
-            location.reload();
+            window.location.href = '/board/myStory/list';
         },
         error: function (xhr) {
             alert('삭제 실패: ' + xhr.responseText);

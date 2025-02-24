@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sangkeumi.mojimoji.dto.board.MyStoriesListResponse;
+import com.sangkeumi.mojimoji.dto.board.MyStoryContentResponse;
+import com.sangkeumi.mojimoji.dto.board.MyStoryInfoResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
@@ -174,8 +176,31 @@ public class BoardController {
         return "삭제되었습니다.";
     }
 
+    /**
+     * 내 스토리의 상세 페이지를 반환하는 메서드
+     * 
+     * @param bookId
+     * @param model
+     * @param principal
+     * @return
+     */
     @GetMapping("/myStory/detail")
-    public String myStoryDetail() {
-        return "board/myStory/myStoryDetail";
+    public String myStoryDetail(@RequestParam("bookId") Long bookId, Model model,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        Long userId = principal.getUserId();
+
+        // 내 스토리 정보 조회
+        MyStoryInfoResponse myStoryInfo = boardService.getMyStoryInfo(bookId, userId);
+
+        // 공유된 스토리인 경우, 공유 상세 페이지로 리다이렉트
+        if (myStoryInfo.sharedBookId() != null) {
+            return "redirect:/board/story/detail?bookId=" + bookId;
+        } else {
+            // 공유되지 않은 스토리인 경우, 내 스토리 상세 페이지 데이터를 조회 및 모델에 추가
+            List<MyStoryContentResponse> myStoryContent = boardService.getMyStoryContent(bookId);
+            model.addAttribute("myStoryInfo", myStoryInfo);
+            model.addAttribute("myStoryContent", myStoryContent);
+            return "board/myStory/myStoryDetail";
+        }
     }
 }

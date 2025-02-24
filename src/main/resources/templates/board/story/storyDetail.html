@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>공유 스토리 상세</title>
     <!-- jQuery -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <!-- Bootstrap CSS -->
@@ -12,8 +12,7 @@
         th:href="@{/css/bootstrap.min.css}">
     <!-- Bootstrap JS -->
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-
-    <script defer th:src="@{/js/reply.js}"></script>
+    <script defer th:src="@{/js/sharedStory.js}"></script>
     <style>
         /* 본문 스타일 */
         .story-box {
@@ -37,37 +36,54 @@
             overflow-y: auto;
         }
 
-        /* 댓글 항목에 Flexbox 레이아웃 적용하여 삭제 버튼은 오른쪽에 고정 */
+        /* 댓글 항목 스타일 */
         .list-group-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        /* 댓글 텍스트 영역은 왼쪽 정렬 */
         .comment-text {
             flex: 1;
             text-align: left;
             margin-right: 10px;
+        }
+
+        /* 공유 스토리 내용을 감싸는 박스 스타일 (스크롤 적용) */
+        .shared-story-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            margin-bottom: 20px;
+            max-height: 400px;
+            /* 최대 높이 지정 */
+            overflow-y: auto;
+            /* 내용이 많을 경우 세로 스크롤 생성 */
         }
     </style>
 </head>
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-
     <!-- 공유 스토리 ID, 로그인 사용자 ID -->
     <input type="hidden" id="sharedBookId" th:value="${sharedStoryInfo.sharedBookId}">
     <input type="hidden" id="currentUserId" th:value="${#authentication.principal.userId}">
-
     <div class="container mt-5 pt-5">
-        <button style="float: right;" id="toStoryList">목록으로</button>
+        <div class="btn-wrapper">
+            <button type="button" class="btn btn-danger btn-sm me-2" style="float: right;"
+                th:if="${#authentication.principal.userId == sharedStoryInfo.userId}"
+                th:attr="onclick=|deleteStory(${sharedStoryInfo.bookId})|">
+                삭제
+            </button>
+        </div>
         <h1 th:text="${sharedStoryInfo.title}">책제목</h1>
 
-        <!-- 공유 스토리 내용 -->
-        <div th:each="sharedStory : ${sharedStoryContent}">
-            <p th:text="${sharedStory.content}"></p>
-            <hr>
+        <!-- 공유 스토리 내용을 하나의 박스에 표시 (내용이 길면 스크롤 생김) -->
+        <div class="shared-story-box">
+            <div th:each="sharedStory : ${sharedStoryContent}">
+                <p th:text="${sharedStory.content}"></p>
+            </div>
         </div>
 
         <!-- 댓글 영역 -->
@@ -75,7 +91,6 @@
             <h5>댓글</h5>
             <input type="text" id="comment-input" class="form-control" placeholder="댓글 추가...">
             <button class="btn btn-dark mt-2" id="add-comment">댓글 등록</button>
-
             <div class="comment-container mt-3">
                 <!-- 댓글 목록 -->
                 <ul class="list-group comment-list" id="comment-list">

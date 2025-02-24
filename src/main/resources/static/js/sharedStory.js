@@ -137,3 +137,20 @@ $(document).ready(function () {
         });
     });
 });
+
+// 삭제 버튼 클릭 시 호출되는 함수
+function deleteStory(bookId) {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    $.ajax({
+        url: '/board/myStory/delete',
+        type: 'DELETE',
+        data: { bookId: bookId },
+        success: function (response) {
+            alert('삭제되었습니다.');
+            window.location.href = '/board/story/list';
+        },
+        error: function (xhr) {
+            alert('삭제 실패: ' + xhr.responseText);
+        }
+    });
+}

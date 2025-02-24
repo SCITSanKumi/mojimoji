@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sangkeumi.mojimoji.dto.board.MyStoriesListResponse;
+import com.sangkeumi.mojimoji.dto.board.MyStoryContentResponse;
+import com.sangkeumi.mojimoji.dto.board.MyStoryInfoResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
 import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
@@ -300,5 +302,50 @@ public class BoardService {
                 // Cascade 옵션이 설정되어 있으므로, 책 삭제 시 연관된 SharedBook 도 삭제
                 bookRepository.delete(book);
         }
+    
+    /**
+     * 내 스토리 정보를 조회하는 메서드
+     * 
+     * @param bookId
+     * @param userId
+     * @return
+     */
+    @Transactional
+    public MyStoryInfoResponse getMyStoryInfo(Long bookId, Long userId) {
+            // 책 조회 및 소유자 검증
+            Book book = bookRepository.findById(bookId)
+                            .orElseThrow(() -> new RuntimeException("해당 책을 찾을 수 없습니다."));
+            if (!book.getUser().getUserId().equals(userId)) {
+                    throw new RuntimeException("자신의 책만 조회할 수 있습니다.");
+            }
 
+            // 공유 여부: sharedBook이 null이 아니면 공유된 상태
+            Long sharedBookId = (book.getSharedBook() != null) ? book.getSharedBook().getSharedBookId() : null;
+
+            return MyStoryInfoResponse.builder()
+                            .sharedBookId(sharedBookId)
+                            .bookId(book.getBookId())
+                            .userId(book.getUser().getUserId())
+                            .title(book.getTitle())
+                            .thumbnailUrl(book.getThumbnailUrl())
+                            .nickname(book.getUser().getNickname())
+                            .profileUrl(book.getUser().getProfileUrl())
+                            .hitCount(book.getSharedBook() != null ? book.getSharedBook().getHitCount() : 0)
+                            .gaechu(book.getSharedBook() != null ? book.getSharedBook().getGaechu() : 0)
+                            .build();
+    }
+
+    /**
+     * 내 스토리 내용을 조회하는 메서드
+     * 
+     * @param bookId
+     * @return
+     */
+    @Transactional
+    public List<MyStoryContentResponse> getMyStoryContent(Long bookId) {
+            List<BookLine> bookLines = bookLineRepository.findByBook_BookIdOrderBySequenceAsc(bookId);
+            return bookLines.stream()
+                            .map(bookLine -> new MyStoryContentResponse(bookLine.getContent()))
+                            .collect(Collectors.toList());
+    }
 }
