@@ -94,7 +94,7 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
     CategoryCollectionSummary findCategoryCollectionSummary(@Param("userId") Long userId);
 
     @Query(value = """
-            SELECT
+            SELECT DISTINCT
                 k.category   AS category,
                 k.jlpt_rank  AS jlptRank,
                 k.kanji_id   AS kanjiId,
