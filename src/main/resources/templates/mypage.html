@@ -15,44 +15,42 @@
     <!-- jQuery (예시) -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
-    <!-- 스타일 (인라인 제거 후 CSS로 통합) -->
+    <!-- 스타일 -->
     <style>
-        /* 상단 헤더(수집현황 + 사용자 정보) 영역 */
+        /* ============ 헤더 영역 ============ */
         .header-row {
             display: flex;
-            /* 가로로 배치 */
+            /* 가로 배치 */
             justify-content: space-between;
             align-items: center;
             /* 세로 가운데 정렬 */
-            margin: 0 50px 0 50px;
+            margin: 0 50px;
             /* 좌우 여백 */
         }
 
         .header-row h5 {
             margin: 0;
-            /* h5 기본 마진 제거로 간격 줄임 */
+            /* 기본 마진 제거 */
         }
 
         .user-info {
             text-align: right;
-            /* 사용자 정보 오른쪽 정렬 (선택) */
         }
 
-        /* 게이지 차트 전체 래퍼 */
+        /* ============ 게이지 차트 (JLPT 통계) ============ */
         .Collection {
-            font-family: sans-serif;
             display: flex;
             flex-wrap: wrap;
-            box-sizing: border-box;
             align-items: flex-end;
             justify-content: center;
+            box-sizing: border-box;
+            font-family: sans-serif;
         }
 
-        /* 개별 차트 컨테이너 */
         .chart-container {
             width: 180px;
             margin: -40px 19px 0 8px;
-            /* 차트 사이 간격을 약간 줄임 */
+            /* 차트 간 간격/위치 조정 */
             position: relative;
             padding: 10px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -61,32 +59,133 @@
         /* "전체" 차트만 크게 보이도록 */
         .chart-container.large-chart {
             width: 250px;
-            /* 가로 크기 */
             height: 250px;
-            /* 세로 크기 (도넛 차트는 세로도 중요) */
         }
 
-        /* Bar 차트 상단 제목/일일평균 표시 래퍼 */
+        /* ============ Bar 차트 영역 ============ */
         .bar-chart-row {
             display: flex;
             width: 900px;
             justify-content: space-between;
-            margin: 0 10px 0 10px;
+            margin: 0 10px;
+            /* 상단 제목/일일평균 컨테이너 여백 */
         }
 
-        /* Bar 차트 감싸는 박스 */
         .bar-chart-wrapper {
             width: 900px;
-            margin: 0 10px 0 10px;
-            /* 가운데 정렬 */
+            margin: 0 10px;
+            /* Bar 차트 자체 컨테이너 여백 */
+        }
+
+        /* ============ 카테고리 & 한자 목록 ============ */
+        .bar-and-category-wrapper {
+            display: flex;
+            /* Bar 차트와 카테고리 목록을 가로 배치 */
+        }
+
+        .category-scroll-container {
+            width: 580px;
+            margin: -34px 10px 0 5px;
+            overflow: scroll;
+            height: 500px;
+        }
+
+        .category-header-row {
+            margin: 2px;
+            display: flex;
+        }
+
+        .category-sort-icon {
+            height: 30px;
+            margin: -3px 10px 0 45px;
+        }
+
+        .category-achievement-text {
+            margin: 0 0 0 185px;
+        }
+
+        .category-block {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* ============ 한자 목록 수평 스크롤(페이지) ============ */
+        .horizontal-container {
+            display: flex;
+            align-items: center;
+            /* 세로 가운데 정렬 */
+            gap: 10px;
+            /* 버튼과 리스트 사이 간격 */
+        }
+
+        .horizontal-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: nowrap;
+            /* 한 줄로만 */
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            /* 넘치는 부분 숨김 */
+            width: 600px;
+            /* 한 번에 보일 영역의 너비 */
+        }
+
+        .horizontal-list li {
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .kanji-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .prev-btn,
+        .next-btn {
+            width: 60px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        /* ============ 수집 여부 표시 ============ */
+        .kanji-collected {
+            border-radius: 10px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .kanji-not-collected {
+            border-radius: 10px;
+            color: #999;
+            background-color: lightgray;
         }
     </style>
 
     <script th:inline="javascript">
-        // ----------------------------
+        // ---------------------------------------------
         // 1) JLPT 통계 (게이지 차트)
-        // ----------------------------
-        const statsData = /*[[${stats}]]*/[];  // 예: [{jlptRank: '전체', collected:123}, {jlptRank: 'N1', ...}, ...]
+        // ---------------------------------------------
+        const statsData = /*[[${stats}]]*/[];  // [{jlptRank:'전체', collected:123},...]
         const rankTotals = {
             "전체": 2136,
             "N1": 1139,
@@ -96,7 +195,6 @@
             "N5": 29
         };
 
-        // 중앙 텍스트 표시 플러그인
         const centerTextPlugin = {
             id: 'centerTextPlugin',
             afterDraw(chart) {
@@ -127,7 +225,6 @@
             }
         };
 
-        // 게이지 차트 생성 함수
         function createGaugeChart(canvasId, partial, total, label) {
             const percentage = Math.floor((partial / total) * 100);
             const remainValue = 100 - percentage;
@@ -168,15 +265,15 @@
             });
         }
 
-        // ----------------------------
+        // ---------------------------------------------
         // 2) 날짜별 Bar 차트
-        // ----------------------------
-        const dailyStatsData = /*[[${dailyStats}]]*/[];
+        // ---------------------------------------------
+        const dailyStatsData = /*[[${dailyStats}]]*/[]; // [{acquisitionDate:'2025-03-01', dailyCount:2}, ...]
         const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
         const chartValues = dailyStatsData.map(ds => ds.dailyCount);
 
         document.addEventListener('DOMContentLoaded', () => {
-            // 1) JLPT 게이지 차트들 생성
+            // 1) JLPT 게이지 차트들
             statsData.forEach(stat => {
                 const rank = stat.jlptRank;
                 const collected = stat.collected;
@@ -212,6 +309,53 @@
                 }
             });
         });
+
+        // ---------------------------------------------
+        // 3) 카테고리별 한자 목록 (수평 페이지네이션)
+        // ---------------------------------------------
+        document.addEventListener('DOMContentLoaded', function () {
+            const ITEMS_PER_PAGE = 5;
+
+            // 모든 카테고리 블록을 순회
+            document.querySelectorAll('.horizontal-container').forEach(container => {
+                const ul = container.querySelector('ul.horizontal-list');
+                const liArray = Array.from(ul.querySelectorAll('li'));
+
+                const prevBtn = container.querySelector('.prev-btn');
+                const nextBtn = container.querySelector('.next-btn');
+
+                let currentPage = 0;
+                const totalPages = Math.ceil(liArray.length / ITEMS_PER_PAGE);
+
+                function renderPage(page) {
+                    if (page < 0) page = 0;
+                    if (page >= totalPages) page = totalPages - 1;
+                    currentPage = page;
+
+                    liArray.forEach(li => li.style.display = 'none');
+
+                    const start = currentPage * ITEMS_PER_PAGE;
+                    const end = start + ITEMS_PER_PAGE;
+                    liArray.slice(start, end).forEach(li => li.style.display = 'block');
+                }
+
+                // 초기 렌더
+                renderPage(0);
+
+                // Prev
+                prevBtn.addEventListener('click', () => {
+                    if (currentPage > 0) {
+                        renderPage(currentPage - 1);
+                    }
+                });
+                // Next
+                nextBtn.addEventListener('click', () => {
+                    if (currentPage < totalPages - 1) {
+                        renderPage(currentPage + 1);
+                    }
+                });
+            });
+        });
     </script>
 </head>
 
@@ -220,21 +364,19 @@
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <br><br><br><br>
 
-    <!-- 상단: 수집현황 + 사용자 정보를 한 줄에 배치 -->
+    <!-- 상단: 수집현황 + 사용자 정보 -->
     <div class="header-row">
         <h5>수집현황</h5>
         <div class="user-info">
-            <span sec:authentication="principal.nickname"></span>
-            <p>최종접속일 : 2025/02/06</p>
+            <h5 sec:authentication="principal.nickname"></h5>
             <a th:href="@{/board/myStory/list}" style="text-decoration: none;">
                 작성한 스토리 : 329개
             </a>
         </div>
     </div>
 
-    <!-- 게이지 차트 목록 -->
+    <!-- 게이지 차트 (JLPT) -->
     <div class="Collection">
-        <!-- stats: jlptRank, collected -->
         <th:block th:each="stat : ${stats}">
             <div class="chart-container" th:classappend="${stat.jlptRank} == '전체' ? ' large-chart' : ''">
                 <canvas th:id="'gaugeChart' + ${stat.jlptRank}"></canvas>
@@ -252,9 +394,62 @@
         <h5 th:text="'일일평균: ' + ${dailyAvg} + '개'">일일평균: 0개</h5>
     </div>
 
-    <!-- Bar 차트 영역 -->
-    <div class="bar-chart-wrapper">
-        <canvas id="lineChart"></canvas>
+    <!-- Bar 차트 + 카테고리 목록을 가로 배치 -->
+    <div class="bar-and-category-wrapper">
+        <!-- Bar 차트 -->
+        <div class="bar-chart-wrapper">
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <!-- 카테고리 목록 스크롤 영역 -->
+        <div class="category-scroll-container">
+            <!-- 카테고리 헤더 (정렬 아이콘 등) -->
+            <div class="category-header-row">
+                <h5>카테고리</h5>
+                <a href="#">
+                    <img class="category-sort-icon"
+                        src="https://cdn0.iconfinder.com/data/icons/phosphor-regular-vol-4/256/sort-ascending-1024.png"
+                        alt="정렬아이콘">
+                </a>
+                <h5>달성률순</h5>
+                <h5 class="category-achievement-text"
+                    th:text="'달성 ' + ${summary.fullyCollectedCategoryCount} + '/' + ${summary.totalCategoryCount}">
+                    달성 3/104
+                </h5>
+            </div>
+
+            <!-- Map<String, List<CategoryKanjiRow>> -->
+            <!-- key: category, value: List<...> -->
+            <th:block th:each="entry : ${catMap}" th:if="${entry.key} != '없음'">
+                <div class="category-block">
+                    <div class="category-info">
+                        <h5 th:text="${entry.key}">카테고리이름</h5>
+                        <h5
+                            th:text="${#lists.size(entry.value.?[isCollected == 1])} + '/' + ${#lists.size(entry.value)}">
+                            0/0
+                        </h5>
+                    </div>
+
+                    <div class="horizontal-container">
+                        <ul class="horizontal-list" th:attr="data-cat=${entry.key}">
+                            <div class="pagination-controls">
+                                <button type="button" class="prev-btn">Prev</button>
+                                <li th:each="row : ${entry.value}"
+                                    th:classappend="${row.isCollected} == 1 ? 'kanji-collected' : 'kanji-not-collected'">
+                                    <div class="kanji-box">
+                                        <h5 th:text="${row.kanji}">漢</h5>
+                                        <h5 th:text="${row.jlptRank}">N1</h5>
+                                    </div>
+                                    <span th:if="${row.isCollected} == 1"></span>
+                                    <span th:if="${row.isCollected} == 0"></span>
+                                </li>
+                        </ul>
+                        <button type="button" class="next-btn">Next</button>
+                    </div>
+                </div>
+        </div>
+        </th:block>
+    </div>
     </div>
 
     <!-- 푸터 -->
