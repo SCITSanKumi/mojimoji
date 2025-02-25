@@ -10,7 +10,6 @@ import com.sangkeumi.mojimoji.entity.SharedBookReply;
 public interface SharedBookReplyRepository extends JpaRepository<SharedBookReply, Long> {
     /**
      * SharedBook의 ID에 해당하는 댓글(SharedBookReply) 목록을 페이지네이션(Pageable)을 적용하여 조회
-     * 
      * @param sharedBookId
      * @param pageable
      * @return
