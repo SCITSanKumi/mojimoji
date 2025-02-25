@@ -67,4 +67,9 @@ public class UserService {
         // 여기서 user.getNickname() 등 Lazy 필드 접근 가능 (트랜잭션 내)
         return new CustomUser(user.getUserId(), user.getNickname(), user.getEmail());
     }
+
+    public User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }
