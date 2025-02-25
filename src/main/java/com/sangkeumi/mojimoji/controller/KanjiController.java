@@ -42,11 +42,16 @@ public class KanjiController {
             User user = userService.getUser(userId);
             User notUser = userService.getUser((long) 7);
 
-            List<KanjiCollection> kanjiCollection = kanjiCollectionService.getKanjiCollection(category, jlptRank,
-                    kanjiSearch, user);
+            List<KanjiCollection> kanjiCollection = kanjiCollectionService.getKanjiCollection(userId, category,
+                    jlptRank,
+                    kanjiSearch);
+
+            List<KanjiCollection> myCollection = kanjiCollectionService.getMyCollection(user, category, jlptRank,
+                    kanjiSearch);
 
             List<KanjiCollection> allKanjiCollection = kanjiCollectionService.getAllKanjiCollection(category, jlptRank,
                     kanjiSearch, notUser);
+
             List<Kanji> kanjiList = kanjiService.getKanjiList(category, jlptRank, kanjiSearch);
 
             model.addAttribute("category", category);
@@ -54,6 +59,8 @@ public class KanjiController {
             model.addAttribute("kanjiSearch", kanjiSearch);
             model.addAttribute("kanjiCollection", kanjiCollection);
             model.addAttribute("kanjiList", kanjiList);
+            model.addAttribute("user", user);
+            model.addAttribute("myCollection", myCollection);
             model.addAttribute("allKanjiCollection", allKanjiCollection);
         }
         return "kanji/kanjiCollection";

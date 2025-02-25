@@ -25,6 +25,10 @@
 
         .toKanjiDetail {
             display: inline-block;
+
+        }
+
+        .kanjiCard {
             width: 245px;
             height: 367px;
             border: 1px solid gray;
@@ -33,13 +37,15 @@
             margin-right: 3px;
         }
 
-        .kanjiCard {
-            /* width: 245px;
+        .notKanjiCard {
+            width: 245px;
             height: 367px;
             border: 1px solid gray;
             text-align: center;
             margin-bottom: 10px;
-            margin-right: 3px; */
+            margin-right: 3px;
+            background-color: lightgray;
+            opacity: 0.5;
         }
 
         .kanji {
@@ -87,8 +93,14 @@
     </style>
     <script>
         $(function () {
-            $('.toKanjiDetail').on('click', function () {
-                location.href = '/kanji/detail';
+            let kanjiId = $('.kanjiCard').data('seq');
+
+            $('.kanjiCard').on('click', function () {
+                location.href = `/kanji/detail?kanjiId=${kanjiId}`;
+            });
+
+            $('.notKanjiCard').on('click', function () {
+                alert('본인이 등록한 한자만 볼 수 있습니다.');
             });
 
 
@@ -106,7 +118,7 @@
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="container px-4 py-5" id="custom-cards"><br><br><br>
         <h2>한자 수집북</h2><br>
-        <span id="kanjiCurrent" th:text="${kanjiCollection.size()} + '/' + ${kanjiList.size()}"></span>
+        <span id="kanjiCurrent" th:text="${myCollection.size()} + '/' + ${kanjiList.size()}"></span>
         <select id="kanjiSort">
             <option value="한자번호순">한자번호순</option>
             <option value="최근등록순">최근등록순</option>
@@ -151,58 +163,50 @@
                 <option value="N4" th:selected="${jlptRank} == 'N4'">N4</option>
                 <option value="N5" th:selected="${jlptRank} == 'N5'">N5</option>
             </select>
-            <input type="text" name="kanjiSearch" th:value="${kanjiSearch}">
+            <input type="text" name="kanjiSearch" th:value="${kanjiSearch}" placeholder="한자를 입력해주세요">
             <input type="submit" value="검색">
         </form>
         <br><br><br>
 
 
-        <div th:each="kanji : ${allKanjiCollection}" class="toKanjiDetail">
-            <div th:each="myKanji : ${kanjiCollection}">
-                <div th:if="${kanji.getKanji().getKanji()} == ${myKanji.getKanji().getKanji()}" class="kanjiCard">
-                    <span class="kanji">[[${kanji.getKanji().getKanji()}]]</span>
-                    <hr>
-                    <div class="kanjiExplain">
-                        <div class="category">카테고리 : [[${kanji.getKanji().getCategory()}]]</div>
-                        <div class="jlptRank">[[${kanji.getKanji().getJlptRank()}]]</div>
-                        <div class="yomi"
-                            th:text="${kanji.getKanji().getKorKunyomi()} + ' ' + ${kanji.getKanji().getKorOnyomi()}">
-                        </div>
-                        <div class="kanjiId" th:text="'No.' + ${kanji.getKanji().getKanjiId()}">]</div>
+
+        <div th:each="kanji : ${kanjiCollection}" class="toKanjiDetail">
+            <div th:if="${kanji.getUser()} == ${user}" class="kanjiCard" th:data-seq="${kanji.getKanji().getKanjiId()}">
+                <span class="kanji">[[${kanji.getKanji().getKanji()}]]</span>
+                <hr>
+                <div class="kanjiExplain">
+                    <div class="category">카테고리 : [[${kanji.getKanji().getCategory()}]]</div>
+                    <div class="jlptRank">[[${kanji.getKanji().getJlptRank()}]]</div>
+                    <div class="yomi"
+                        th:text="${kanji.getKanji().getKorKunyomi()} + ' ' + ${kanji.getKanji().getKorOnyomi()}">
                     </div>
-                    <div class="createdAt" th:text="${#temporals.format(kanji.getCreatedAt(),'yyyy-MM-dd')}"></div>
+                    <div class="kanjiId" th:text="'No.' + ${kanji.getKanji().getKanjiId()}">]</div>
                 </div>
-                <!-- <div th:switch="${kanji.getKanji().getKanji()}">
-                    <div th:case="${myKanji.getKanji().getKanji()}" class="kanjiCard">
-                        <span class="kanji">[[${kanji.getKanji().getKanji()}]]</span>
-                        <hr>
-                        <div class="kanjiExplain">
-                            <div class="category">카테고리 : [[${kanji.getKanji().getCategory()}]]</div>
-                            <div class="jlptRank">[[${kanji.getKanji().getJlptRank()}]]</div>
-                            <div class="yomi"
-                                th:text="${kanji.getKanji().getKorKunyomi()} + ' ' + ${kanji.getKanji().getKorOnyomi()}">
-                            </div>
-                            <div class="kanjiId" th:text="'No.' + ${kanji.getKanji().getKanjiId()}">]</div>
-                        </div>
-                        <div class="createdAt" th:text="${#temporals.format(kanji.getCreatedAt(),'yyyy-MM-dd')}"></div>
+                <div class="createdAt" th:text="${#temporals.format(kanji.getCreatedAt(),'yyyy-MM-dd')}"></div>
+            </div>
+            <div th:unless="${kanji.getUser()} == ${user}" class="notKanjiCard"
+                th:data-seq="${kanji.getKanji().getKanjiId()}">
+                <span class="kanji">[[${kanji.getKanji().getKanji()}]]</span>
+                <hr>
+                <div class="kanjiExplain">
+                    <div class="category">카테고리 : [[${kanji.getKanji().getCategory()}]]</div>
+                    <div class="jlptRank">[[${kanji.getKanji().getJlptRank()}]]</div>
+                    <div class="yomi"
+                        th:text="${kanji.getKanji().getKorKunyomi()} + ' ' + ${kanji.getKanji().getKorOnyomi()}">
                     </div>
-                    <div th:case="*" class="kanjiCard">
-                        <span class="kanji">[[${kanji.getKanji().getKanji()}]]</span>
-                        <hr>
-                        <div class="kanjiExplain">
-                            <div class="category">카테고리 : [[${kanji.getKanji().getCategory()}]]</div>
-                            <div class="jlptRank">[[${kanji.getKanji().getJlptRank()}]]</div>
-                            <div class="yomi"
-                                th:text="${kanji.getKanji().getKorKunyomi()} + ' ' + ${kanji.getKanji().getKorOnyomi()}">
-                            </div>
-                            <div class="kanjiId" th:text="'No.' + ${kanji.getKanji().getKanjiId()}">]</div>
-                        </div>
-                        <div class="createdAt" th:text="${#temporals.format(kanji.getCreatedAt(),'yyyy-MM-dd')}"></div>
-                    </div> -->
+                    <div class="kanjiId" th:text="'No.' + ${kanji.getKanji().getKanjiId()}">]</div>
+                </div>
+                <div class="createdAt">미등록</div>
 
             </div>
-
         </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+
+    </div>
     </div>
     </div>
 
