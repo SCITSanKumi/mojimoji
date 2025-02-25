@@ -104,49 +104,63 @@
             margin: 0 0 0 185px;
         }
 
+        /* ============ 카테고리 블록 (가로 한 줄 배치) ============ */
         .category-block {
             border: 1px solid #ccc;
             margin-bottom: 20px;
             padding: 10px;
+            display: flex;
+            /* 가로로 배치 */
+            align-items: center;
+            /* 세로 중앙 정렬 */
+            gap: 20px;
+            /* 항목 간 간격 */
         }
 
+        /* 카테고리 정보 부분 */
         .category-info {
             display: flex;
+            width: 70px;
             align-items: center;
+            /* 세로 중앙 정렬 */
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 0;
+            /* 아래쪽 여백 제거 */
+            flex-direction: column;
         }
 
-        /* ============ 한자 목록 수평 스크롤(페이지) ============ */
+        /* 한자 목록을 수평 스크롤로 가로 정렬 */
         .horizontal-container {
             display: flex;
-            align-items: center;
-            /* 세로 가운데 정렬 */
             gap: 10px;
-            /* 버튼과 리스트 사이 간격 */
+            /* 버튼과 리스트 간의 간격 */
+            align-items: center;
+            /* 수직 중앙 정렬 */
+            flex: 3;
+            /* 리스트 부분이 더 많은 공간을 차지하도록 */
         }
 
+        /* 한자 목록 (가로 정렬) */
         .horizontal-list {
             list-style: none;
             display: flex;
-            flex-wrap: nowrap;
-            /* 한 줄로만 */
+            gap: 10px;
+            /* 한자 간의 간격 */
             margin: 0;
             padding: 0;
             overflow: hidden;
-            /* 넘치는 부분 숨김 */
-            width: 600px;
-            /* 한 번에 보일 영역의 너비 */
+            width: 75%;
         }
 
+        /* 한자 항목 */
         .horizontal-list li {
-            margin-right: 10px;
             border: 1px solid #ccc;
             padding: 5px;
             text-align: center;
-            min-width: 60px;
+            min-width: 50px;
         }
 
+        /* 한자 박스 */
         .kanji-box {
             display: flex;
             flex-direction: column;
@@ -154,20 +168,24 @@
             width: 40px;
         }
 
+        /* 페이지 네비게이션 버튼 */
         .pagination-controls {
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
+        /* 버튼 스타일 */
         .prev-btn,
         .next-btn {
-            width: 60px;
+            width: 30px;
             height: 30px;
             cursor: pointer;
+            background-color: white;
+            border: white;
         }
 
-        /* ============ 수집 여부 표시 ============ */
+        /* 수집 여부 표시 */
         .kanji-collected {
             border-radius: 10px;
             color: black;
@@ -178,6 +196,35 @@
             border-radius: 10px;
             color: #999;
             background-color: lightgray;
+        }
+
+        /* Progress Bar 컨테이너 */
+        .progress-bar-container {
+            width: 100px;
+            margin: 10px 0;
+            text-align: center;
+            /* 가운데 정렬 */
+        }
+
+        progress {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            /* 사용자 정의 속성 --progress-color를 초기값으로 설정 */
+            --progress-color: #4caf50;
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-value {
+            background-color: var(--progress-color);
+            border-radius: 10px;
         }
     </style>
 
@@ -356,6 +403,70 @@
                 });
             });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 모든 프로그레스 바와 텍스트 요소를 한 번에 선택
+            const progressData = []; // { progressBar, progressText, targetValue, startTime }
+            document.querySelectorAll('.progress-bar-container').forEach(container => {
+                const progressBar = container.querySelector('progress');
+                const progressText = container.querySelector('.progress-text');
+                // 서버에서 전달된 실제 value를 targetValue로 저장 (예: 습득한 항목 수)
+                const serverValue = parseFloat(progressBar.value);
+                const targetValue = serverValue;
+                // 초기 애니메이션을 위해 value를 0으로 초기화
+                progressBar.value = 0;
+                progressText.textContent = '0%';
+                progressData.push({
+                    progressBar,
+                    progressText,
+                    targetValue,
+                    startTime: performance.now()
+                });
+            });
+
+            const duration = 2500; // 애니메이션 지속 시간 (예: 2.5초)
+
+            function updateAllProgressBars() {
+                const currentTime = performance.now();
+                let allCompleted = true;
+
+                progressData.forEach(item => {
+                    const elapsedTime = currentTime - item.startTime;
+                    const progress = Math.min(elapsedTime / duration, 1);
+                    // 0부터 targetValue까지 애니메이션 (targetValue는 서버에서 받은 값)
+                    const currentValue = progress * item.targetValue;
+                    item.progressBar.value = currentValue;
+
+                    // 퍼센트는 전체 max (즉, 총 항목 수)를 기준으로 계산
+                    const percentage = item.progressBar.max > 0 ? Math.floor((currentValue / item.progressBar.max) * 100) : 0;
+                    item.progressText.textContent = `${percentage}%`;
+
+                    // 5개 색상 구간 (0~20%, 21~40%, 41~60%, 61~80%, 81~100%)
+                    if (percentage <= 20) {
+                        item.progressBar.style.setProperty('--progress-color', '#F0C9D8');
+                    } else if (percentage <= 40) {
+                        item.progressBar.style.setProperty('--progress-color', '#EE697D');
+                    } else if (percentage <= 60) {
+                        item.progressBar.style.setProperty('--progress-color', '#EFA69A');
+                    } else if (percentage <= 80) {
+                        item.progressBar.style.setProperty('--progress-color', '#727B98');
+                    } else {
+                        item.progressBar.style.setProperty('--progress-color', '#42405C');
+                    }
+
+                    if (progress < 1) {
+                        allCompleted = false;
+                    }
+                });
+
+                if (!allCompleted) {
+                    requestAnimationFrame(updateAllProgressBars);
+                }
+            }
+
+            updateAllProgressBars();
+        });
+
     </script>
 </head>
 
@@ -433,7 +544,7 @@
                     <div class="horizontal-container">
                         <ul class="horizontal-list" th:attr="data-cat=${entry.key}">
                             <div class="pagination-controls">
-                                <button type="button" class="prev-btn">Prev</button>
+                                <button type="button" class="prev-btn">&lt;</button>
                                 <li th:each="row : ${entry.value}"
                                     th:classappend="${row.isCollected} == 1 ? 'kanji-collected' : 'kanji-not-collected'">
                                     <div class="kanji-box">
@@ -443,13 +554,24 @@
                                     <span th:if="${row.isCollected} == 1"></span>
                                     <span th:if="${row.isCollected} == 0"></span>
                                 </li>
+                                <button type="button" class="next-btn">&gt;</button>
+                            </div>
                         </ul>
-                        <button type="button" class="next-btn">Next</button>
+                        <div class="progress-bar-container">
+                            <progress th:id="'progressBar' + ${entry.key}"
+                                th:value="${#lists.size(entry.value.?[isCollected == 1])}"
+                                th:max="${#lists.size(entry.value)}">
+                            </progress>
+                            <div th:id="'progressText' + ${entry.key}" class="progress-text"
+                                th:text="${#lists.size(entry.value) > 0 ? ((#lists.size(entry.value.?[isCollected == 1]) * 100) / #lists.size(entry.value)) + '%' : '0%'}">
+                                0%
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </th:block>
+
         </div>
-        </th:block>
-    </div>
     </div>
 
     <!-- 푸터 -->
