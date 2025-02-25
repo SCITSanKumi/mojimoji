@@ -148,7 +148,7 @@ public class GameService {
     public Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
         return webClient.post()
             .bodyValue(Map.of(
-                "model", "gpt-4-turbo",
+                "model", "gpt-4o-mini",
                 "temperature", 0.6,
                 "messages", messages,
                 "max_tokens", 500,
