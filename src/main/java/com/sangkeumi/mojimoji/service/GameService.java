@@ -117,35 +117,35 @@ public class GameService {
             })
             .filter(chunk -> !isJsonStarted.get()) // JSON 데이터는 Flux에서 제외
             .doOnComplete(() -> {
-                Map<String, Object> extractedState = new HashMap<>();
+                int updatedHealth = currentHealth;
 
                 try {
-                    extractedState = new ObjectMapper().readValue(jsonResponse.toString(), Map.class);
+                    Map<String, Object> extractedState = new ObjectMapper().readValue(jsonResponse.toString(), Map.class);
 
                     // 상태 업데이트
-                    int updatedHealth = defaultHealth;
-
                     if (extractedState.containsKey("health") && extractedState.get("health") instanceof Integer) {
                         updatedHealth = (int)extractedState.get("health");
                     }
 
-                    if (extractedState.containsKey("isEnded") && extractedState.get("isEnded") instanceof Boolean) {
-                        book.setEnded((boolean)extractedState.get("isEnded"));
+                    if (extractedState.containsKey("isEnded")
+                            && extractedState.get("isEnded") instanceof Boolean
+                            && (boolean)extractedState.get("isEnded")) {
+                        book.setEnded(true);
                         bookRepository.save(book);
                     }
-
-                    // 응답 저장 (JSON 제외)
-                    bookLineRepository.save(BookLine.builder()
-                        .book(book)
-                        .role("assistant")
-                        .content(contentResponse.toString().trim())
-                        .health(updatedHealth)
-                        .sequence(nextSequence + 1)
-                        .build()
-                    );
                 } catch (JsonProcessingException e) {
                     log.error("JSON 처리 중 오류 발생: ", e);
                 }
+
+                // 응답 저장 (JSON 제외)
+                bookLineRepository.save(BookLine.builder()
+                    .book(book)
+                    .role("assistant")
+                    .content(contentResponse.toString().trim())
+                    .health(updatedHealth)
+                    .sequence(nextSequence + 1)
+                    .build()
+                );
             });
     }
 
@@ -153,7 +153,7 @@ public class GameService {
     public Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
         return webClient.post()
             .bodyValue(Map.of(
-                "model", "gpt-4-turbo",
+                "model", "gpt-4o-mini",
                 "temperature", 0.6,
                 "messages", messages,
                 "max_tokens", 500,

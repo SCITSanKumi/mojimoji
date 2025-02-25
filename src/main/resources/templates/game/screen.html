@@ -5,21 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mojimoji</title>
-    <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
-        th:href="@{/css/bootstrap.min.css}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <!-- Bootstrap Bundle JS -->
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <!-- 한자 리스트 -->
+    <script src="../../static/js/kanjiList.js" th:src="@{/js/kanjiList.js}"></script>
     <script>
         $(() => {
-            let history = [];
-            let bookId = null;
-
-            function updateStory(text) {
-                $("#storyBox .dialogue").append(text);
-            }
-
             $("#startGameBtn").click(() => {
                 $.ajax({
                     type: "POST",
@@ -29,9 +24,9 @@
                     data: { bookId: -1 },
                     success: (response) => {
                         bookId = response.bookId;
-                        $("#startGameBtn").hide();
-                        $(".dialogue-container, .input-group, #historyBtn").show();
-                        updateStory(response.message);
+                        $("#startGameBtn").addClass("d-none");
+                        $(".dialogue-container, .input-group").removeClass("d-none");
+                        $(".dialogue").append(text);
                     },
                     error: () => {
                         alert("게임 시작 중 오류가 발생했습니다.");
@@ -39,151 +34,94 @@
                 });
             });
 
-            $("#submitBtn").click(function() {
-                let userText = $("#userInput").val();
-                if (userText.trim() !== "" && bookId !== null) {
-                    $("#storyBox .dialogue").text("");
-
-                    fetch("/game/send", { // 스트리밍 요청
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ bookId: bookId, message: userText })
-                    })
-                    .then(res => {
-                        const reader = res.body
-                            .pipeThrough(new TextDecoderStream())
-                            .getReader();
-
-                        reader.read().then(function processText({ done, value }) {
-                            if (done) {
-                                console.log("스트리밍 종료");
-
-                                // 💡 jQuery의 $.ajax()로 게임 상태 확인
-                                $.ajax({
-                                    url: `/game/state/${bookId}`,
-                                    type: "GET",
-                                    dataType: "json",
-                                    success: function(data) {
-                                        console.log("게임 상태 업데이트", data);
-                                        $("#healthDisplay").text(`체력: ${data.health}`);
-                                        if (data.isEnded) {
-                                            alert("게임이 종료되었습니다!");
-                                        }
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.error("게임 상태 조회 실패:", error);
-                                    }
-                                });
-
-                                return;
-                            }
-
-                            let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
-                            console.log({cleanedValue});
-                            $("#storyBox .dialogue").append(cleanedValue);
-                            reader.read().then(processText);
-                        });
-                    });
+            $("#submitBtn").click(sendUserInput);
+            $("#userInput").keyup((event) => {
+                if (event.key === "Enter") {
+                    sendUserInput();
                 }
             });
 
+            function sendUserInput() {
+                let userText = $("#userInput").val().trim();
 
-            $("#historyBtn").click(() => {
-                $("#modalStoryBox").html(history.map(text => `<p>${text}</p>`).join(""));
-            });
+                if (!kanjiList.includes(userText)) {
+                    alert("상용한자(常用漢字)만 입력 가능합니다.");
+                    return;
+                }
+
+                if (bookId !== null) {
+                    $("#userInput").val("");
+
+                    fetch("/game/send", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ bookId: bookId, message: userText })
+                    })
+                    .then(streamResponse);
+                }
+            }
+
+            async function streamResponse(response) {
+                const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        console.log("스트리밍 종료");
+                        checkGameState(bookId);
+                        break;
+                    }
+
+                    let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
+                    console.log("서버 응답:", cleanedValue);
+
+                    $(".dialogue-container").removeClass("d-none"); // 숨김 해제
+                    $(".dialogue").append(cleanedValue);
+                }
+            }
+
+            function checkGameState(bookId) {
+                $.ajax({
+                    url: `/game/state/${bookId}`,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        $("#healthDisplay").text(`체력: ${data.health}`);
+                        if (data.isEnded) {
+                            alert("게임이 종료되었습니다!");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("게임 상태 조회 실패:", error);
+                    }
+                });
+            }
         });
     </script>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .novel-container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .story-box {
-            height: 300px;
-            overflow-y: auto;
-            background: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/979461/ss_b6ec5c1b67cafc41fc8ec35e4cbed4bd531a55e1.1920x1080.jpg?t=1729702976') no-repeat center center;
-            background-size: cover;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .dialogue-container {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
-            width: 100%;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            text-align: left;
-            display: none;
-        }
-
-        .start-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
-    </style>
 </head>
-<body>
+<body class="bg-light text-center p-3">
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-    <div class="novel-container">
-        <h2>カミゲ</h2>
-        <h4 id="healthDisplay">체력: 100</h4>
-        <div class="story-box" id="storyBox">
-            <button class="btn btn-primary start-button" id="startGameBtn">게임 시작</button>
-            <!-- 체력 및 게임 상태 표시 -->
-            <div class="mt-2">
-            </div>
-            <div class="dialogue-container">
-                <p class="dialogue text-white m-0"></p>
-            </div>
-        </div>
-        <div class="input-group" style="display: none;">
-            <input type="text" id="userInput" class="form-control" placeholder="다음 대사를 입력하세요...">
-            <button class="btn btn-primary" id="submitBtn">입력</button>
-        </div>
-        <button class="btn btn-secondary mt-2" id="historyBtn" data-bs-toggle="modal" data-bs-target="#historyModal" style="display: none;">
-            이전 이야기 보기
-        </button>
-    </div>
 
-    <!-- 모달 창 -->
-    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="historyModalLabel">이전 이야기</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="container mt-5">
+        <div class="card shadow-lg mx-auto p-3" style="max-width: 600px;">
+            <h2 class="text-primary">カミゲ</h2>
+            <h4 id="healthDisplay" class="mb-3">체력: 100</h4>
+
+            <div class="story-box border rounded position-relative d-flex align-items-center justify-content-center"
+                style="height: 300px; background: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/979461/ss_b6ec5c1b67cafc41fc8ec35e4cbed4bd531a55e1.1920x1080.jpg?t=1729702976') no-repeat center center; background-size: cover;">
+
+                <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="startGameBtn">
+                    게임 시작
+                </button>
+
+                <div class="dialogue-container bg-dark text-white p-2 rounded w-100 position-absolute bottom-0 start-0 d-none overflow-auto" style="max-height: 300px;">
+                    <p class="dialogue m-0 text-start"></p>
                 </div>
-                <div class="modal-body" id="modalStoryBox">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                </div>
+            </div>
+
+            <div class="input-group mt-3 d-none">
+                <input type="text" id="userInput" class="form-control" placeholder="다음 대사를 입력하세요...">
+                <button class="btn btn-primary input-group-append" id="submitBtn">입력</button>
             </div>
         </div>
     </div>
