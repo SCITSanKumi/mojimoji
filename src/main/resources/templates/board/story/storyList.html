@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>스토리 목록</title>
-    <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-    <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <!-- JQuery -->
-    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <!-- jQuery -->
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <!-- Bootstrap JS -->
+    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script defer th:src="@{/js/storyListPaging.js}"></script>
 </head>
 
 <body>
@@ -17,24 +19,25 @@
     <div class="container px-4 py-5" id="custom-cards">
         <div class="row">
             <div class="col-12 d-flex justify-content-between align-items-center">
-                <button type="button" class="btn btn-dark">내스토리</button>
+                <button type="button" id="myStoryBtn" class="btn btn-dark">내스토리</button>
                 <form action="/board/story/list" method="get" class="d-flex align-items-center gap-2 flex-nowrap">
                     <div class="input-group">
-                        <select name="searchItem" class="form-select" style="max-width: 120px;">
+                        <select name="searchItem" id="searchItem" class="form-select" style="max-width: 120px;">
                             <option value="title" th:selected="${searchItem == 'title'}">제목</option>
                             <option value="user" th:selected="${searchItem == 'user'}">작성자</option>
                         </select>
-                        <input type="text" name="searchWord" placeholder="검색어를 입력하세요" th:value="${searchWord}"
-                            class="form-control" style="min-width: 400px;">
+                        <input type="text" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요"
+                            th:value="${searchWord}" class="form-control" style="min-width: 400px;">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </div>
                 </form>
             </div>
         </div>
-
+    
         <div class="row mt-2">
             <div class="col-12 text-end">
                 <span class="fw-bold me-2">정렬:</span>
+                <input type="hidden" id="sortOption" th:value="${sortOption}">
                 <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
                     class="btn btn-outline-secondary btn-sm me-1">추천순</a>
                 <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='viewCount')}"
@@ -43,7 +46,9 @@
                     class="btn btn-outline-secondary btn-sm">날짜순</a>
             </div>
         </div>
-        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5">
+    
+        <!-- 초기 렌더링된 6개 스토리 카드 -->
+        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5" id="story-container">
             <div class="col" th:each="sharedStory : ${sharedStoryList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                     th:style="'background-image: url(' + ${sharedStory.thumbnailUrl} + ');'">
@@ -55,28 +60,25 @@
                         <h5 th:text="${sharedStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${sharedStory.profileUrl}" alt="Bootstrap" width="32" height="32"
-                                    class="rounded-circle border border-white">
+                                <img th:src="${sharedStory.profileUrl}" alt="Profile" width="32" height="32" class="rounded-circle border border-white">
                             </li>
                             <li class="d-flex align-items-center me-3">
-                                <svg class="bi me-2" width="1em" height="1em">
-                                    <use xlink:href="#geo-fill" />
-                                </svg>
                                 <small>조회수</small>
                             </li>
                             <li class="d-flex align-items-center">
-                                <svg class="bi me-2" width="1em" height="1em">
-                                    <use xlink:href="#calendar3" />
-                                </svg>
-                                <small th:text="${sharedStory.hitCount}">2,000</small>
+                                <small th:text="${sharedStory.hitCount}">조회수</small>
                             </li>
                         </ul>
+                        <h5 th:text="${sharedStory.createdAt}"></h5>
+                        <h5 th:text="${sharedStory.gaechu}"></h5>
                     </div>
                 </div>
             </div>
         </div>
-
+        <!-- 로딩 인디케이터 -->
+        <div id="loading" style="display:none; text-align:center;">Loading...</div>
     </div>
+    <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
 
 </html>

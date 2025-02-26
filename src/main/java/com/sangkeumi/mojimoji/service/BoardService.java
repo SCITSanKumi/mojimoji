@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -48,15 +49,19 @@ public class BoardService {
         private final BookRepository bookRepository;
         private final SharedBookViewRepository sharedBookViewRepository;
         private final SharedBookLikeRepository sharedBookLikeRepository;
-
+  
         /**
-         * 공유된 스토리 목록 검색 및 정렬 메서드
+         * 페이지네이션을 적용한 공유 스토리 목록 검색 및 정렬 메서드
+         * AJAX 요청 등에서 page, size 값을 받아서 무한 스크롤 구현에 사용
          * @param searchWord
          * @param searchItem
          * @param sortOption
+         * @param page
+         * @param size
          * @return
          */
-        public List<SharedStoryListResponse> searchAndSortSharedBooks(String searchWord, String searchItem, String sortOption) {
+        public List<SharedStoryListResponse> searchAndSortSharedBooks(String searchWord, String searchItem,
+                        String sortOption, int page, int size) {
                 Sort sort;
                 if ("date".equalsIgnoreCase(sortOption)) {
                         sort = Sort.by(Sort.Direction.DESC, "createdAt");
@@ -65,31 +70,29 @@ public class BoardService {
                 } else {
                         sort = Sort.by(Sort.Direction.DESC, "gaechu");
                 }
-
-                List<SharedBook> sharedBooks;
+                Pageable pageable = PageRequest.of(page, size, sort);
+                Page<SharedBook> sharedBooksPage;
 
                 if (searchWord != null && !searchWord.trim().isEmpty()) {
-                        // 검색어가 있는 경우
-                        if ("title".equalsIgnoreCase(searchItem)) { // 제목 기준 검색
-                                sharedBooks = sharedBookRepository.findByBook_TitleContainingIgnoreCase(searchWord, sort);
-                        } else { // 작성자(닉네임) 기준 검색
-                                sharedBooks = sharedBookRepository.findByBook_User_NicknameContainingIgnoreCase(searchWord, sort);
+                        if ("title".equalsIgnoreCase(searchItem)) { // 제목 검색
+                                sharedBooksPage = sharedBookRepository.findByBook_TitleContainingIgnoreCase(searchWord, pageable);
+                        } else { // 작성자(닉네임) 검색
+                                sharedBooksPage = sharedBookRepository.findByBook_User_NicknameContainingIgnoreCase(searchWord, pageable);
                         }
-                } else { // 검색어가 없는 경우 전체 조회 (정렬 적용)
-                        sharedBooks = sharedBookRepository.findAll(sort);
+                } else {
+                        sharedBooksPage = sharedBookRepository.findAll(pageable);
                 }
 
-                // SharedBook(Entity) -> SharedStroyListResponse(DTO)로 변환
-                return sharedBooks.stream()
+                return sharedBooksPage.stream()
                                 .map(sharedBook -> new SharedStoryListResponse(
-                                        sharedBook.getBook().getBookId(),
-                                        sharedBook.getBook().getTitle(),
-                                        sharedBook.getBook().getThumbnailUrl(),
-                                        sharedBook.getBook().getUser().getNickname(),
-                                        sharedBook.getBook().getUser().getProfileUrl(),
-                                        sharedBook.getHitCount(),
-                                        sharedBook.getGaechu(),
-                                        sharedBook.getCreatedAt()))
+                                                sharedBook.getBook().getBookId(),
+                                                sharedBook.getBook().getTitle(),
+                                                sharedBook.getBook().getThumbnailUrl(),
+                                                sharedBook.getBook().getUser().getNickname(),
+                                                sharedBook.getBook().getUser().getProfileUrl(),
+                                                sharedBook.getHitCount(),
+                                                sharedBook.getGaechu(),
+                                                sharedBook.getCreatedAt()))
                                 .collect(Collectors.toList());
         }
 

@@ -42,9 +42,9 @@ public class BoardController {
 
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     * @param searchWord 검색어
-     * @param searchItem 검색 대상, 기본값은 "title"
-     * @param sortOption 정렬 옵션, 기본값은 "date"
+     * @param searchWord
+     * @param searchItem
+     * @param sortOption
      * @param model
      * @return
      */
@@ -54,11 +54,26 @@ public class BoardController {
             @RequestParam(name = "searchItem", required = false, defaultValue = "title") String searchItem,
             @RequestParam(name = "sortOption", required = false, defaultValue = "date") String sortOption,
             Model model) {
-        List<SharedStoryListResponse> sharedStoryList = boardService.searchAndSortSharedBooks(searchWord, searchItem, sortOption);
+        // 첫 페이지(0번 페이지)에서 6개만 가져오기
+        List<SharedStoryListResponse> sharedStoryList = boardService.searchAndSortSharedBooks(searchWord, searchItem,
+                sortOption, 0, 6);
         model.addAttribute("sharedStoryList", sharedStoryList);
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("searchItem", searchItem);
+        model.addAttribute("sortOption", sortOption);
         return "board/story/storyList";
+    }
+
+    // AJAX용 엔드포인트 (페이지네이션)
+    @GetMapping("/story/ajaxList")
+    @ResponseBody
+    public List<SharedStoryListResponse> ajaxStoryList(
+            @RequestParam(name = "searchWord", required = false) String searchWord,
+            @RequestParam(name = "searchItem", required = false, defaultValue = "title") String searchItem,
+            @RequestParam(name = "sortOption", required = false, defaultValue = "date") String sortOption,
+            @RequestParam(name = "page", defaultValue = "1") int page, // 두번째 페이지부터 시작
+            @RequestParam(name = "size", defaultValue = "6") int size) {
+        return boardService.searchAndSortSharedBooks(searchWord, searchItem, sortOption, page, size);
     }
 
     /**
