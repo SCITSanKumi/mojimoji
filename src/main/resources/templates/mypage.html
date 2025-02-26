@@ -3,164 +3,178 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>mojimoji</title>
+    <title>mojimoji - Mypage</title>
 
-    <!-- Chart.js CDN -->
+    <!-- (1) Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Bootstrap (예시) -->
+    <!-- (2) Bootstrap CSS/JS -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
     <script defer th:src="@{/js/bootstrap.bundle.min.js}"></script>
-
-    <!-- jQuery (예시) -->
+    <!-- (3) jQuery -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
-    <!-- 스타일 -->
+    <!-- ================== 스타일 ================== -->
     <style>
-        /* ============ 헤더 영역 ============ */
+        /* 1) 상단 헤더 */
         .header-row {
             display: flex;
-            /* 가로 배치 */
             justify-content: space-between;
             align-items: center;
-            /* 세로 가운데 정렬 */
             margin: 0 50px;
-            /* 좌우 여백 */
         }
 
         .header-row h5 {
             margin: 0;
-            /* 기본 마진 제거 */
         }
 
         .user-info {
             text-align: right;
         }
 
-        /* ============ 게이지 차트 (JLPT 통계) ============ */
+        /* 2) JLPT 게이지 차트 */
         .Collection {
             display: flex;
             flex-wrap: wrap;
             align-items: flex-end;
             justify-content: center;
-            box-sizing: border-box;
             font-family: sans-serif;
         }
 
         .chart-container {
             width: 180px;
             margin: -40px 19px 0 8px;
-            /* 차트 간 간격/위치 조정 */
             position: relative;
             padding: 10px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* "전체" 차트만 크게 보이도록 */
         .chart-container.large-chart {
             width: 250px;
             height: 250px;
         }
 
-        /* ============ Bar 차트 영역 ============ */
+        /* 3) 날짜별 Bar 차트 */
         .bar-chart-row {
             display: flex;
             width: 900px;
             justify-content: space-between;
             margin: 0 10px;
-            /* 상단 제목/일일평균 컨테이너 여백 */
         }
 
         .bar-chart-wrapper {
             width: 900px;
             margin: 0 10px;
-            /* Bar 차트 자체 컨테이너 여백 */
         }
 
-        /* ============ 카테고리 & 한자 목록 ============ */
+        /* 4) Bar 차트 + 카테고리 목록 */
         .bar-and-category-wrapper {
             display: flex;
-            /* Bar 차트와 카테고리 목록을 가로 배치 */
+            gap: 10px;
+            margin: 0 10px;
         }
 
         .category-scroll-container {
             width: 580px;
-            margin: -34px 10px 0 5px;
-            overflow: scroll;
             height: 500px;
+            overflow: auto;
         }
 
         .category-header-row {
-            margin: 2px;
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
         .category-sort-icon {
             height: 30px;
             margin: -3px 10px 0 45px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .category-sort-icon:hover {
+            transform: rotate(15deg);
         }
 
         .category-achievement-text {
-            margin: 0 0 0 185px;
+            margin-left: 185px;
         }
 
-        /* ============ 카테고리 블록 (가로 한 줄 배치) ============ */
+        /* 5) 카테고리 블록 (한 줄) */
         .category-block {
+            width: 100%;
             border: 1px solid #ccc;
             margin-bottom: 20px;
             padding: 10px;
             display: flex;
-            /* 가로로 배치 */
             align-items: center;
-            /* 세로 중앙 정렬 */
-            gap: 20px;
-            /* 항목 간 간격 */
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
         }
 
-        /* 카테고리 정보 부분 */
         .category-info {
             display: flex;
-            width: 70px;
-            align-items: center;
-            /* 세로 중앙 정렬 */
-            gap: 10px;
-            margin-bottom: 0;
-            /* 아래쪽 여백 제거 */
             flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            text-align: center;
+            width: 70px;
         }
 
-        /* 한자 목록을 수평 스크롤로 가로 정렬 */
         .horizontal-container {
             display: flex;
-            gap: 10px;
-            /* 버튼과 리스트 간의 간격 */
             align-items: center;
-            /* 수직 중앙 정렬 */
-            flex: 3;
-            /* 리스트 부분이 더 많은 공간을 차지하도록 */
+            gap: 10px;
+            flex: 1;
         }
 
-        /* 한자 목록 (가로 정렬) */
+        .pagination-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .prev-btn,
+        .next-btn {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .prev-btn:hover,
+        .next-btn:hover {
+            background-color: #f2f2f2;
+        }
+
         .horizontal-list {
             list-style: none;
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            /* 한자 간의 간격 */
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            width: 75%;
         }
 
-        /* 한자 항목 */
         .horizontal-list li {
             border: 1px solid #ccc;
             padding: 5px;
             text-align: center;
             min-width: 50px;
+            transition: transform 0.2s;
         }
 
-        /* 한자 박스 */
+        .horizontal-list li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
         .kanji-box {
             display: flex;
             flex-direction: column;
@@ -168,42 +182,12 @@
             width: 40px;
         }
 
-        /* 페이지 네비게이션 버튼 */
-        .pagination-controls {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* 버튼 스타일 */
-        .prev-btn,
-        .next-btn {
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            background-color: white;
-            border: white;
-        }
-
-        /* 수집 여부 표시 */
-        .kanji-collected {
-            border-radius: 10px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .kanji-not-collected {
-            border-radius: 10px;
-            color: #999;
-            background-color: lightgray;
-        }
-
-        /* Progress Bar 컨테이너 */
+        /* 6) 진행도 ProgressBar */
         .progress-bar-container {
-            width: 100px;
-            margin: 10px 0;
-            text-align: center;
-            /* 가운데 정렬 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
         }
 
         progress {
@@ -213,7 +197,6 @@
             height: 20px;
             background-color: #e0e0e0;
             border-radius: 10px;
-            /* 사용자 정의 속성 --progress-color를 초기값으로 설정 */
             --progress-color: #4caf50;
         }
 
@@ -226,13 +209,189 @@
             background-color: var(--progress-color);
             border-radius: 10px;
         }
+
+        .progress-text {
+            margin-top: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        /* 수집 여부 */
+        .kanji-collected {
+            border-radius: 10px;
+            color: black;
+            font-weight: bold;
+            background-color: #ffe9e9;
+        }
+
+        .kanji-not-collected {
+            border-radius: 10px;
+            color: #999;
+            background-color: lightgray;
+        }
+
+        /* 7) 모달 내부 한자 카드 */
+        .toKanjiList {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .detailKanjiCard {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid lightgray;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .detailKanji {
+            display: inline-block;
+            font-size: 130px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid lightgray;
+            margin-top: 10px;
+        }
+
+        .detailKanjiExplain {
+            text-align: left;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        .detailCategory,
+        .detailCreatedAt {
+            font-size: 15px;
+        }
+
+        .detail-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        .detailJlptRank {
+            font-weight: bold;
+            text-align: right;
+            margin-right: 25px;
+        }
+
+        .detailYomi {
+            text-align: center;
+            font-size: 40px;
+            margin-top: 10px;
+        }
+
+        .detailKanjiId {
+            font-size: 15px;
+            color: #1063FE;
+            margin-left: 25px;
+        }
+
+        /* pre 태그 줄바꿈 및 자동 줄바꿈 */
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow: visible;
+            margin-top: 0;
+        }
+
+        /* 8) 반응형 미디어쿼리 */
+        @media (max-width: 992px) {
+            .bar-and-category-wrapper {
+                flex-direction: column;
+            }
+
+            .bar-chart-wrapper {
+                width: 95%;
+                max-width: 600px;
+                margin: 0 auto 20px auto;
+            }
+
+            .category-scroll-container {
+                width: 95%;
+                margin: 0 auto;
+                height: 400px;
+            }
+
+            .bar-chart-row {
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .chart-container {
+                width: 140px;
+                margin: -20px 10px 0 5px;
+            }
+
+            .chart-container.large-chart {
+                width: 180px;
+                height: 180px;
+            }
+
+            .bar-chart-wrapper {
+                max-width: 90%;
+            }
+
+            .category-scroll-container {
+                height: 300px;
+            }
+
+            .category-block {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .horizontal-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .progress-bar-container {
+                margin-top: 10px;
+            }
+        }
+
+        /* Bootstrap 기본 .modal-content의 flex-direction을 초기화하고, 고정 너비를 지정 */
+        .modal-content {
+            flex-direction: initial !important;
+            /* 기본 flex-direction 제거 */
+            width: 320px;
+            /* .toKanjiList의 max-width와 동일하게 설정 */
+            margin: auto;
+        }
+
+        /* detailKanjiId와 detailJlptRank를 같은 줄에 배치할 컨테이너 */
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        /* 필요시 개별 요소 스타일 */
+        .detailKanjiId,
+        .detailJlptRank {
+            font-size: 15px;
+        }
     </style>
 
+    <!-- ================== JS (Thymeleaf inline) ================== -->
     <script th:inline="javascript">
-        // ---------------------------------------------
-        // 1) JLPT 통계 (게이지 차트)
-        // ---------------------------------------------
-        const statsData = /*[[${stats}]]*/[];  // [{jlptRank:'전체', collected:123},...]
+        /* -------------------------------
+           (1) JLPT 통계 (게이지 차트)
+           ------------------------------- */
+        const statsData = /*[[${stats}]]*/[];
         const rankTotals = {
             "전체": 2136,
             "N1": 1139,
@@ -249,25 +408,19 @@
                 const partial = opts.partial || 0;
                 const total = opts.total || 1;
                 const label = opts.label || 'ALL';
-
                 const percentage = Math.floor((partial / total) * 100);
                 const { ctx, chartArea: { top, left, width, height } } = chart;
                 const centerX = left + width / 2;
                 const centerY = top + height / 2;
-
                 ctx.save();
                 ctx.textAlign = 'center';
                 ctx.fillStyle = '#333';
-
                 ctx.font = '16px sans-serif';
                 ctx.fillText(label, centerX, centerY - 20);
-
                 ctx.font = '16px sans-serif';
                 ctx.fillText(`${partial}/${total}`, centerX, centerY + 20);
-
                 ctx.font = '23px sans-serif';
                 ctx.fillText(`${percentage}%`, centerX, centerY + 50);
-
                 ctx.restore();
             }
         };
@@ -275,7 +428,6 @@
         function createGaugeChart(canvasId, partial, total, label) {
             const percentage = Math.floor((partial / total) * 100);
             const remainValue = 100 - percentage;
-
             const ctx = document.getElementById(canvasId).getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
@@ -292,35 +444,29 @@
                     rotation: -150,
                     circumference: 300,
                     plugins: {
-                        centerTextPlugin: {
-                            partial: partial,
-                            total: total,
-                            label: label
-                        },
+                        centerTextPlugin: { partial, total, label },
                         legend: { display: false },
                         tooltip: { enabled: false }
                     },
                     animation: {
                         animateRotate: true,
                         animateScale: false,
-                        onComplete: (anim) => {
-                            anim.chart.config.options.animation = false;
-                        }
+                        onComplete: (anim) => { anim.chart.config.options.animation = false; }
                     }
                 },
                 plugins: [centerTextPlugin]
             });
         }
 
-        // ---------------------------------------------
-        // 2) 날짜별 Bar 차트
-        // ---------------------------------------------
-        const dailyStatsData = /*[[${dailyStats}]]*/[]; // [{acquisitionDate:'2025-03-01', dailyCount:2}, ...]
+        /* -------------------------------
+           (2) 날짜별 Bar 차트
+           ------------------------------- */
+        const dailyStatsData = /*[[${dailyStats}]]*/[];
         const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
         const chartValues = dailyStatsData.map(ds => ds.dailyCount);
 
         document.addEventListener('DOMContentLoaded', () => {
-            // 1) JLPT 게이지 차트들
+            // JLPT 게이지 차트 생성
             statsData.forEach(stat => {
                 const rank = stat.jlptRank;
                 const collected = stat.collected;
@@ -329,7 +475,7 @@
                 createGaugeChart(canvasId, collected, total, rank);
             });
 
-            // 2) Bar 차트 생성
+            // Bar 차트 생성
             const ctxBar = document.getElementById('lineChart').getContext('2d');
             new Chart(ctxBar, {
                 type: 'bar',
@@ -345,72 +491,48 @@
                 },
                 options: {
                     responsive: true,
-                    scales: {
-                        y: { beginAtZero: true }
-                    },
-                    plugins: {
-                        title: {
-                            display: false
-                        }
-                    }
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { title: { display: false } }
                 }
             });
         });
 
-        // ---------------------------------------------
-        // 3) 카테고리별 한자 목록 (수평 페이지네이션)
-        // ---------------------------------------------
-        document.addEventListener('DOMContentLoaded', function () {
+        /* -------------------------------
+           (3) 카테고리 목록 페이지네이션
+           ------------------------------- */
+        document.addEventListener('DOMContentLoaded', () => {
             const ITEMS_PER_PAGE = 5;
-
-            // 모든 카테고리 블록을 순회
             document.querySelectorAll('.horizontal-container').forEach(container => {
                 const ul = container.querySelector('ul.horizontal-list');
                 const liArray = Array.from(ul.querySelectorAll('li'));
-
                 const prevBtn = container.querySelector('.prev-btn');
                 const nextBtn = container.querySelector('.next-btn');
-
                 let currentPage = 0;
                 const totalPages = Math.ceil(liArray.length / ITEMS_PER_PAGE);
-
                 function renderPage(page) {
                     if (page < 0) page = 0;
                     if (page >= totalPages) page = totalPages - 1;
                     currentPage = page;
-
                     liArray.forEach(li => li.style.display = 'none');
-
                     const start = currentPage * ITEMS_PER_PAGE;
                     const end = start + ITEMS_PER_PAGE;
-                    liArray.slice(start, end).forEach(li => li.style.display = 'block');
+                    liArray.slice(start, end).forEach(li => { li.style.display = 'flex'; });
                 }
-
-                // 초기 렌더
                 renderPage(0);
-
-                // Prev
-                prevBtn.addEventListener('click', () => {
-                    if (currentPage > 0) {
-                        renderPage(currentPage - 1);
-                    }
-                });
-                // Next
-                nextBtn.addEventListener('click', () => {
-                    if (currentPage < totalPages - 1) {
-                        renderPage(currentPage + 1);
-                    }
-                });
+                prevBtn.addEventListener('click', e => { e.stopPropagation(); if (currentPage > 0) renderPage(currentPage - 1); });
+                nextBtn.addEventListener('click', e => { e.stopPropagation(); if (currentPage < totalPages - 1) renderPage(currentPage + 1); });
             });
         });
 
+        /* -------------------------------
+           (4) 카테고리 달성도 ProgressBar
+           ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
-            // 모든 프로그레스 바와 텍스트 요소를 한 번에 선택
-            const progressData = []; // { progressBar, progressText, targetValue, startTime }
+            const progressData = [];
             document.querySelectorAll('.progress-bar-container').forEach(container => {
                 const progressBar = container.querySelector('progress');
                 const progressText = container.querySelector('.progress-text');
-                // 서버에서 전달된 실제 value를 targetValue로 저장 (예: 습득한 항목 수)
+                // 서버에서 전달된 실제 value를 targetValue로 저장
                 const serverValue = parseFloat(progressBar.value);
                 const targetValue = serverValue;
                 // 초기 애니메이션을 위해 value를 0으로 초기화
@@ -423,25 +545,18 @@
                     startTime: performance.now()
                 });
             });
-
-            const duration = 2500; // 애니메이션 지속 시간 (예: 2.5초)
-
+            const duration = 2500;
             function updateAllProgressBars() {
                 const currentTime = performance.now();
                 let allCompleted = true;
-
                 progressData.forEach(item => {
                     const elapsedTime = currentTime - item.startTime;
                     const progress = Math.min(elapsedTime / duration, 1);
-                    // 0부터 targetValue까지 애니메이션 (targetValue는 서버에서 받은 값)
                     const currentValue = progress * item.targetValue;
                     item.progressBar.value = currentValue;
-
-                    // 퍼센트는 전체 max (즉, 총 항목 수)를 기준으로 계산
+                    // 퍼센트는 progressBar.max (총 항목 수)를 기준으로 계산
                     const percentage = item.progressBar.max > 0 ? Math.floor((currentValue / item.progressBar.max) * 100) : 0;
                     item.progressText.textContent = `${percentage}%`;
-
-                    // 5개 색상 구간 (0~20%, 21~40%, 41~60%, 61~80%, 81~100%)
                     if (percentage <= 20) {
                         item.progressBar.style.setProperty('--progress-color', '#42405C');
                     } else if (percentage <= 40) {
@@ -449,22 +564,117 @@
                     } else if (percentage <= 60) {
                         item.progressBar.style.setProperty('--progress-color', '#EFA69A');
                     } else if (percentage <= 80) {
-                        item.progressBar.style.setProperty('--progress-color', ' #EE697D');
+                        item.progressBar.style.setProperty('--progress-color', '#EE697D');
                     } else {
-                        item.progressBar.style.setProperty('--progress-color', ' #F0C9D8');
+                        item.progressBar.style.setProperty('--progress-color', '#F0C9D8');
                     }
-
-                    if (progress < 1) {
-                        allCompleted = false;
-                    }
+                    if (progress < 1) { allCompleted = false; }
                 });
-
                 if (!allCompleted) {
                     requestAnimationFrame(updateAllProgressBars);
                 }
             }
-
             updateAllProgressBars();
+        });
+
+        /* -------------------------------
+           (5) 달성률 정렬 아이콘 (예시)
+           ------------------------------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const sortIcon = document.querySelector('.category-sort-icon');
+            let isDesc = true;
+            if (sortIcon) {
+                sortIcon.addEventListener('click', () => {
+                    const container = document.getElementById('categoryScrollContainer');
+                    if (!container) return;
+                    const blocks = Array.from(container.querySelectorAll('.category-block'));
+                    blocks.sort((a, b) => {
+                        const collectedA = parseInt(a.dataset.collected) || 0;
+                        const totalA = parseInt(a.dataset.total) || 1;
+                        const ratioA = collectedA / totalA;
+                        const collectedB = parseInt(b.dataset.collected) || 0;
+                        const totalB = parseInt(b.dataset.total) || 1;
+                        const ratioB = collectedB / totalB;
+                        return isDesc ? (ratioB - ratioA) : (ratioA - ratioB);
+                    });
+                    blocks.forEach(block => container.appendChild(block));
+                    isDesc = !isDesc;
+                });
+            }
+        });
+
+        /* -------------------------------
+           (6) 카테고리 블록 클릭 -> 이동
+           ------------------------------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.category-block').forEach(block => {
+                block.addEventListener('click', e => {
+                    const targetUrl = block.dataset.url;
+                    if (targetUrl) { window.location.href = targetUrl; }
+                });
+            });
+        });
+
+        /* -------------------------------
+           (7) kanji-collected/kanji-not-collected 클릭 시 모달
+           ------------------------------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.kanji-collected, .kanji-not-collected')
+                .forEach(kanjiEl => {
+                    kanjiEl.addEventListener('click', e => {
+                        e.stopPropagation();
+                        const kanjiId = kanjiEl.getAttribute('data-kanji-id');
+                        fetch(`/kanji/details?kanjiId=${kanjiId}`)
+                            .then(response => {
+                                if (!response.ok) { throw new Error("Network response was not ok"); }
+                                return response.json();
+                            })
+                            .then(detail => {
+                                const detailModal = document.getElementById('kanjiDetailModal');
+                                const modalBody = detailModal.querySelector('.modal-body');
+
+                                let obtainedDisplay = "미수집";
+                                if (detail.obtainedAt) {
+                                    const date = new Date(detail.obtainedAt);
+                                    const yyyy = date.getFullYear();
+                                    const mm = String(date.getMonth() + 1).padStart(2, '0');
+                                    const dd = String(date.getDate()).padStart(2, '0');
+                                    obtainedDisplay = `${yyyy}-${mm}-${dd}`;
+                                }
+                                const formattedMeaning = detail.meaning
+                                    .replace(/;/g, ',')   // 모든 세미콜론을 콤마로 치환
+                                    .replace(/\\n/g, '<br/>');  // newline 문자 치환
+
+                                modalBody.innerHTML = `
+                            <div class="toKanjiList">
+                                <div class="detail-header">
+                                    <div class="detailKanjiId">No. ${detail.kanjiId}</div>
+                                    <div class="detailJlptRank">${detail.jlptRank}</div>
+                                </div>
+                                <div class="detailKanjiCard">
+                                    <span class="detailKanji">${detail.kanji}</span>
+                                    <div class="detailKanjiExplain">
+                                        <div class="detailYomi">${detail.korKunyomi} ${detail.korOnyomi} (일)</div>
+                                        <div>음독 : ${detail.jpnOnyomi}</div>
+                                        <div>훈독 : ${detail.jpnKunyomi}</div>
+                                        <pre>의미: ${formattedMeaning}</pre>
+                                    </div>
+                                </div>
+                                <div class="detail-info">
+                                    <div class="detailCategory">카테고리 : ${detail.category}</div>
+                                    <div class="detailCreatedAt">날짜: ${obtainedDisplay}</div>
+                                </div>
+                            </div>
+                        `;
+
+                                const bsModal = new bootstrap.Modal(detailModal, {});
+                                bsModal.show();
+                            })
+                            .catch(error => {
+                                console.error('Error fetching kanji details:', error);
+                            });
+                    });
+                });
         });
 
     </script>
@@ -486,7 +696,7 @@
         </div>
     </div>
 
-    <!-- 게이지 차트 (JLPT) -->
+    <!-- JLPT 게이지 차트들 -->
     <div class="Collection">
         <th:block th:each="stat : ${stats}">
             <div class="chart-container" th:classappend="${stat.jlptRank} == '전체' ? ' large-chart' : ''">
@@ -505,72 +715,80 @@
         <h5 th:text="'일일평균: ' + ${dailyAvg} + '개'">일일평균: 0개</h5>
     </div>
 
-    <!-- Bar 차트 + 카테고리 목록을 가로 배치 -->
+    <!-- Bar 차트 + 카테고리 목록 (가로 배치) -->
     <div class="bar-and-category-wrapper">
-        <!-- Bar 차트 -->
+        <!-- (A) Bar 차트 영역 -->
         <div class="bar-chart-wrapper">
             <canvas id="lineChart"></canvas>
         </div>
-
-        <!-- 카테고리 목록 스크롤 영역 -->
-        <div class="category-scroll-container">
-            <!-- 카테고리 헤더 (정렬 아이콘 등) -->
+        <!-- (B) 카테고리 목록 스크롤 영역 -->
+        <div class="category-scroll-container" id="categoryScrollContainer">
+            <!-- 카테고리 헤더 -->
             <div class="category-header-row">
                 <h5>카테고리</h5>
-                <a href="#">
-                    <img class="category-sort-icon"
-                        src="https://cdn0.iconfinder.com/data/icons/phosphor-regular-vol-4/256/sort-ascending-1024.png"
-                        alt="정렬아이콘">
-                </a>
+                <img class="category-sort-icon"
+                    src="https://cdn0.iconfinder.com/data/icons/phosphor-regular-vol-4/256/sort-ascending-1024.png"
+                    alt="정렬아이콘">
                 <h5>달성률순</h5>
                 <h5 class="category-achievement-text"
                     th:text="'달성 ' + ${summary.fullyCollectedCategoryCount} + '/' + ${summary.totalCategoryCount}">
                     달성 3/104
                 </h5>
             </div>
-
-            <!-- Map<String, List<CategoryKanjiRow>> -->
-            <!-- key: category, value: List<...> -->
+            <!-- 카테고리 블록들 (Map<String, List<CategoryKanjiRow>>) -->
             <th:block th:each="entry : ${catMap}" th:if="${entry.key} != '없음'">
-                <div class="category-block">
+                <div class="category-block" th:attr="data-collected=${#lists.size(entry.value.?[isCollected == 1])},
+                            data-total=${#lists.size(entry.value)}, data-url=@{/kanji/collection}">
+                    <!-- (1) 카테고리 정보 -->
                     <div class="category-info">
-                        <h5 th:text="${entry.key}">카테고리이름</h5>
+                        <h5 th:text="${entry.key}">카테고리</h5>
                         <h5
                             th:text="${#lists.size(entry.value.?[isCollected == 1])} + '/' + ${#lists.size(entry.value)}">
                             0/0
                         </h5>
                     </div>
-
+                    <!-- (2) 한자 목록 + 페이지네이션 -->
                     <div class="horizontal-container">
-                        <ul class="horizontal-list" th:attr="data-cat=${entry.key}">
-                            <div class="pagination-controls">
-                                <button type="button" class="prev-btn">&lt;</button>
-                                <li th:each="row : ${entry.value}"
-                                    th:classappend="${row.isCollected} == 1 ? 'kanji-collected' : 'kanji-not-collected'">
-                                    <div class="kanji-box">
-                                        <h5 th:text="${row.kanji}">漢</h5>
-                                        <h5 th:text="${row.jlptRank}">N1</h5>
-                                    </div>
-                                    <span th:if="${row.isCollected} == 1"></span>
-                                    <span th:if="${row.isCollected} == 0"></span>
-                                </li>
-                                <button type="button" class="next-btn">&gt;</button>
-                            </div>
+                        <div class="pagination-controls">
+                            <button type="button" class="prev-btn">&lt;</button>
+                            <button type="button" class="next-btn">&gt;</button>
+                        </div>
+                        <ul class="horizontal-list">
+                            <li th:each="row : ${entry.value}"
+                                th:classappend="${row.isCollected} == 1 ? 'kanji-collected' : 'kanji-not-collected'"
+                                th:attr="data-kanji-id=${row.kanjiId}">
+                                <div class="kanji-box">
+                                    <h5 th:text="${row.kanji}">漢</h5>
+                                    <h5 th:text="${row.jlptRank}">N1</h5>
+                                </div>
+                            </li>
                         </ul>
-                        <div class="progress-bar-container">
-                            <progress th:id="'progressBar' + ${entry.key}"
-                                th:value="${#lists.size(entry.value.?[isCollected == 1])}"
-                                th:max="${#lists.size(entry.value)}">
-                            </progress>
-                            <div th:id="'progressText' + ${entry.key}" class="progress-text"
-                                th:text="${#lists.size(entry.value) > 0 ? ((#lists.size(entry.value.?[isCollected == 1]) * 100) / #lists.size(entry.value)) + '%' : '0%'}">
-                                0%
-                            </div>
+                    </div>
+                    <!-- (3) 진행도 ProgressBar -->
+                    <div class="progress-bar-container">
+                        <progress th:id="'progressBar' + ${entry.key}"
+                            th:value="${#lists.size(entry.value.?[isCollected == 1])}"
+                            th:max="${#lists.size(entry.value)}">
+                        </progress>
+                        <div th:id="'progressText' + ${entry.key}" class="progress-text"
+                            th:text="${#lists.size(entry.value) > 0 ? ((#lists.size(entry.value.?[isCollected == 1]) * 100) / #lists.size(entry.value)) + '%' : '0%'}">
+                            0%
                         </div>
                     </div>
                 </div>
             </th:block>
+        </div>
+    </div>
 
+    <!-- (C) Bootstrap Modal (한자 상세 정보) -->
+    <div class="modal fade" id="kanjiDetailModal" tabindex="-1" aria-labelledby="kanjiDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    로딩 중...
+                </div>
+            </div>
         </div>
     </div>
 

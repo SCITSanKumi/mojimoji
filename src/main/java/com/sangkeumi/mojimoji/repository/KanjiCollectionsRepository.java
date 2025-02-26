@@ -1,6 +1,7 @@
 package com.sangkeumi.mojimoji.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -108,4 +109,7 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
 
             """, nativeQuery = true)
     List<CategoryKanjiRow> findCategoryKanjiRows(@Param("userId") Long userId);
+
+    // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
+    Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
 }
