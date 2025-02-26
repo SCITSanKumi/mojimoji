@@ -12,5 +12,4 @@ public record MyStoriesListResponse(
         int hitCount,
         int gaechu,
         LocalDateTime createdAt) {
-
 }

@@ -5,20 +5,9 @@ import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.sangkeumi.mojimoji.dto.board.MyStoriesListResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoriesListResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyRequest;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyResponse;
+import com.sangkeumi.mojimoji.dto.board.*;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.service.BoardService;
 
@@ -94,7 +83,7 @@ public class BoardController {
 
     /**
      * 댓글 목록 조회
-     * 
+     *
      * @param sharedBookId
      * @return
      */
@@ -109,7 +98,7 @@ public class BoardController {
 
     /**
      * 댓글 추가
-     * 
+     *
      * @param principal
      * @param request
      * @return
@@ -125,7 +114,7 @@ public class BoardController {
 
     /**
      * 댓글 삭제
-     * 
+     *
      * @param sharedBookReplyId
      */
     @DeleteMapping("/story/comment")
@@ -136,7 +125,7 @@ public class BoardController {
 
     /**
      * 내 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     * 
+     *
      * @param model
      * @param principal
      * @return

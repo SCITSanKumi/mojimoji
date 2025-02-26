@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class SocialAccount {
-
     /**
      * 기본키, 자동 증가
      */

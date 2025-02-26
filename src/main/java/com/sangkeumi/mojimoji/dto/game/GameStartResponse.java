@@ -1,6 +1,6 @@
 package com.sangkeumi.mojimoji.dto.game;
 
-public record MessageSendRequest(
+public record GameStartResponse(
     Long bookId,
     String message
 ) {
