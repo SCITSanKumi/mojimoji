@@ -25,7 +25,6 @@ import org.springframework.http.MediaType;
 public class GameController {
 
     private final GameService gameService;
-    private final KanjiService kanjiService;
     private final KanjiCollectionService kanjiCollectionService;
 
     @GetMapping("/screen")
@@ -37,13 +36,17 @@ public class GameController {
     @GetMapping("/start/{bookId}")
     @ResponseBody
     @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
-    public ResponseEntity<GameStartResponse> gameStart(@PathVariable("bookId") Long bookId, @AuthenticationPrincipal MyPrincipal principal) {
+    public ResponseEntity<GameStartResponse> gameStart(
+            @PathVariable("bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
         return ResponseEntity.ok(gameService.gameStart(bookId, principal));
     }
 
     @ResponseBody
     @PostMapping(value = "/send/{bookId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> sendMessage(@PathVariable("bookId") Long bookId, @RequestParam("message") String message) {
+    public Flux<String> sendMessage(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam("message") String message) {
         return gameService.getChatResponseStream(bookId, message);
     }
 
@@ -59,21 +62,11 @@ public class GameController {
         return ResponseEntity.ok(gameService.gameEnd(bookId));
     }
 
-    @PostMapping("/quiz")
     @ResponseBody
-    public boolean quiz(
-            @RequestParam("korOnyomi") String korOnyomi,
-            @RequestParam("korKunyomi") String korKunyomi,
-            @RequestParam("kanjiId") Long kanjiId) {
-        return kanjiService.checkAnswer(korOnyomi, korKunyomi, kanjiId);
-    }
-
     @PostMapping("/addCollection")
-    @ResponseBody
-    public boolean addCollection(
+    public void addCollection(
             @RequestParam("kanjiId") Long kanjiId,
-            @RequestParam("userId") Long userId) {
-        AddKanjiCollection addKanjiCollection = new AddKanjiCollection(userId, kanjiId);
-        return kanjiCollectionService.addCollection(addKanjiCollection);
+            @AuthenticationPrincipal MyPrincipal principal) {
+        kanjiCollectionService.addCollection(kanjiId, principal);
     }
 }

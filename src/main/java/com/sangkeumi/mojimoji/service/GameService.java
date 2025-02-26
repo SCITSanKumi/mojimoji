@@ -232,7 +232,7 @@ public class GameService {
         List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(bookId);
 
         List<KanjiDTO> kanjiDTOs = kanjis.stream()
-                            .map(kanji -> new KanjiDTO(kanji.getKanji(), kanji.getKorOnyomi(), kanji.getKorKunyomi()))
+                            .map(kanji -> new KanjiDTO(kanji.getKanjiId(), kanji.getKanji(), kanji.getKorOnyomi(), kanji.getKorKunyomi()))
                             .collect(Collectors.toList());
 
         return new GameEndResponse(kanjiDTOs);

@@ -11,8 +11,6 @@
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <!-- 한자 리스트 -->
-    <script src="../../static/js/kanjiList.js" th:src="@{/js/kanjiList.js}"></script>
     <style>
         #correctKanji {
             color: blue;
@@ -25,11 +23,7 @@
         .modal-content {
             padding: 20px;
             background: #ffffff;
-            border-radius: 20px;
-        }
-
-        input[type="text"] {
-            width: 50px;
+            border-radius: 10px;
         }
     </style>
     <script>
@@ -126,169 +120,115 @@
                     url: `/game/end/${bookId}`,
                     type: "GET",
                     success: function (response) {
+                        if (!response || !response.kanjis || response.kanjis.length === 0) {
+                            alert("퀴즈 데이터를 불러올 수 없습니다.");
+                            return;
+                        }
                         kanjiList = response.kanjis;
+                        currentQuestionIndex = 0;
+                        score = 0;
+                        $("#quiz-modal").modal("show"); // 모달 열기
                         startQuiz();
-                        $("#quiz-modal").removeClass("d-none");
                     },
                     error: () => {
                         alert("게임 종료 중 오류가 발생했습니다.");
                     }
                 });
-
             });
 
             function startQuiz() {
-                if (kanjiList.length > 0) {
-                    displayQuestion();
-                }
-            }
-
-            function displayQuestion() {
                 if (currentQuestionIndex < kanjiList.length) {
-                    let quizContainer = document.getElementById("quiz-container");
-                    let quizItem = quizContainer.querySelector(".quiz-item");
+                    let quizItem = $(".quiz-item");
                     let kanjiData = kanjiList[currentQuestionIndex];
 
-                    quizItem.classList.remove("d-none");
-                    quizItem.querySelector(".kanji-question").textContent = `문제: ${kanjiData.kanji}`;
-                    quizItem.querySelector(".kunyomi-input").value = "";
-                    quizItem.querySelector(".onyomi-input").value = "";
+                    quizItem.find(".kanji-question").text(`문제: ${kanjiData.kanji}`);
+                    quizItem.find(".kunyomi-input").val("");
+                    quizItem.find(".onyomi-input").val("");
 
-                    let answerBtn = quizItem.querySelector(".answer-btn");
-                    answerBtn.onclick = function () {
+                    let answerBtn = quizItem.find(".answer-btn");
+                    answerBtn.off("click").on("click", function () {
                         checkAnswer(kanjiData);
-                    };
+                    });
                 } else {
-                    endGame();
+                    endQuiz();
                 }
             }
 
             function checkAnswer(kanjiData) {
-                let kunyomiInput = document.querySelector(".kunyomi-input").value.trim();
-                let onyomiInput = document.querySelector(".onyomi-input").value.trim();
+                let kunyomiInput = $(".kunyomi-input").val().trim();
+                let onyomiInput = $(".onyomi-input").val().trim();
 
                 if (
-                    kunyomiInput === kanjiData.korKunyomi.toLowerCase() ||
-                    onyomiInput === kanjiData.korOnyomi.toLowerCase()
+                    kunyomiInput.toLowerCase() === kanjiData.korKunyomi.toLowerCase() ||
+                    onyomiInput.toLowerCase() === kanjiData.korOnyomi.toLowerCase()
                 ) {
                     score++;
                     alert("정답입니다!");
+
+                    if (confirm("컬렉션에 추가하시겠습니까?")) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/game/addCollection",
+                            data: { "kanjiId": kanjiData.kanjiId },
+                            success: () => {
+                                alert("컬렉션에 추가되었습니다.");
+                            },
+                            error: () => {
+                                alert("컬렉션 추가 중 오류가 발생했습니다.");
+                            }
+                        });
+                    } else {
+                        alert("컬렉션에 추가하지 않았습니다.");
+                    }
                 } else {
                     alert("오답입니다!");
                 }
 
-                document.getElementById("scoreDisplay").textContent = `점수: ${score}`;
+                $("#scoreDisplay").text(`점수: ${score}`);
+
+                // 다음 문제로 이동
                 currentQuestionIndex++;
-                displayQuestion();
+
+                if (currentQuestionIndex < kanjiList.length) {
+                    displayQuestion();
+                } else {
+                    endQuiz();
+                }
             }
 
-            function endGame() {
-                document.getElementById("quiz-container").classList.add("d-none");
-                let gameResult = document.getElementById("game-result");
-                gameResult.classList.remove("d-none");
-                gameResult.innerHTML = `<h3>퀴즈 종료!</h3><p>최종 점수: ${score}</p>`;
-            }
-        });
-
-        $(function () {
-            let currentIndex = 1;
-            let totalQuizes = $(".quiz-item").length;
-            let correct = 0;
-            let correctKanji = '';
-            let wrongKanji = '';
-
-            $(".quiz-item").hide();
-            $("#quiz" + currentIndex).show();
-
-            $(".answer-btn").click(function () {
-                let btnId = $(this).attr("id");
-                let id = btnId.replace("btn", "");
-                let kanji = $("#kanji-id" + id).data("kanji");
-
-                let kanjiId = $("#kanji-id" + id).val();
-                let korKunyomi = $("#kor-kunyomi" + id).val();
-                let korOnyomi = $("#kor-onyomi" + id).val();
-
-                if (korKunyomi.trim().length == 0 || korOnyomi.trim().length == 0) {
-                    alert("한글훈독과 한글음독을 입력해주세요.");
-                    $("#kor-kunyomi" + id).val("");
-                    $("#kor-onyomi" + id).val("");
+            function displayQuestion() {
+                if (currentQuestionIndex >= kanjiList.length) {
+                    endQuiz();
                     return;
                 }
 
-                $.ajax({
-                    type: "POST",
-                    url: "/game/quiz",
-                    contentType: "application/x-www-form-urlencoded",
-                    data: {
-                        korKunyomi: korKunyomi,
-                        korOnyomi: korOnyomi,
-                        kanjiId: kanjiId
-                    },
-                    success: function (resp) {
-                        if (resp) {
-                            correct++;
-                            correctKanji += `${kanji} `;
-                            $(`#${btnId}`).text("정답입니다.");
-                            let question = confirm("정답입니다. 컬렉션에 추가하시겠습니까?");
-                            $(`#${btnId}`).attr("disabled", true);
+                let quizItem = $(".quiz-item");
+                let kanjiData = kanjiList[currentQuestionIndex];
 
-                            if (question) {
-                                $.ajax({
-                                    type: "POST",
-                                    url: "/game/addCollection",
-                                    contentType: "application/x-www-form-urlencoded",
-                                    data: {
-                                        kanjiId: kanjiId,
-                                        userId: 1
-                                    },
-                                    success: function (resp) {
-                                        if (resp) {
-                                            $('#result-text').text("컬렉션에 추가되었습니다.");
-                                            nextQuestion();
-                                        }
-                                    }
-                                });
-                            } else {
-                                $('#result-text').text("컬렉션에 추가하지 않았습니다.");
-                                nextQuestion();
-                            }
-                        } else {
-                            $(`#${btnId}`).text("오답입니다.");
-                            wrongKanji += `${kanji} `;
-                            $('#result-text').text("오답입니다.");
-                            nextQuestion();
-                        }
-                    }
+                // 문제 설정
+                quizItem.find(".kanji-question").text(`문제: ${kanjiData.kanji}`);
+                quizItem.find(".kunyomi-input").val("");
+                quizItem.find(".onyomi-input").val("");
+
+                let answerBtn = quizItem.find(".answer-btn");
+                answerBtn.off("click").on("click", function () {
+                    checkAnswer(kanjiData);
                 });
-            });
+            }
 
-            function nextQuestion() {
-                $("#quiz" + currentIndex).hide();
-                currentIndex++;
+            function endQuiz() {
+                $(".quiz-item").addClass("d-none");
+                let gameResult = $("#game-result");
+                gameResult.removeClass("d-none").html(`<h3>퀴즈 종료!</h3><p>최종 점수: ${score}</p>`);
 
-                if (currentIndex <= totalQuizes) {
-                    $("#quiz" + currentIndex).show();
-                } else {
-                    $('#result-text').text("");
-                    alert("모든 문제가 끝났습니다.");
-                    let wrong = totalQuizes - correct;
-
-                    $('#correct-kanji').html(correctKanji);
-                    $('#wrong-kanji').html(correctKanji + wrongKanji + "<br><br>");
-                    $('#game-end').html(`맞힌 한자 개수 : ${correct}개 틀린 한자 개수 : ${wrong}개</span><br><br><button id="to-main" class="btn btn-primary">메인으로</button> <button id="to-story-list" class="btn btn-secondary">스토리 공유하기</button>`);
-                }
-
-                $("#to-main").click(function () {
-                    location.href = "/";
-                });
-                $("#to-story-list").click(function () {
-                    location.href = "/board/story/list";
-                });
+                setTimeout(() => {
+                    $("#quiz-modal").modal("hide");
+                }, 3000);
             }
         });
     </script>
 </head>
+
 <body class="bg-light text-center p-3">
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
 
@@ -300,7 +240,7 @@
             <div class="story-box border rounded position-relative d-flex align-items-center justify-content-center"
                 style="height: 300px; background: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/979461/ss_b6ec5c1b67cafc41fc8ec35e4cbed4bd531a55e1.1920x1080.jpg?t=1729702976') no-repeat center center; background-size: cover;">
 
-`                <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">
+                <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">
                     게임 시작
                 </button>
 
@@ -314,25 +254,28 @@
                 <button class="btn btn-primary input-group-append" id="submit-btn">입력</button>
             </div>
 
-            <button class="btn btn-danger d-none" id="end-btn">마치기</button>
+            <button class="btn btn-danger d-none mt-3" id="end-btn">마치기</button>
         </div>
     </div>
-    <div class="container mt-5">
-        <div class="card shadow-lg mx-auto p-3" style="max-width: 600px;">
-            <h2 class="text-primary">한자 퀴즈</h2>
-            <h4 id="scoreDisplay" class="mb-3">점수: 0</h4>
-            <div id="quiz-container">
-                <div class="quiz-item d-none">
-                    <h5 class="kanji-question"></h5>
-                    <label>한글 훈독</label>
-                    <input type="text" class="form-control kunyomi-input">
-                    <label>한글 음독</label>
-                    <input type="text" class="form-control onyomi-input">
-                    <button class="answer-btn btn btn-primary mt-2">제출</button>
+
+    <!-- 퀴즈 모달 -->
+    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content p-4">
+                <h2 class="text-center">한자 퀴즈</h2>
+                <div id="quiz-container">
+                    <div class="quiz-item">
+                        <h5 class="kanji-question"></h5>
+                        <label>한글 훈독</label>
+                        <input type="text" class="form-control kunyomi-input">
+                        <label>한글 음독</label>
+                        <input type="text" class="form-control onyomi-input">
+                        <button class="answer-btn btn btn-primary mt-2">제출</button>
+                    </div>
                 </div>
+                <button id="next-btn" class="btn btn-success mt-3 d-none">다음 문제</button>
+                <div id="game-result" class="mt-3 d-none"></div>
             </div>
-            <button id="next-btn" class="btn btn-success mt-3 d-none">다음 문제</button>
-            <div id="game-result" class="mt-3 d-none"></div>
         </div>
     </div>
 </body>

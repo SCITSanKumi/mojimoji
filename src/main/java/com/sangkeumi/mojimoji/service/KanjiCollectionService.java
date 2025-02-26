@@ -2,24 +2,19 @@ package com.sangkeumi.mojimoji.service;
 
 import java.util.List;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
 import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
-import com.sangkeumi.mojimoji.entity.Kanji;
-import com.sangkeumi.mojimoji.entity.KanjiCollection;
-import com.sangkeumi.mojimoji.entity.User;
-import com.sangkeumi.mojimoji.repository.KanjiCollectionsRepository;
-import com.sangkeumi.mojimoji.repository.KanjiRepository;
-import com.sangkeumi.mojimoji.repository.UserRepository;
+import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
+import com.sangkeumi.mojimoji.entity.*;
+import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class KanjiCollectionService {
 
     private final KanjiCollectionsRepository kanjiCollectionsRepository;
@@ -27,29 +22,20 @@ public class KanjiCollectionService {
     private final KanjiRepository kanjiRepository;
 
     @Transactional
-    public boolean addCollection(AddKanjiCollection addKanjiCollection) {
-        try {
-            // 1) kanjiId, userId로 DB에서 엔티티 조회
-            Kanji kanji = kanjiRepository.findById(addKanjiCollection.kanjiId())
-                    .orElseThrow(() -> new RuntimeException("Kanji not found"));
+    public void addCollection(Long kanjiId, MyPrincipal principal) {
+        // 1) kanjiId, userId로 DB에서 엔티티 조회
+        Kanji kanji = kanjiRepository.findById(kanjiId)
+            .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
 
-            User user = userRepository.findById(addKanjiCollection.userId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(principal.getUserId())
+            .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
 
-            // 2) KanjiCollection 엔티티 생성
-            KanjiCollection kanjiCollection = KanjiCollection.builder()
-                    .kanji(kanji) // Kanji 엔티티
-                    .user(user) // User 엔티티
-                    .build();
-
-            // 3) DB에 저장
-            kanjiCollectionsRepository.save(kanjiCollection);
-
-            return true;
-        } catch (Exception e) {
-            // 예외 발생 시 false 반환 (필요하다면 로그 남기기)
-            return false;
-        }
+        // 2) DB에 저장
+        kanjiCollectionsRepository.save(KanjiCollection.builder()
+            .kanji(kanji) // Kanji 엔티티
+            .user(user) // User 엔티티
+            .build()
+        );
     }
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {
