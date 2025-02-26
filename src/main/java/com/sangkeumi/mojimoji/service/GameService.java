@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sangkeumi.mojimoji.dto.game.*;
+import com.sangkeumi.mojimoji.dto.kanji.KanjiDTO;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import reactor.core.publisher.Flux;
 
@@ -34,8 +36,9 @@ public class GameService {
     private final UsedBookKanjiRepository usedBookKanjiRepository;
     private final UserRepository userRepository;
     private final KanjiRepository kanjiRepository;
-    private final GameMessageProvider messageProvider;
+
     private final WebClient webClient;
+    private final GameMessageProvider messageProvider;
 
     /** 게임 시작 메서드 */
     @Transactional
@@ -71,8 +74,8 @@ public class GameService {
 
     /** OpenAI API와 스트리밍 통신을 위한 Flux<String> */
     @Transactional
-    public Flux<String> getChatResponseStream(MessageRequest request) {
-        Book book = bookRepository.findById(request.bookId())
+    public Flux<String> getChatResponseStream(Long bookId, String message) {
+        Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
         List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleOrderBySequenceDesc(book, "assistant");
@@ -88,7 +91,7 @@ public class GameService {
         messages.add(Map.of("role", "system", "content", messageProvider.getSystemMessage()));
         history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
         messages.add(Map.of("role", "assistant", "content", "현재 HP: " + currentHP + "현재 MP: " + currentMP));
-        messages.add(Map.of("role", "user", "content", request.message()));
+        messages.add(Map.of("role", "user", "content", message));
 
         log.info("Messages: {}", messages);
 
@@ -96,7 +99,7 @@ public class GameService {
         BookLine bookLine = bookLineRepository.save(BookLine.builder()
             .book(book)
             .role("user")
-            .content(request.message())
+            .content(message)
             .hp(currentHP)
             .mp(currentMP)
             .sequence(nextSequence)
@@ -104,8 +107,8 @@ public class GameService {
         );
 
 
-        for (int i = 0; i < request.message().length(); i++) {
-            String kanjiCharacter = String.valueOf(request.message().charAt(i));
+        for (int i = 0; i < message.length(); i++) {
+            String kanjiCharacter = String.valueOf(message.charAt(i));
 
             if (!Character.UnicodeBlock.of(kanjiCharacter.charAt(0)).equals(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)) {
                 break;
@@ -217,5 +220,21 @@ public class GameService {
             .orElseThrow(() -> new RuntimeException("해당 bookLine이 존재하지 않습니다."));
 
         return new GameStateResponse(bookLine.getHp(), bookLine.getMp(), book.isEnded());
+    }
+
+    @Transactional
+    public GameEndResponse gameEnd(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+            .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
+
+        book.setEnded(true);
+
+        List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(bookId);
+
+        List<KanjiDTO> kanjiDTOs = kanjis.stream()
+                            .map(kanji -> new KanjiDTO(kanji.getKanji(), kanji.getKorOnyomi(), kanji.getKorKunyomi()))
+                            .collect(Collectors.toList());
+
+        return new GameEndResponse(kanjiDTOs);
     }
 }
