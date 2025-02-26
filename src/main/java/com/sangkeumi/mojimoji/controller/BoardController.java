@@ -2,6 +2,8 @@ package com.sangkeumi.mojimoji.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import com.sangkeumi.mojimoji.dto.board.*;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.service.BoardService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +29,9 @@ public class BoardController {
 
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     *
-     * @param searchWord 검색어
-     * @param searchItem 검색 대상, 기본값은 "title"
-     * @param sortOption 정렬 옵션, 기본값은 "date"
+     * @param searchWord
+     * @param searchItem
+     * @param sortOption
      * @param model
      * @return
      */
@@ -39,17 +41,38 @@ public class BoardController {
             @RequestParam(name = "searchItem", required = false, defaultValue = "title") String searchItem,
             @RequestParam(name = "sortOption", required = false, defaultValue = "date") String sortOption,
             Model model) {
-        List<SharedStoriesListResponse> sharedStoryList = boardService.searchAndSortSharedBooks(searchWord, searchItem,
-                sortOption);
+        // 첫 페이지(0번 페이지)에서 6개만 가져오기
+        List<SharedStoryListResponse> sharedStoryList = boardService.searchAndSortSharedBooks(searchWord, searchItem,
+                sortOption, 0, 6);
         model.addAttribute("sharedStoryList", sharedStoryList);
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("searchItem", searchItem);
+        model.addAttribute("sortOption", sortOption);
         return "board/story/storyList";
     }
 
     /**
+     * 공유된 스토리 AJAX용 엔드포인트 (페이지네이션)
+     * @param searchWord
+     * @param searchItem
+     * @param sortOption
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping("/story/ajaxList")
+    @ResponseBody
+    public List<SharedStoryListResponse> ajaxStoryList(
+            @RequestParam(name = "searchWord", required = false) String searchWord,
+            @RequestParam(name = "searchItem", required = false, defaultValue = "title") String searchItem,
+            @RequestParam(name = "sortOption", required = false, defaultValue = "date") String sortOption,
+            @RequestParam(name = "page", defaultValue = "1") int page, // 두번째 페이지부터 시작
+            @RequestParam(name = "size", defaultValue = "6") int size) {
+        return boardService.searchAndSortSharedBooks(searchWord, searchItem, sortOption, page, size);
+    }
+
+    /**
      * 공유된 스토리의 상세 페이지를 반환하는 메서드
-     *
      * @param bookId
      * @param model
      * @return
@@ -57,16 +80,18 @@ public class BoardController {
     @GetMapping("/story/detail")
     public String storyDetail(@RequestParam(name = "bookId") Long bookId, Model model,
             @AuthenticationPrincipal MyPrincipal principal) {
+        // principal이 null이면 (로그인하지 않은 경우) 로그인 페이지로 리다이렉트
+        if (principal == null) {
+            return "redirect:/user/login";
+        }
+
         // 공유된 스토리의 정보 조회
         SharedStoryInfoResponse sharedStoryInfo = boardService.getSharedStoryInfo(bookId);
 
-        // 로그인한 사용자가 없거나, 현재 글의 작성자와 다르면 조회수 증가 처리
         if (sharedStoryInfo != null) {
-            Long authorId = sharedStoryInfo.userId();
-            Long currentUserId = (principal != null) ? principal.getUserId() : null;
-            if (currentUserId == null || !authorId.equals(currentUserId)) {
-                boardService.incrementHitCount(bookId);
-                // 조회수 증가 후, 새로 증가된 값을 반영하기 위해 다시 공유 스토리 정보 조회
+            // 현재 사용자와 작성자가 다르면 조회수 증가 처리
+            if (!sharedStoryInfo.userId().equals(principal.getUserId())) {
+                boardService.incrementHitCount(bookId, principal.getUserId());
                 sharedStoryInfo = boardService.getSharedStoryInfo(bookId);
             }
         }
@@ -82,8 +107,29 @@ public class BoardController {
     }
 
     /**
+     * 공유된 스토리 추천 수 토글 메서드
+     * @param sharedBookId
+     * @param principal
+     * @return
+     */
+    @PostMapping("/story/like")
+    @ResponseBody
+    @Operation(summary = "추천 수", description = "공유된 스토리의 추천 수를 증가/감소")
+    public ResponseEntity<?> toggleLike(@RequestParam("sharedBookId") Long sharedBookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        try {
+            SharedStoryInfoResponse updatedInfo = boardService.toggleLike(sharedBookId, principal.getUserId());
+            return ResponseEntity.ok(updatedInfo);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    /**
      * 댓글 목록 조회
-     *
      * @param sharedBookId
      * @return
      */
@@ -98,7 +144,6 @@ public class BoardController {
 
     /**
      * 댓글 추가
-     *
      * @param principal
      * @param request
      * @return
@@ -107,14 +152,12 @@ public class BoardController {
     @ResponseBody
     public SharedStoryReplyResponse addComment(@AuthenticationPrincipal MyPrincipal principal,
             @RequestBody SharedStoryReplyRequest request) {
-        // 컨트롤러에서 MyPrincipal을 주입받아 userId 추출
         Long userId = principal.getUserId();
         return boardService.addComment(userId, request);
     }
 
     /**
      * 댓글 삭제
-     *
      * @param sharedBookReplyId
      */
     @DeleteMapping("/story/comment")
@@ -125,7 +168,6 @@ public class BoardController {
 
     /**
      * 내 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     *
      * @param model
      * @param principal
      * @return
@@ -133,9 +175,28 @@ public class BoardController {
     @GetMapping("/myStory/list")
     public String myStoryList(Model model, @AuthenticationPrincipal MyPrincipal principal) {
         Long userId = principal.getUserId();
-        List<MyStoriesListResponse> myStoryList = boardService.getMyBooks(userId);
+        // 첫 페이지(0번 페이지)에서 6개만 가져오기
+        List<MyStoryListResponse> myStoryList = boardService.getMyBooksPaginated(userId, 0, 6);
         model.addAttribute("myStoryList", myStoryList);
+        // 초기 렌더링 시 전체 목록이 아니라 첫 페이지 데이터만 보여줌
         return "board/myStory/myStoryList";
+    }
+
+    /**
+     * 내 스토리 AJAX용 엔드포인트 (페이지네이션)
+     * @param page
+     * @param size
+     * @param principal
+     * @return
+     */
+    @GetMapping("/myStory/ajaxList")
+    @ResponseBody
+    public List<MyStoryListResponse> ajaxMyStoryList(
+            @RequestParam(name = "page", defaultValue = "1") int page, // 초기 렌더링 후 다음 페이지부터 (0페이지는 초기 렌더링)
+            @RequestParam(name = "size", defaultValue = "6") int size,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        Long userId = principal.getUserId();
+        return boardService.getMyBooksPaginated(userId, page, size);
     }
 
     /**
@@ -163,8 +224,30 @@ public class BoardController {
         return "삭제되었습니다.";
     }
 
+    /**
+     * 내 스토리의 상세 페이지를 반환하는 메서드
+     * @param bookId
+     * @param model
+     * @param principal
+     * @return
+     */
     @GetMapping("/myStory/detail")
-    public String myStoryDetail() {
-        return "board/myStory/myStoryDetail";
+    public String myStoryDetail(@RequestParam("bookId") Long bookId, Model model,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        Long userId = principal.getUserId();
+
+        // 내 스토리 정보 조회
+        MyStoryInfoResponse myStoryInfo = boardService.getMyStoryInfo(bookId, userId);
+
+        // 공유된 스토리인 경우, 공유 상세 페이지로 리다이렉트
+        if (myStoryInfo.sharedBookId() != null) {
+            return "redirect:/board/story/detail?bookId=" + bookId;
+        } else {
+            // 공유되지 않은 스토리인 경우, 내 스토리 상세 페이지 데이터를 조회 및 모델에 추가
+            List<MyStoryContentResponse> myStoryContent = boardService.getMyStoryContent(bookId);
+            model.addAttribute("myStoryInfo", myStoryInfo);
+            model.addAttribute("myStoryContent", myStoryContent);
+            return "board/myStory/myStoryDetail";
+        }
     }
 }

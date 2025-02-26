@@ -1,17 +1,14 @@
 package com.sangkeumi.mojimoji.dto.board;
 
-import lombok.Builder;
+import java.time.LocalDateTime;
 
-@Builder
-public record SharedStoryInfoResponse(
-    Long sharedBookId,
+public record SharedStoryListResponse(
     Long bookId,
-    Long userId,
     String title,
     String thumbnailUrl,
     String nickname,
     String profileUrl,
     int hitCount,
     int gaechu,
-    boolean liked) {
+    LocalDateTime createdAt) {
 }

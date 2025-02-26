@@ -49,27 +49,29 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // 1) HTTP 요청에 대한 보안 설정
-        http.authorizeHttpRequests(auth -> auth
-            // requestMatchers(...)로 지정한 경로들은 인증 없이 접근 허용
-            .requestMatchers(
-                "/",
-                "/swagger-ui.html",
-                "/swagger-ui/**",
-                "/api-docs/**",
-                "/user/login",
-                "/user/regist",
-                "/user/id-check",
-                "/user/nickname-check",
-                "/user/email-check",
-                "/user/sign-up",
-                "/user/sign-in",
-                "/js/**",
-                "/css/**",
-                "/image/**")
-            .permitAll()
-            // 그 외 모든 요청은 인증(로그인) 필요
-            .anyRequest().authenticated())
+                // 1) HTTP 요청에 대한 보안 설정
+                http.authorizeHttpRequests(auth -> auth
+                    // requestMatchers(...)로 지정한 경로들은 인증 없이 접근 허용
+                    .requestMatchers(
+                        "/",
+                        "/board/story/list",
+                        "/board/story/ajaxList",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/api-docs/**",
+                        "/user/login",
+                        "/user/regist",
+                        "/user/id-check",
+                        "/user/nickname-check",
+                        "/user/email-check",
+                        "/user/sign-up",
+                        "/user/sign-in",
+                        "/js/**",
+                        "/css/**",
+                        "/image/**")
+                    .permitAll()
+                    // 그 외 모든 요청은 인증(로그인) 필요
+                    .anyRequest().authenticated())
 
             // 2) Form 로그인 설정
             .formLogin(form -> form

@@ -2,7 +2,7 @@ package com.sangkeumi.mojimoji.dto.board;
 
 import java.time.LocalDateTime;
 
-public record MyStoriesListResponse(
+public record MyStoryListResponse(
         Long bookId,
         String title,
         String thumbnailUrl,

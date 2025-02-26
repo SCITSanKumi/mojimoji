@@ -136,4 +136,44 @@ $(document).ready(function () {
             }
         });
     });
+
+    // 추천 수 토글 기능
+    $('#like-button').click(function () {
+        $.ajax({
+            url: '/board/story/like',
+            type: 'POST',
+            data: { sharedBookId: sharedBookId },
+            success: function (response) {
+                // 추천 수 업데이트
+                $('#like-count').text(response.gaechu);
+                // 추천 상태에 따라 하트 아이콘 변경: liked가 true이면 채워진 하트(♥), 아니면 빈 하트(♡)
+                if (response.liked) {
+                    $('#like-button').text("♥");
+                } else {
+                    $('#like-button').text("♡");
+                }
+            },
+            error: function (err) {
+                console.error("추천 토글 실패", err);
+                alert(err.responseText);
+            }
+        });
+    });
 });
+
+// 삭제 버튼 클릭 시 호출되는 함수
+function deleteStory(bookId) {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    $.ajax({
+        url: '/board/myStory/delete',
+        type: 'DELETE',
+        data: { bookId: bookId },
+        success: function (response) {
+            alert('삭제되었습니다.');
+            window.location.href = '/board/story/list';
+        },
+        error: function (xhr) {
+            alert('삭제 실패: ' + xhr.responseText);
+        }
+    });
+}
