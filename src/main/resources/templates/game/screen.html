@@ -45,7 +45,7 @@
                         bookId = response.bookId;
                         $("#startGameBtn").addClass("d-none");
                         $(".dialogue-container, .input-group, #modal-btn").removeClass("d-none");
-                        $(".dialogue").append(text);
+                        $(".dialogue").append(response.message);
                     },
                     error: () => {
                         alert("게임 시작 중 오류가 발생했습니다.");
@@ -63,10 +63,10 @@
             function sendUserInput() {
                 let userText = $("#userInput").val().trim();
 
-                if (!kanjiList.includes(userText)) {
-                    alert("상용한자(常用漢字)만 입력 가능합니다.");
-                    return;
-                }
+                // if (!kanjiList.includes(userText)) {
+                //     alert("상용한자(常用漢字)만 입력 가능합니다.");
+                //     return;
+                // }
 
                 if (bookId !== null) {
                     $("#userInput").val("");
@@ -247,28 +247,27 @@
             <button type="button" id="modal-btn" class="btn btn-danger d-none">마치기</button>
         </div>
     </div>
+    <div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <h2>한자 퀴즈</h2>
+            <div id="quiz-list">
+                <th:block th:each="usedBookKanji, status : ${usedBookKanjiList}">
+                    <div th:id="'quiz' + ${status.count}" class="quiz-item">
+                        <span th:text="${status.count} + '번. ' + ${usedBookKanji.kanji.kanji}" th:id="'kanji-id' + ${status.count}" th:data-kanji="${usedBookKanji.kanji.kanji}" th:value="${usedBookKanji.kanji.kanjiId}"></span><br><br>
 
-        <div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <h2>한자 퀴즈</h2>
-                <div id="quiz-list">
-                    <th:block th:each="usedBookKanji, status : ${usedBookKanjiList}">
-                        <div th:id="'quiz' + ${status.count}" class="quiz-item">
-                            <span th:text="${status.count} + '번. ' + ${usedBookKanji.kanji.kanji}" th:id="'kanji-id' + ${status.count}" th:data-kanji="${usedBookKanji.kanji.kanji}" th:value="${usedBookKanji.kanji.kanjiId}"></span><br><br>
+                        한글훈독 <input type="text" class="form-control" th:id="'kor-kunyomi' + ${status.count}">
+                        한글음독 <input type="text" class="form-control" th:id="'kor-onyomi' + ${status.count}"><br><br>
 
-                            한글훈독 <input type="text" class="form-control" th:id="'kor-kunyomi' + ${status.count}">
-                            한글음독 <input type="text" class="form-control" th:id="'kor-onyomi' + ${status.count}"><br><br>
-
-                            <button th:id="'btn' + ${status.count}" class="answer-btn btn btn-primary">[[${status.count}]]번 제출</button>
-                        </div>
-                    </th:block>
-                    <span id="result-text"> </span>
-                </div>
-                <span id="correct-kanji"></span><span id="wrong-kanji"></span>
-                <div id="game-end"></div>
+                        <button th:id="'btn' + ${status.count}" class="answer-btn btn btn-primary">[[${status.count}]]번 제출</button>
+                    </div>
+                </th:block>
+                <span id="result-text"> </span>
             </div>
+            <span id="correct-kanji"></span><span id="wrong-kanji"></span>
+            <div id="game-end"></div>
         </div>
+    </div>
     </div>
 </body>
 </html>

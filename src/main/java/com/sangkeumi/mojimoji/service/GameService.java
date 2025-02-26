@@ -31,7 +31,9 @@ public class GameService {
 
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
+    private final UsedBookKanjiRepository usedBookKanjiRepository;
     private final UserRepository userRepository;
+    private final KanjiRepository kanjiRepository;
     private final GameMessageProvider messageProvider;
     private final WebClient webClient;
 
@@ -91,7 +93,7 @@ public class GameService {
         log.info("Messages: {}", messages);
 
         // 사용자 입력 저장
-        bookLineRepository.save(BookLine.builder()
+        BookLine bookLine = bookLineRepository.save(BookLine.builder()
             .book(book)
             .role("user")
             .content(request.message())
@@ -100,6 +102,27 @@ public class GameService {
             .sequence(nextSequence)
             .build()
         );
+
+
+        for (int i = 0; i < request.message().length(); i++) {
+            String kanjiCharacter = String.valueOf(request.message().charAt(i));
+
+            if (!Character.UnicodeBlock.of(kanjiCharacter.charAt(0)).equals(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)) {
+                break;
+            }
+
+            // Kanji 엔티티를 DB에서 찾기
+            Kanji kanji = kanjiRepository.findByKanji(kanjiCharacter)
+                .orElseThrow(() -> new RuntimeException("Kanji not found"));
+
+            // 새 UsedBookKanji 객체를 생성하여 리스트에 추가
+            UsedBookKanji usedBookKanji = UsedBookKanji.builder()
+                .bookLine(bookLine)
+                .kanji(kanji)
+                .build();
+
+            usedBookKanjiRepository.save(usedBookKanji);
+        }
 
         StringBuilder contentResponse = new StringBuilder();
         StringBuilder jsonResponse = new StringBuilder();

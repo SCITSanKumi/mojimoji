@@ -35,6 +35,8 @@ public class GameController {
 
     @GetMapping("/screen")
     public String game() {
+        // List<UsedBookKanji> usedBookkanjiList = usedBookKanjiService.selectAll();
+        // model.addAttribute("usedBookKanjiList", usedBookkanjiList);
         return "game/screen";
     }
 
@@ -55,13 +57,6 @@ public class GameController {
     @GetMapping("/state/{bookId}")
     public ResponseEntity<GameStateResponse> getGameState(@PathVariable Long bookId) {
         return ResponseEntity.ok(gameService.getGameState(bookId));
-    }
-
-    @GetMapping("/quiz")
-    public String quiz(Model model) {
-        List<UsedBookKanji> usedBookkanjiList = usedBookKanjiService.selectAll();
-        model.addAttribute("usedBookKanjiList", usedBookkanjiList);
-        return "/game/quiz";
     }
 
     @PostMapping("/quiz")
