@@ -3,15 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>mojimoji - Mypage</title>
+    <title>mojimoji</title>
 
     <!-- (1) Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- (2) Bootstrap CSS/JS -->
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
-    <script defer th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <link rel="stylesheet" th:href="@{css/bootstrap.min.css}" />
+    <script defer th:src="@{js/bootstrap.bundle.min.js}"></script>
     <!-- (3) jQuery -->
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{js/jquery-3.7.1.min.js}"></script>
 
     <!-- ================== 스타일 ================== -->
     <style>
@@ -156,10 +156,10 @@
         .horizontal-list {
             list-style: none;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 7px;
             margin: 0;
             padding: 0;
+            width: 286px;
         }
 
         .horizontal-list li {
@@ -301,6 +301,7 @@
             word-wrap: break-word;
             overflow: visible;
             margin-top: 0;
+            height: 168px;
         }
 
         /* 8) 반응형 미디어쿼리 */
@@ -654,10 +655,10 @@
                                 <div class="detailKanjiCard">
                                     <span class="detailKanji">${detail.kanji}</span>
                                     <div class="detailKanjiExplain">
-                                        <div class="detailYomi">${detail.korKunyomi} ${detail.korOnyomi} (일)</div>
+                                        <div class="detailYomi">${detail.korKunyomi} ${detail.korOnyomi}</div>
                                         <div>음독 : ${detail.jpnOnyomi}</div>
                                         <div>훈독 : ${detail.jpnKunyomi}</div>
-                                        <pre>의미: ${formattedMeaning}</pre>
+                                        <pre>의미: <br/>${formattedMeaning}</pre>
                                     </div>
                                 </div>
                                 <div class="detail-info">
@@ -751,7 +752,7 @@
                     <div class="horizontal-container">
                         <div class="pagination-controls">
                             <button type="button" class="prev-btn">&lt;</button>
-                            <button type="button" class="next-btn">&gt;</button>
+
                         </div>
                         <ul class="horizontal-list">
                             <li th:each="row : ${entry.value}"
@@ -763,6 +764,10 @@
                                 </div>
                             </li>
                         </ul>
+                        <div class="pagination-controls">
+
+                            <button type="button" class="next-btn">&gt;</button>
+                        </div>
                     </div>
                     <!-- (3) 진행도 ProgressBar -->
                     <div class="progress-bar-container">

@@ -35,7 +35,6 @@ public class MyPageContoller {
         Long userId = myPrincipal.getUserId();
 
         Long BookCount = boardService.getBooksCount(userId);
-        log.info("북 카운트 {}", BookCount);
 
         // 1) 등급별 수집 통계 / 전체 수집 통계
         List<JlptCollectionStats> stats = kanjiCollectionService.getJlptStats(userId);
