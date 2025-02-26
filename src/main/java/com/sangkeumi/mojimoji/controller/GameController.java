@@ -41,7 +41,8 @@ public class GameController {
     @PostMapping("/start")
     @ResponseBody
     @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
-    public ResponseEntity<GameStartResponse> gameStart(@RequestParam Long bookId, @AuthenticationPrincipal MyPrincipal principal) {
+    public ResponseEntity<GameStartResponse> gameStart(@RequestParam(name = "bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
         return ResponseEntity.ok(gameService.gameStart(bookId, principal));
     }
 
