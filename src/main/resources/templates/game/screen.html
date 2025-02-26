@@ -13,6 +13,25 @@
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <!-- 한자 리스트 -->
     <script src="../../static/js/kanjiList.js" th:src="@{/js/kanjiList.js}"></script>
+    <style>
+        #correctKanji {
+            color: blue;
+        }
+
+        #wrongKanji {
+            color: red;
+        }
+
+        .modal-content {
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 20px;
+        }
+
+        input[type="text"] {
+            width: 50px;
+        }
+    </style>
     <script>
         $(() => {
             $("#startGameBtn").click(() => {
@@ -25,7 +44,7 @@
                     success: (response) => {
                         bookId = response.bookId;
                         $("#startGameBtn").addClass("d-none");
-                        $(".dialogue-container, .input-group").removeClass("d-none");
+                        $(".dialogue-container, .input-group, #modal-btn").removeClass("d-none");
                         $(".dialogue").append(text);
                     },
                     error: () => {
@@ -98,6 +117,107 @@
             }
         });
     </script>
+    <script>
+        $(function () {
+            let currentIndex = 1;
+            let totalQuizes = $(".quiz-item").length;
+            let correct = 0;
+            let correctKanji = '';
+            let wrongKanji = '';
+
+            $(".quiz-item").hide();
+            $("#quiz" + currentIndex).show();
+
+            $(".answer-btn").click(function () {
+                let btnId = $(this).attr("id");
+                let id = btnId.replace("btn", "");
+                let kanji = $("#kanji-id" + id).data("kanji");
+
+                let kanjiId = $("#kanji-id" + id).val();
+                let korKunyomi = $("#kor-kunyomi" + id).val();
+                let korOnyomi = $("#kor-onyomi" + id).val();
+
+                if (korKunyomi.trim().length == 0 || korOnyomi.trim().length == 0) {
+                    alert("한글훈독과 한글음독을 입력해주세요.");
+                    $("#kor-kunyomi" + id).val("");
+                    $("#kor-onyomi" + id).val("");
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/game/quiz",
+                    data: {
+                        "korKunyomi": korKunyomi,
+                        "korOnyomi": korOnyomi,
+                        "kanjiId": kanjiId
+                    },
+                    success: function (resp) {
+                        if (resp) {
+                            correct++;
+                            correctKanji += `${kanji} `;
+                            $(`#${btnId}`).text("정답입니다.");
+                            let question = confirm("정답입니다. 컬렉션에 추가하시겠습니까?");
+                            $(`#${btnId}`).attr("disabled", true);
+
+                            if (question) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/game/addCollection",
+                                    data: {
+                                        "kanjiId": kanjiId,
+                                        "userId": 1
+                                    },
+                                    success: function (resp) {
+                                        if (resp) {
+                                            $('#result-text').text("컬렉션에 추가되었습니다.");
+                                            nextQuestion();
+                                        }
+                                    }
+                                })
+                            } else {
+                                $('#result-text').text("컬렉션에 추가하지 않았습니다.");
+                                nextQuestion();
+                            }
+                        } else {
+                            $(`#${btnId}`).text("오답입니다.");
+                            wrongKanji += `${kanji} `;
+                            $('#result-text').text("오답입니다.");
+                            nextQuestion();
+                        }
+                    }
+                });
+            });
+
+            $("#modal-btn").click(function () {
+                $(".modal").modal('show');
+            });
+
+            function nextQuestion() {
+                $("#quiz" + currentIndex).hide();
+                currentIndex++;
+
+                if (currentIndex <= totalQuizes) {
+                    $("#quiz" + currentIndex).show();
+                } else {
+                    $('#result-text').text("");
+                    alert("모든 문제가 끝났습니다.");
+                    let wrong = totalQuizes - correct;
+
+                    $('#correct-kanji').html(correctKanji);
+                    $('#wrong-kanji').html(correctKanji + wrongKanji + "<br><br>");
+                    $('#game-end').html(`맞힌 한자 개수 : ${correct}개 틀린 한자 개수 : ${wrong}개</span><br><br><button id="to-main" class="btn btn-primary">메인으로</button> <button id="to-story-list" class="btn btn-secondary">스토리 공유하기</button>`);
+                }
+
+                $("#to-main").click(function () {
+                    location.href = "/";
+                });
+                $("#to-story-list").click(function () {
+                    location.href = "/board/story/list";
+                });
+            }
+        });
+    </script>
 </head>
 <body class="bg-light text-center p-3">
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
@@ -122,6 +242,31 @@
             <div class="input-group mt-3 d-none">
                 <input type="text" id="userInput" class="form-control" placeholder="다음 대사를 입력하세요...">
                 <button class="btn btn-primary input-group-append" id="submitBtn">입력</button>
+            </div>
+
+            <button type="button" id="modal-btn" class="btn btn-danger d-none">마치기</button>
+        </div>
+    </div>
+
+        <div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <h2>한자 퀴즈</h2>
+                <div id="quiz-list">
+                    <th:block th:each="usedBookKanji, status : ${usedBookKanjiList}">
+                        <div th:id="'quiz' + ${status.count}" class="quiz-item">
+                            <span th:text="${status.count} + '번. ' + ${usedBookKanji.kanji.kanji}" th:id="'kanji-id' + ${status.count}" th:data-kanji="${usedBookKanji.kanji.kanji}" th:value="${usedBookKanji.kanji.kanjiId}"></span><br><br>
+
+                            한글훈독 <input type="text" class="form-control" th:id="'kor-kunyomi' + ${status.count}">
+                            한글음독 <input type="text" class="form-control" th:id="'kor-onyomi' + ${status.count}"><br><br>
+
+                            <button th:id="'btn' + ${status.count}" class="answer-btn btn btn-primary">[[${status.count}]]번 제출</button>
+                        </div>
+                    </th:block>
+                    <span id="result-text"> </span>
+                </div>
+                <span id="correct-kanji"></span><span id="wrong-kanji"></span>
+                <div id="game-end"></div>
             </div>
         </div>
     </div>
