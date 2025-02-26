@@ -13,4 +13,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     // Book의 user 필드(User 타입) 내의 userId 속성을 기준으로 조회
     List<Book> findByUser_UserId(Long userId);
 
+    Long countByUserUserId(Long userId);
+
 }

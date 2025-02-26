@@ -13,6 +13,7 @@ import com.sangkeumi.mojimoji.dto.mypage.CategoryKanjiRow;
 import com.sangkeumi.mojimoji.dto.mypage.DailyAcquisitionStats;
 import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
+import com.sangkeumi.mojimoji.service.BoardService;
 import com.sangkeumi.mojimoji.service.KanjiCollectionService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,11 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 public class MyPageContoller {
 
     private final KanjiCollectionService kanjiCollectionService;
+    private final BoardService boardService;
 
     @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal MyPrincipal myPrincipal, Model model) {
 
         Long userId = myPrincipal.getUserId();
+
+        Long BookCount = boardService.getBooksCount(userId);
+        log.info("북 카운트 {}", BookCount);
 
         // 1) 등급별 수집 통계 / 전체 수집 통계
         List<JlptCollectionStats> stats = kanjiCollectionService.getJlptStats(userId);
@@ -47,6 +52,7 @@ public class MyPageContoller {
         // 5) 카테고리별 한자 목록
         Map<String, List<CategoryKanjiRow>> catMap = kanjiCollectionService.getCategoryKanjiMap(userId);
 
+        model.addAttribute("BookCount", BookCount);
         model.addAttribute("stats", stats);
         model.addAttribute("dailyStats", dailyStats);
         model.addAttribute("dailyAvg", dailyAvg);

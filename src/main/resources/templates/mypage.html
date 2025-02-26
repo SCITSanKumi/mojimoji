@@ -443,15 +443,15 @@
 
                     // 5개 색상 구간 (0~20%, 21~40%, 41~60%, 61~80%, 81~100%)
                     if (percentage <= 20) {
-                        item.progressBar.style.setProperty('--progress-color', '#F0C9D8');
+                        item.progressBar.style.setProperty('--progress-color', '#42405C');
                     } else if (percentage <= 40) {
-                        item.progressBar.style.setProperty('--progress-color', '#EE697D');
+                        item.progressBar.style.setProperty('--progress-color', '#727B98');
                     } else if (percentage <= 60) {
                         item.progressBar.style.setProperty('--progress-color', '#EFA69A');
                     } else if (percentage <= 80) {
-                        item.progressBar.style.setProperty('--progress-color', '#727B98');
+                        item.progressBar.style.setProperty('--progress-color', ' #EE697D');
                     } else {
-                        item.progressBar.style.setProperty('--progress-color', '#42405C');
+                        item.progressBar.style.setProperty('--progress-color', ' #F0C9D8');
                     }
 
                     if (progress < 1) {
@@ -480,7 +480,7 @@
         <h5>수집현황</h5>
         <div class="user-info">
             <h5 sec:authentication="principal.nickname"></h5>
-            <a th:href="@{/board/myStory/list}" style="text-decoration: none;">
+            <a th:href="@{/board/myStory/list}" style="text-decoration: none;" th:text="'작성한 스토리 : ' + ${BookCount}">
                 작성한 스토리 : 329개
             </a>
         </div>

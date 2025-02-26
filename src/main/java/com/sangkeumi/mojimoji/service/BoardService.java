@@ -301,4 +301,8 @@ public class BoardService {
                 bookRepository.delete(book);
         }
 
+        public Long getBooksCount(Long userId) {
+                return bookRepository.countByUserUserId(userId);
+        }
+
 }
