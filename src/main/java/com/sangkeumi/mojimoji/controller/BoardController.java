@@ -7,22 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.sangkeumi.mojimoji.dto.board.MyStoryListResponse;
-import com.sangkeumi.mojimoji.dto.board.MyStoryContentResponse;
-import com.sangkeumi.mojimoji.dto.board.MyStoryInfoResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryListResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryContentResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryInfoResponse;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyRequest;
-import com.sangkeumi.mojimoji.dto.board.SharedStoryReplyResponse;
+import com.sangkeumi.mojimoji.dto.board.*;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.service.BoardService;
 
@@ -97,7 +84,7 @@ public class BoardController {
         if (principal == null) {
             return "redirect:/user/login";
         }
-        
+
         // 공유된 스토리의 정보 조회
         SharedStoryInfoResponse sharedStoryInfo = boardService.getSharedStoryInfo(bookId);
 

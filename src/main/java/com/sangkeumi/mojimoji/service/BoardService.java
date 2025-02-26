@@ -49,7 +49,7 @@ public class BoardService {
         private final BookRepository bookRepository;
         private final SharedBookViewRepository sharedBookViewRepository;
         private final SharedBookLikeRepository sharedBookLikeRepository;
-  
+
         /**
          * 페이지네이션을 적용한 공유 스토리 목록 검색 및 정렬 메서드
          * AJAX 요청 등에서 page, size 값을 받아서 무한 스크롤 구현에 사용
@@ -139,12 +139,12 @@ public class BoardService {
                         return null;
                 }
         }
-        
+
         /**
          * 조회수 증가 (한 사용자당 1 증가)
          * @param bookId
          * @param userId
-         */    
+         */
         @Transactional
         public void incrementHitCount(Long bookId, Long userId) {
                 Optional<SharedBook> sharedBookOpt = sharedBookRepository.findByBook_bookId(bookId);
@@ -212,7 +212,7 @@ public class BoardService {
                         .liked(liked)
                         .build();
         }
-        
+
         /**
          * 댓글 목록 조회
          * @param sharedBookId
@@ -351,7 +351,7 @@ public class BoardService {
                 // Cascade 옵션이 설정되어 있으므로, 책 삭제 시 연관된 SharedBook도 삭제
                 bookRepository.delete(book);
         }
-    
+
         /**
          * 내 스토리 정보를 조회하는 메서드
          * @param bookId
@@ -394,5 +394,9 @@ public class BoardService {
                 return bookLines.stream()
                         .map(bookLine -> new MyStoryContentResponse(bookLine.getContent()))
                         .collect(Collectors.toList());
+        }
+
+        public Long getBooksCount(Long userId) {
+                return bookRepository.countByUserUserId(userId);
         }
 }

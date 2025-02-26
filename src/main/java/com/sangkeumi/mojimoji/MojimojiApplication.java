@@ -9,5 +9,4 @@ public class MojimojiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MojimojiApplication.class, args);
 	}
-
 }
