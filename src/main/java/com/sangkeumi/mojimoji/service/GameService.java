@@ -26,7 +26,8 @@ import reactor.core.publisher.Flux;
 @Slf4j
 @RequiredArgsConstructor
 public class GameService {
-    private final int defaultHealth = 100;
+    private final int defaultHP = 100;
+    private final int defaultMP = 100;
 
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
@@ -54,7 +55,8 @@ public class GameService {
                     .book(newBook)
                     .role("assistant")
                     .content(messageProvider.getIntroMessage())
-                    .health(defaultHealth)
+                    .hp(defaultHP)
+                    .mp(defaultMP)
                     .sequence(0)
                     .build()
                 );
@@ -75,14 +77,15 @@ public class GameService {
         Collections.reverse(history);
 
         int lastSequence = history.isEmpty() ? 0 : history.get(history.size() - 1).getSequence();
-        int currentHealth = history.isEmpty() ? defaultHealth : history.get(history.size() - 1).getHealth();
+        int currentHP = history.isEmpty() ? defaultHP : history.get(history.size() - 1).getHp();
+        int currentMP = history.isEmpty() ? defaultMP : history.get(history.size() - 1).getMp();
 
         int nextSequence = lastSequence + 1;
 
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", messageProvider.getSystemMessage()));
         history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
-        messages.add(Map.of("role", "assistant", "content", "현재 체력: " + currentHealth));
+        messages.add(Map.of("role", "assistant", "content", "현재 HP: " + currentHP + "현재 MP: " + currentMP));
         messages.add(Map.of("role", "user", "content", request.message()));
 
         log.info("Messages: {}", messages);
@@ -92,7 +95,8 @@ public class GameService {
             .book(book)
             .role("user")
             .content(request.message())
-            .health(currentHealth)
+            .hp(currentHP)
+            .mp(currentMP)
             .sequence(nextSequence)
             .build()
         );
@@ -115,16 +119,21 @@ public class GameService {
                     contentResponse.append(chunk);
                 }
             })
-            .filter(chunk -> !isJsonStarted.get()) // JSON 데이터는 Flux에서 제외
+            // .filter(chunk -> !isJsonStarted.get()) // JSON 데이터는 Flux에서 제외
             .doOnComplete(() -> {
-                int updatedHealth = currentHealth;
+                int updatedHP = currentHP;
+                int updatedMP = currentMP;
 
                 try {
                     Map<String, Object> extractedState = new ObjectMapper().readValue(jsonResponse.toString(), Map.class);
 
                     // 상태 업데이트
-                    if (extractedState.containsKey("health") && extractedState.get("health") instanceof Integer) {
-                        updatedHealth = (int)extractedState.get("health");
+                    if (extractedState.containsKey("HP") && extractedState.get("HP") instanceof Integer) {
+                        updatedHP = (int)extractedState.get("HP");
+                    }
+
+                    if (extractedState.containsKey("MP") && extractedState.get("MP") instanceof Integer) {
+                        updatedMP = (int)extractedState.get("MP");
                     }
 
                     if (extractedState.containsKey("isEnded")
@@ -142,7 +151,8 @@ public class GameService {
                     .book(book)
                     .role("assistant")
                     .content(contentResponse.toString().trim())
-                    .health(updatedHealth)
+                    .hp(updatedHP)
+                    .mp(updatedMP)
                     .sequence(nextSequence + 1)
                     .build()
                 );
@@ -183,6 +193,6 @@ public class GameService {
         BookLine bookLine = bookLineRepository.findTopByBookAndRoleOrderBySequenceDesc(book, "assistant")
             .orElseThrow(() -> new RuntimeException("해당 bookLine이 존재하지 않습니다."));
 
-        return new GameStateResponse(bookLine.getHealth(), book.isEnded());
+        return new GameStateResponse(bookLine.getHp(), bookLine.getMp(), book.isEnded());
     }
 }
