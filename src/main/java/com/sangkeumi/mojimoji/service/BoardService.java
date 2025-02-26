@@ -85,14 +85,14 @@ public class BoardService {
 
                 return sharedBooksPage.stream()
                                 .map(sharedBook -> new SharedStoryListResponse(
-                                                sharedBook.getBook().getBookId(),
-                                                sharedBook.getBook().getTitle(),
-                                                sharedBook.getBook().getThumbnailUrl(),
-                                                sharedBook.getBook().getUser().getNickname(),
-                                                sharedBook.getBook().getUser().getProfileUrl(),
-                                                sharedBook.getHitCount(),
-                                                sharedBook.getGaechu(),
-                                                sharedBook.getCreatedAt()))
+                                        sharedBook.getBook().getBookId(),
+                                        sharedBook.getBook().getTitle(),
+                                        sharedBook.getBook().getThumbnailUrl(),
+                                        sharedBook.getBook().getUser().getNickname(),
+                                        sharedBook.getBook().getUser().getProfileUrl(),
+                                        sharedBook.getHitCount(),
+                                        sharedBook.getGaechu(),
+                                        sharedBook.getCreatedAt()))
                                 .collect(Collectors.toList());
         }
 
@@ -280,14 +280,18 @@ public class BoardService {
         }
 
         /**
-         * 내 스토리를 전부 조회하는 메서드
+         * 내 스토리를 페이징 처리하여 조회하는 메서드 (무한 스크롤)
          * @param userId
+         * @param page
+         * @param size
          * @return
          */
         @Transactional
-        public List<MyStoryListResponse> getMyBooks(Long userId) {
-                List<Book> books = bookRepository.findByUser_UserId(userId);
-                return books.stream()
+        public List<MyStoryListResponse> getMyBooksPaginated(Long userId, int page, int size) {
+                // 최신 등록 순(내림차순)으로 정렬
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+                Page<Book> bookPage = bookRepository.findByUser_UserId(userId, pageable);
+                return bookPage.stream()
                                 .map(book -> new MyStoryListResponse(
                                         book.getBookId(),
                                         book.getTitle(),
