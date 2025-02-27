@@ -3,16 +3,24 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인</title>
-    <!-- Bootstrap -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
         th:href="@{/css/bootstrap.min.css}">
+    <!-- Bootstrap JS -->
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <!-- JQuery -->
+    <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script defer>
-
+        // Bootstrap Tooltip 초기화
+        document.addEventListener("DOMContentLoaded", () => {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(tooltipTriggerEl => {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            // URL 파라미터에 따라 토스트 표시
+            showMessageToastIfNeeded();
+        });
 
         // 토스트 표시 함수
         function showToast(message) {
@@ -22,33 +30,68 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // URL 파라미터에서 error, message를 확인 후 토스트 표시
-        function showErrorToastIfNeeded() {
+        // URL 파라미터에서 error 또는 success와 message를 확인 후 토스트 표시
+        function showMessageToastIfNeeded() {
             const urlParams = new URLSearchParams(window.location.search);
+            const success = urlParams.get("success");
+            const error = urlParams.get("error");
+            const message = urlParams.get("message");
 
-            const isError = urlParams.get("error");   // "true" or null
-            const errMessage = urlParams.get("message"); // 인코딩된 메시지일 수 있음
-
-            if (isError === "true" && errMessage) {
-                // 필요하면 수동 디코딩
-                const decodedMsg = decodeURIComponent(errMessage);
-                showToast(decodedMsg);
+            if (success === "true" && message) {
+                showToast(decodeURIComponent(message));
+            } else if (error === "true" && message) {
+                showToast(decodeURIComponent(message));
             }
         }
-
-        // 페이지 로드가 끝나면 자동으로 실행
-        document.addEventListener("DOMContentLoaded", () => {
-            showErrorToastIfNeeded();
-        });
     </script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 20px;
+        }
 
+        .d-flex {
+            display: flex;
+        }
+
+        .vh-100 {
+            height: 100vh;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+
+        form {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translate(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1050;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body>
     <div class="d-flex align-items-center justify-content-center vh-100 bg-light">
         <form method="post" th:action="@{/user/sign-in}"
-            class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle"
-            style="max-width: 400px; width: 100%;">
+            class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle">
             <h1 class="h2 fw-bolder mb-4">로그인</h1>
             <div class="form-floating mb-2">
                 <input type="text" class="form-control" id="username" name="username" placeholder="hong">
@@ -75,7 +118,8 @@
                 <a href="/oauth2/authorization/google" class="btn btn-light rounded-circle p-2 shadow">
                     <img src="https://img.icons8.com/color/48/google-logo.png" width="28" />
                 </a>
-                <a href="/oauth2/authorization/github" class="btn btn-dark rounded-circle p-2 shadow">
+                <a href="/oauth2/authorization/github" class="btn btn-dark rounded-circle p-2 shadow"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub 계정에 public email이 설정되어 있어야 합니다.">
                     <img src="https://img.icons8.com/ios-filled/48/ffffff/github.png" width="28" />
                 </a>
                 <a href="/oauth2/authorization/discord" class="btn btn-primary rounded-circle p-2 shadow">
@@ -83,9 +127,7 @@
                 </a>
             </div>
         </form>
-        <div id="toast" class="toast"
-            style="position: fixed; bottom: 20px; left: 50%; transform: translate(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px; border-radius: 5px; ">
-        </div>
+        <div id="toast" class="toast"></div>
     </div>
 </body>
 
