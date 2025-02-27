@@ -38,12 +38,6 @@ public class UsedBookKanji {
     private Kanji kanji;
 
     /**
-     * 힌트로 사용되었는지 여부
-     */
-    @Column(name = "is_hint", nullable = false)
-    private boolean isHint;
-
-    /**
      * 생성일시
      */
     @Column(name = "created_at", nullable = false, updatable = false)
