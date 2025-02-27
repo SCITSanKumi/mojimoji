@@ -15,6 +15,4 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Long countByUserUserId(Long userId);
 
-    Long countByUserUserId(Long userId);
-
 }
