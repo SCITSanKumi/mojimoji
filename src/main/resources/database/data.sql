@@ -4329,94 +4329,94 @@ INSERT INTO Books VALUES
 --  line_id 1: 질문,  2: 한자 입력 ("一"),  3: 결과 ("一(하나)! 벽이 무너졌다.")
 --------------------------------------------------------------------
 -- Book 1: '모험의 시작' (user_id 1)
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 1, 'user', '내 앞에는 커다란 벽이 있다. 어떻게 해야 할까?', 75, 0, '2025-02-13 11:00:01.000000'),
--- (DEFAULT, 1, 'assistant', '一', 82, 0, '2025-02-13 11:00:02.000000'),
--- (DEFAULT, 1, 'system', '一(하나)! 벽이 무너졌다.', 90, 1, '2025-02-13 11:00:03.000000');
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 1, 'user', '내 앞에는 커다란 벽이 있다. 어떻게 해야 할까?', 75, 75, 0, '2025-02-13 11:00:01.000000'),
+(DEFAULT, 1, 'assistant', '一', 82, 75, 0, '2025-02-13 11:00:02.000000'),
+(DEFAULT, 1, 'system', '一(하나)! 벽이 무너졌다.', 90, 75, 1, '2025-02-13 11:00:03.000000');
 
--- -- [Book 2] (진행 중인 스토리, user_id 1)
--- -- Cycle 1: 완성 → Cycle 2: 질문만 남음
--- -- line_id 4~7
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 2, 'user', '깊은 숲 속에 감춰진 비밀이 있다. 어떻게 해야 할까?', 68, 0, '2025-02-13 11:05:01.000000'),
--- (DEFAULT, 2, 'assistant', '二', 79, 0, '2025-02-13 11:05:02.000000'),
--- (DEFAULT, 2, 'system', '二(둘)! 비밀의 문이 열렸다.', 95, 1, '2025-02-13 11:05:03.000000'),
--- (DEFAULT, 2, 'user', '그러나 새로운 도전이 나타났다. 어떻게 할까?', 62, 0, '2025-02-13 11:05:04.000000');
+-- [Book 2] (진행 중인 스토리, user_id 1)
+-- Cycle 1: 완성 → Cycle 2: 질문만 남음
+-- line_id 4~7
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 2, 'user', '깊은 숲 속에 감춰진 비밀이 있다. 어떻게 해야 할까?', 68, 75, 0, '2025-02-13 11:05:01.000000'),
+(DEFAULT, 2, 'assistant', '二', 79, 75, 0, '2025-02-13 11:05:02.000000'),
+(DEFAULT, 2, 'system', '二(둘)! 비밀의 문이 열렸다.', 95, 75, 1, '2025-02-13 11:05:03.000000'),
+(DEFAULT, 2, 'user', '그러나 새로운 도전이 나타났다. 어떻게 할까?', 62, 75, 0, '2025-02-13 11:05:04.000000');
 
--- -- [Book 3] (완료된 스토리, user_id 2)
--- -- Cycle 1 + Cycle 2
--- -- line_id 8~13
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 3, 'user', '바람이 세차게 부는 들판, 어떤 행동을 취할까?', 77, 0, '2025-02-13 11:10:01.000000'),
--- (DEFAULT, 3, 'assistant', '三', 85, 0, '2025-02-13 11:10:02.000000'),
--- (DEFAULT, 3, 'system', '三(셋)! 주인공은 신속히 달려나갔다.', 91, 1, '2025-02-13 11:10:03.000000'),
--- (DEFAULT, 3, 'user', '도착한 곳에서 또 다른 도전이 기다린다. 무엇을 할까?', 70, 0, '2025-02-13 11:10:04.000000'),
--- (DEFAULT, 3, 'assistant', '四', 80, 0, '2025-02-13 11:10:05.000000'),
--- (DEFAULT, 3, 'system', '四(넷)! 모든 장애물을 극복했다.', 96, 1, '2025-02-13 11:10:06.000000');
+-- [Book 3] (완료된 스토리, user_id 2)
+-- Cycle 1 + Cycle 2
+-- line_id 8~13
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 3, 'user', '바람이 세차게 부는 들판, 어떤 행동을 취할까?', 77, 75, 0, '2025-02-13 11:10:01.000000'),
+(DEFAULT, 3, 'assistant', '三', 85, 75, 0, '2025-02-13 11:10:02.000000'),
+(DEFAULT, 3, 'system', '三(셋)! 주인공은 신속히 달려나갔다.', 91, 75, 1, '2025-02-13 11:10:03.000000'),
+(DEFAULT, 3, 'user', '도착한 곳에서 또 다른 도전이 기다린다. 무엇을 할까?', 75, 70, 0, '2025-02-13 11:10:04.000000'),
+(DEFAULT, 3, 'assistant', '四', 80, 75, 0, '2025-02-13 11:10:05.000000'),
+(DEFAULT, 3, 'system', '四(넷)! 모든 장애물을 극복했다.', 96, 75, 1, '2025-02-13 11:10:06.000000');
 
--- -- [Book 4] (진행 중인 스토리, user_id 3)
--- -- Cycle 1 완료 + Cycle 2 진행 중 (질문만)
--- -- line_id 14~17
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 4, 'user', '해변에서 바람이 속삭인다. 어떻게 반응할까?', 72, 0, '2025-02-13 11:15:01.000000'),
--- (DEFAULT, 4, 'assistant', '五', 84, 0, '2025-02-13 11:15:02.000000'),
--- (DEFAULT, 4, 'system', '五(다섯)! 해변의 비밀이 드러났다.', 93, 1, '2025-02-13 11:15:03.000000'),
--- (DEFAULT, 4, 'user', '이어지는 파도 소리에 의문이 생긴다. 다음은?', 65, 0, '2025-02-13 11:15:04.000000');
+-- [Book 4] (진행 중인 스토리, user_id 3)
+-- Cycle 1 완료 + Cycle 2 진행 중 (질문만)
+-- line_id 14~17
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 4, 'user', '해변에서 바람이 속삭인다. 어떻게 반응할까?', 72, 75, 0, '2025-02-13 11:15:01.000000'),
+(DEFAULT, 4, 'assistant', '五', 84, 75, 0, '2025-02-13 11:15:02.000000'),
+(DEFAULT, 4, 'system', '五(다섯)! 해변의 비밀이 드러났다.', 75, 93, 1, '2025-02-13 11:15:03.000000'),
+(DEFAULT, 4, 'user', '이어지는 파도 소리에 의문이 생긴다. 다음은?', 75, 65, 0, '2025-02-13 11:15:04.000000');
 
--- -- [Book 5] (완료된 스토리, user_id 3)
--- -- 단일 사이클
--- -- line_id 18~20
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 5, 'system', '별들이 총총히 빛나는 밤, 어떤 선택을 할까?', 88, 0, '2025-02-13 11:20:01.000000'),
--- (DEFAULT, 5, 'user', '六', 75, 0, '2025-02-13 11:20:02.000000'),
--- (DEFAULT, 5, 'assistant', '六(여섯)! 별빛이 길을 밝혀주었다.', 98, 1, '2025-02-13 11:20:03.000000');
+-- [Book 5] (완료된 스토리, user_id 3)
+-- 단일 사이클
+-- line_id 18~20
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 5, 'system', '별들이 총총히 빛나는 밤, 어떤 선택을 할까?', 75, 88, 0, '2025-02-13 11:20:01.000000'),
+(DEFAULT, 5, 'user', '六', 75, 75, 0, '2025-02-13 11:20:02.000000'),
+(DEFAULT, 5, 'assistant', '六(여섯)! 별빛이 길을 밝혀주었다.', 75, 98, 1, '2025-02-13 11:20:03.000000');
 
--- -- [Book 6] (진행 중인 스토리, user_id 4)
--- -- 두 사이클 모두 진행 중
--- -- line_id 21~26
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 6, 'system', '도시의 어둠 속에서 한 줄기의 빛을 찾는다. 어떻게?', 83, 0, '2025-02-13 11:25:01.000000'),
--- (DEFAULT, 6, 'user', '七', 71, 0, '2025-02-13 11:25:02.000000'),
--- (DEFAULT, 6, 'assistant', '七(일곱)! 빛이 나타나 길이 열렸다.', 94, 1, '2025-02-13 11:25:03.000000'),
--- (DEFAULT, 6, 'system', '하지만 도시의 미로는 끝이 없다. 다음 행동은?', 79, 0, '2025-02-13 11:25:04.000000'),
--- (DEFAULT, 6, 'user', '八', 69, 0, '2025-02-13 11:25:05.000000'),
--- (DEFAULT, 6, 'assistant', '八(여덟)! 도시의 비밀이 드러나기 시작한다.', 97, 1, '2025-02-13 11:25:06.000000');
+-- [Book 6] (진행 중인 스토리, user_id 4)
+-- 두 사이클 모두 진행 중
+-- line_id 21~26
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 6, 'system', '도시의 어둠 속에서 한 줄기의 빛을 찾는다. 어떻게?', 75, 83, 0, '2025-02-13 11:25:01.000000'),
+(DEFAULT, 6, 'user', '七', 75, 71, 0, '2025-02-13 11:25:02.000000'),
+(DEFAULT, 6, 'assistant', '七(일곱)! 빛이 나타나 길이 열렸다.', 75, 94, 1, '2025-02-13 11:25:03.000000'),
+(DEFAULT, 6, 'system', '하지만 도시의 미로는 끝이 없다. 다음 행동은?', 75, 79, 0, '2025-02-13 11:25:04.000000'),
+(DEFAULT, 6, 'user', '八', 75, 69, 0, '2025-02-13 11:25:05.000000'),
+(DEFAULT, 6, 'assistant', '八(여덟)! 도시의 비밀이 드러나기 시작한다.', 75, 97, 1, '2025-02-13 11:25:06.000000');
 
--- -- [Book 7] (완료된 스토리, user_id 5)
--- -- 세 사이클 진행
--- -- line_id 27~35
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 7, 'system', '산의 정기를 느끼며 도전할 준비를 한다. 어떻게?', 87, 0, '2025-02-13 11:30:01.000000'),
--- (DEFAULT, 7, 'user', '九', 73, 0, '2025-02-13 11:30:02.000000'),
--- (DEFAULT, 7, 'assistant', '九(아홉)! 산의 첫 걸음이 떼어졌다.', 92, 1, '2025-02-13 11:30:03.000000'),
--- (DEFAULT, 7, 'system', '깊은 계곡을 건너야 한다. 어떻게 할까?', 85, 0, '2025-02-13 11:30:04.000000'),
--- (DEFAULT, 7, 'user', '十', 74, 0, '2025-02-13 11:30:05.000000'),
--- (DEFAULT, 7, 'assistant', '十(열)! 계곡을 무사히 건넜다.', 99, 1, '2025-02-13 11:30:06.000000');
+-- [Book 7] (완료된 스토리, user_id 5)
+-- 세 사이클 진행
+-- line_id 27~35
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 7, 'system', '산의 정기를 느끼며 도전할 준비를 한다. 어떻게?', 75, 87, 0, '2025-02-13 11:30:01.000000'),
+(DEFAULT, 7, 'user', '九', 75, 73, 0, '2025-02-13 11:30:02.000000'),
+(DEFAULT, 7, 'assistant', '九(아홉)! 산의 첫 걸음이 떼어졌다.', 75, 92, 1, '2025-02-13 11:30:03.000000'),
+(DEFAULT, 7, 'system', '깊은 계곡을 건너야 한다. 어떻게 할까?', 75, 85, 0, '2025-02-13 11:30:04.000000'),
+(DEFAULT, 7, 'user', '十', 75, 74, 0, '2025-02-13 11:30:05.000000'),
+(DEFAULT, 7, 'assistant', '十(열)! 계곡을 무사히 건넜다.', 75, 99, 1, '2025-02-13 11:30:06.000000');
 
--- -- [Book 8] (진행 중인 스토리, user_id 5)
--- -- Cycle 1 완료 + Cycle 2 진행 중
--- -- line_id 36~39
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 8, 'system', '하늘에서 눈물이 떨어진다. 어떻게 반응할까?', 80, 0, '2025-02-13 11:35:01.000000'),
--- (DEFAULT, 8, 'user', '二', 78, 0, '2025-02-13 11:35:02.000000'),
--- (DEFAULT, 8, 'assistant', '二(둘)! 하늘의 비밀이 드러났다.', 96, 1, '2025-02-13 11:35:03.000000');
+-- [Book 8] (진행 중인 스토리, user_id 5)
+-- Cycle 1 완료 + Cycle 2 진행 중
+-- line_id 36~39
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 8, 'system', '하늘에서 눈물이 떨어진다. 어떻게 반응할까?', 75, 80, 0, '2025-02-13 11:35:01.000000'),
+(DEFAULT, 8, 'user', '二', 75, 78, 0, '2025-02-13 11:35:02.000000'),
+(DEFAULT, 8, 'assistant', '二(둘)! 하늘의 비밀이 드러났다.', 75, 96, 1, '2025-02-13 11:35:03.000000');
 
--- -- [Book 9] (완료된 스토리, user_id 6)
--- -- 단일 사이클
--- -- line_id 40~42
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 9, 'system', '불꽃이 일렁이는 무대 위, 어떤 움직임을 선택할까?', 85, 0, '2025-02-13 11:40:01.000000'),
--- (DEFAULT, 9, 'user', '三', 78, 0, '2025-02-13 11:40:02.000000'),
--- (DEFAULT, 9, 'assistant', '三(셋)! 불꽃의 리듬에 몸을 맡겼다.', 95, 1, '2025-02-13 11:40:03.000000');
+-- [Book 9] (완료된 스토리, user_id 6)
+-- 단일 사이클
+-- line_id 40~42
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 9, 'system', '불꽃이 일렁이는 무대 위, 어떤 움직임을 선택할까?', 75, 85, 0, '2025-02-13 11:40:01.000000'),
+(DEFAULT, 9, 'user', '三', 75, 78, 0, '2025-02-13 11:40:02.000000'),
+(DEFAULT, 9, 'assistant', '三(셋)! 불꽃의 리듬에 몸을 맡겼다.', 75, 95, 1, '2025-02-13 11:40:03.000000');
 
--- -- [Book 10] (진행 중인 스토리, user_id 7)
--- -- 두 사이클 중 첫 사이클만 완료, 두 번째 사이클 진행 중
--- -- line_id 43~45
--- INSERT INTO Book_Lines VALUES
--- (DEFAULT, 10, 'system', '깊은 바다에서 들려오는 속삭임, 그 의미는?', 82, 0, '2025-02-13 11:45:01.000000'),
--- (DEFAULT, 10, 'user', '四', 76, 0, '2025-02-13 11:45:02.000000'),
--- (DEFAULT, 10, 'assistant', '四(넷)! 바다가 숨긴 이야기가 시작되었다.', 97, 1, '2025-02-13 11:45:03.000000'),
--- (DEFAULT, 10, 'system', '하지만 파도는 계속되는데, 다음은?', 80, 0, '2025-02-13 11:45:04.000000');
+-- [Book 10] (진행 중인 스토리, user_id 7)
+-- 두 사이클 중 첫 사이클만 완료, 두 번째 사이클 진행 중
+-- line_id 43~45
+INSERT INTO Book_Lines VALUES
+(DEFAULT, 10, 'system', '깊은 바다에서 들려오는 속삭임, 그 의미는?', 75, 82, 0, '2025-02-13 11:45:01.000000'),
+(DEFAULT, 10, 'user', '四', 75, 76, 0, '2025-02-13 11:45:02.000000'),
+(DEFAULT, 10, 'assistant', '四(넷)! 바다가 숨긴 이야기가 시작되었다.', 75, 97, 1, '2025-02-13 11:45:03.000000'),
+(DEFAULT, 10, 'system', '하지만 파도는 계속되는데, 다음은?', 75, 80, 0, '2025-02-13 11:45:04.000000');
 
 --------------------------------------------------------------------
 -- 5. Shared_Books 테이블 더미 데이터
@@ -4561,30 +4561,30 @@ INSERT INTO Kanji_Collections VALUES
 -- 각 한자 입력 행(Book_Lines의 특정 sequence)을 기반으로, 해당 한자가 사용되었음을 기록
 -- (아래에서 line_id는 각 책의 입력 행 순서에 따라 할당된다고 가정)
 --------------------------------------------------------------------
--- -- Book 1: line_id 2 ("一")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 2, 1, false, '2025-02-13 12:30:00.000000');
--- -- Book 2: line_id 5 ("二")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 5, 2, false, '2025-02-13 12:31:00.000000');
--- -- Book 3: cycle1: line_id 9 ("三"), cycle2: line_id 12 ("四")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 9, 3, false, '2025-02-13 12:32:00.000000');
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 12, 4, false, '2025-02-13 12:33:00.000000');
--- -- Book 4: line_id 15 ("五")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 15, 5, false, '2025-02-13 12:34:00.000000');
--- -- Book 5: line_id 19 ("六")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 19, 6, false, '2025-02-13 12:35:00.000000');
--- -- Book 6: cycle1: line_id 22 ("七"), cycle2: line_id 25 ("八")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 22, 7, false, '2025-02-13 12:36:00.000000');
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 25, 8, false, '2025-02-13 12:37:00.000000');
--- -- Book 7: cycle1: line_id 28 ("九"), cycle2: line_id 32 ("十"), cycle3: line_id 34 ("一")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 28, 9, false, '2025-02-13 12:38:00.000000');
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 32, 10, false, '2025-02-13 12:39:00.000000');
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 34, 1, false, '2025-02-13 12:40:00.000000');
--- -- Book 8: line_id 37 ("二")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 37, 2, false, '2025-02-13 12:41:00.000000');
--- -- Book 9: line_id 41 ("三")
--- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 41, 3, false, '2025-02-13 12:42:00.000000');
--- -- Book 10: line_id 44 ("四")
--- -- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 44, 4, false, '2025-02-13 12:43:00.000000');
+-- Book 1: line_id 2 ("一")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 2, 1, '2025-02-13 12:30:00.000000');
+-- Book 2: line_id 5 ("二")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 5, 2, '2025-02-13 12:31:00.000000');
+-- Book 3: cycle1: line_id 9 ("三"), cycle2: line_id 12 ("四")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 9, 3, '2025-02-13 12:32:00.000000');
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 12, 4, '2025-02-13 12:33:00.000000');
+-- Book 4: line_id 15 ("五")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 15, 5, '2025-02-13 12:34:00.000000');
+-- Book 5: line_id 19 ("六")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 19, 6, '2025-02-13 12:35:00.000000');
+-- Book 6: cycle1: line_id 22 ("七"), cycle2: line_id 25 ("八")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 22, 7, '2025-02-13 12:36:00.000000');
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 25, 8, '2025-02-13 12:37:00.000000');
+-- Book 7: cycle1: line_id 28 ("九"), cycle2: line_id 32 ("十"), cycle3: line_id 34 ("一")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 28, 9, '2025-02-13 12:38:00.000000');
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 32, 10, '2025-02-13 12:39:00.000000');
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 34, 1, '2025-02-13 12:40:00.000000');
+-- Book 8: line_id 37 ("二")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 37, 2, '2025-02-13 12:41:00.000000');
+-- Book 9: line_id 41 ("三")
+INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 41, 3, '2025-02-13 12:42:00.000000');
+-- Book 10: line_id 44 ("四")
+-- INSERT INTO Used_Book_Kanjis VALUES (DEFAULT, 44, 4, '2025-02-13 12:43:00.000000');
 
 
 --------------------------------------------------------------------
