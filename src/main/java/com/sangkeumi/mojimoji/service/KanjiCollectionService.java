@@ -54,55 +54,6 @@ public class KanjiCollectionService {
         return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category, jlptRank, kanjiSearch, 1,
                 "asc");
 
-        // List<KanjiCollection> kanjiCollection =
-        // kanjiCollectionRepository.findKanjiCollectionsByUserId(userId, category,
-        // jlptRank, kanjiSearch);
-        // return kanjiCollection;
-        // }
-
-        // public List<KanjiCollection> getMyCollection(User user, String category,
-        // String jlptRank,
-        // String kanjiSearch) {
-        // Long userId = user.getUserId();
-        // List<KanjiCollection> kanjiCollection =
-        // kanjiCollectionRepository.findKanjiCollectionsByUserId(userId, category,
-        // jlptRank, kanjiSearch);
-
-        // List<KanjiCollection> myCollection = new ArrayList<>();
-
-        // for (KanjiCollection kanji : kanjiCollection) {
-        // if (kanji != null) {
-        // if (kanji.getUser() == user) {
-        // myCollection.add(kanji);
-        // }
-        // }
-        // }
-
     }
-
-    // 백업
-    // public List<KanjiCollection> getAllKanjiCollection(String category, String
-    // jlptRank, String kanjiSearch,
-    // User notUser) {
-
-    // List<Kanji> allKanjiList =
-    // kanjiRepository.findAllByCategoryContainsAndJlptRankContainsAndKanjiContains(
-    // category,
-    // jlptRank,
-    // kanjiSearch);
-
-    // List<KanjiCollection> allKanjiCollection = new ArrayList<>();
-
-    // for (Kanji kanji : allKanjiList) {
-    // KanjiCollection temp = KanjiCollection.builder()
-    // .kanji(kanji)
-    // .user(notUser)
-    // .build();
-
-    // allKanjiCollection.add(temp);
-    // }
-    // log.info("allKanjiCollection: {}", allKanjiCollection.size());
-    // return allKanjiCollection;
-    // }
 
 }

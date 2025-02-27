@@ -63,29 +63,6 @@ public class KanjiController {
             return "kanji/kanjiCollection";
         }
 
-        // User notUser = userService.getUser((long) 7);
-
-        // List<KanjiCollection> kanjiCollection =
-        // kanjiCollectionService.getKanjiCollection(userId, category,
-        // jlptRank,
-        // kanjiSearch);
-
-        // List<KanjiCollection> myCollection =
-        // kanjiCollectionService.getMyCollection(user, category, jlptRank,
-        // kanjiSearch);
-
-        // List<KanjiCollection> allKanjiCollection =
-        // kanjiCollectionService.getAllKanjiCollection(category, jlptRank,
-        // kanjiSearch, notUser);
-
-        // List<Kanji> kanjiList = kanjiService.getKanjiList(category, jlptRank,
-        // kanjiSearch);
-
-        // model.addAttribute("kanjiCollection", kanjiCollection);
-        // model.addAttribute("kanjiList", kanjiList);
-        // model.addAttribute("user", user);
-        // model.addAttribute("myCollection", myCollection);
-        // model.addAttribute("allKanjiCollection", allKanjiCollection);
         return "kanji/kanjiCollection";
     }
 
