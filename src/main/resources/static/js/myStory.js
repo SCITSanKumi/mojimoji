@@ -49,8 +49,17 @@ $(document).ready(function () {
                     // 삭제 버튼은 항상 표시
                     var deleteBtn = '<button type="button" class="btn btn-danger btn-sm" onclick="deleteStory(' + myStory.bookId + ')">삭제</button>';
 
+                    var thumbnailUrl = (myStory.thumbnailUrl && myStory.thumbnailUrl !== "null")
+                        ? myStory.thumbnailUrl
+                        : '/image/mountains.png';
+
+                    var profileUrl = (myStory.profileUrl && myStory.profileUrl !== "null")
+                        ? myStory.profileUrl
+                        : '/image/logo.png';
+
                     var myStoryHtml = '<div class="col">' +
-                        '<div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url(' + myStory.thumbnailUrl + ');">' +
+                        '<div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" ' +
+                        'style="background-image: url(' + thumbnailUrl + '); background-repeat: no-repeat; background-size: contain; background-position: center;">' +
                         '<div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 position-relative">' +
                         // 공유/삭제 버튼 영역
                         '<div class="position-absolute top-0 end-0 p-2">' +
@@ -63,7 +72,7 @@ $(document).ready(function () {
                         '</h3>' +
                         '<h5>' + myStory.nickname + '</h5>' +
                         '<ul class="d-flex list-unstyled mt-auto">' +
-                        '<li class="me-auto"><img src="' + myStory.profileUrl + '" alt="Profile" width="32" height="32" class="rounded-circle border border-white"></li>' +
+                        '<li class="me-auto"><img src="' + profileUrl + '" alt="Profile" width="32" height="32" class="rounded-circle border border-white"></li>' +
                         '<li class="d-flex align-items-center me-3"><small>조회수</small></li>' +
                         '<li class="d-flex align-items-center"><small>' + myStory.hitCount + '</small></li>' +
                         '</ul>' +

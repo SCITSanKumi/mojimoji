@@ -43,15 +43,26 @@ $(document).ready(function () {
                 }
                 // 각 스토리에 대해 카드 HTML 생성 및 추가
                 $.each(data, function (index, story) {
+                    // story.thumbnailUrl이 falsy하거나 "null" 문자열이면 fallback URL 사용
+                    var thumbnailUrl = (story.thumbnailUrl && story.thumbnailUrl !== "null")
+                        ? story.thumbnailUrl
+                        : '/image/mountains.png';
+
+                    var profileUrl = (story.profileUrl && story.profileUrl !== "null")
+                        ? story.profileUrl
+                        : '/image/logo.png';
+
+
                     var storyHtml = '<div class="col">' +
-                        '<div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url(' + story.thumbnailUrl + ');">' +
+                        '<div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" ' +
+                        'style="background-image: url(' + thumbnailUrl + '); background-repeat: no-repeat; background-size: contain; background-position: center;">' +
                         '<div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">' +
                         '<h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">' +
                         '<a href="/board/story/detail?bookId=' + story.bookId + '" class="text-white text-decoration-none">' + story.title + '</a>' +
                         '</h3>' +
                         '<h5>' + story.nickname + '</h5>' +
                         '<ul class="d-flex list-unstyled mt-auto">' +
-                        '<li class="me-auto"><img src="' + story.profileUrl + '" alt="Profile" width="32" height="32" class="rounded-circle border border-white"></li>' +
+                        '<li class="me-auto"><img src="' + profileUrl + '" alt="Profile" width="32" height="32" class="rounded-circle border border-white"></li>' +
                         '<li class="d-flex align-items-center me-3"><small>조회수</small></li>' +
                         '<li class="d-flex align-items-center"><small>' + story.hitCount + '</small></li>' +
                         '</ul>' +
@@ -62,6 +73,7 @@ $(document).ready(function () {
                         '</div>';
                     $("#story-container").append(storyHtml);
                 });
+
                 page++;
                 loading = false;
                 if (!noMoreData) {

@@ -8,7 +8,8 @@
     <!-- jQuery -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}">
     <!-- Bootstrap JS -->
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <script defer th:src="@{/js/storyListPaging.js}"></script>
@@ -51,7 +52,7 @@
         <div class="row row-cols-1 row-cols-lg-3 g-4 py-5" id="story-container">
             <div class="col" th:each="sharedStory : ${sharedStoryList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                    th:style="'background-image: url(' + ${sharedStory.thumbnailUrl} + ');'">
+                    th:style="|background-image: url(${sharedStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">
                     <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
                         <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
                             <a th:href="@{/board/story/detail(bookId=${sharedStory.bookId})}"
@@ -60,7 +61,9 @@
                         <h5 th:text="${sharedStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${sharedStory.profileUrl}" alt="Profile" width="32" height="32" class="rounded-circle border border-white">
+                                <img th:src="${sharedStory.profileUrl != null ? sharedStory.profileUrl : '/image/logo.png'}"
+                                    alt="Profile" width="32" height="32" class="rounded-circle border border-white">
+
                             </li>
                             <li class="d-flex align-items-center me-3">
                                 <small>조회수</small>
