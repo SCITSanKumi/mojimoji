@@ -12,5 +12,6 @@ public record SharedStoryInfoResponse(
     String nickname,
     String profileUrl,
     int hitCount,
-    int gaechu) {
+    int gaechu,
+    boolean liked) {
 }

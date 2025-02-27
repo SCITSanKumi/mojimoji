@@ -41,6 +41,18 @@ public class BookLine {
     private String content;
 
     /**
+     * 플레이어의 hp를 나타내는 컬럼
+     */
+    @Column(nullable = false)
+    private int hp;
+
+    /**
+     * 플레이어의 mp를 나타내는 컬럼
+     */
+    @Column(nullable = false)
+    private int mp;
+
+    /**
      * 책 내에서의 순서를 나타내는 필드
      */
     @Column(nullable = false)

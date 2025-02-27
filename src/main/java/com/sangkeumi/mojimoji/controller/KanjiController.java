@@ -2,7 +2,6 @@ package com.sangkeumi.mojimoji.controller;
 
 import java.util.List;
 
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,23 +12,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.entity.Kanji;
-import com.sangkeumi.mojimoji.entity.KanjiCollection;
-import com.sangkeumi.mojimoji.entity.User;
+
 import com.sangkeumi.mojimoji.service.KanjiCollectionService;
 import com.sangkeumi.mojimoji.service.KanjiService;
-import com.sangkeumi.mojimoji.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sangkeumi.mojimoji.dto.kanji.KanjiDetailResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Controller
 @RequestMapping("/kanji")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Kanji API", description = "한자 관련 API")
 public class KanjiController {
 
     private final KanjiCollectionService kanjiCollectionService;
-    private final UserService userService;
     private final KanjiService kanjiService;
 
     @GetMapping("/collection")
@@ -42,7 +45,6 @@ public class KanjiController {
         if (principal != null && principal.getUserId() != null) {
 
             Long userId = principal.getUserId();
-            User user = userService.getUser(userId);
             Integer collected = 0;
 
             List<myCollectionRequest> myCollection = kanjiCollectionService.getMyCollection(userId, category, jlptRank,
@@ -74,5 +76,14 @@ public class KanjiController {
         model.addAttribute("kanji", kanji);
 
         return "kanji/kanjiDetail";
+    }
+
+    @GetMapping("/details")
+    @ResponseBody
+    @Operation(summary = "한자 정보", description = "한자의 정보와 수집한 날자를 화면에 전송한다")
+    public KanjiDetailResponse getKanjiDetails(
+            @RequestParam(name = "kanjiId") Long kanjiId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        return kanjiService.getKanjiDetail(kanjiId, principal.getUserId());
     }
 }

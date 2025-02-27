@@ -1,49 +1,72 @@
 package com.sangkeumi.mojimoji.controller;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.sangkeumi.mojimoji.dto.game.MessageSendRequest;
-import com.sangkeumi.mojimoji.service.GameService;
+import com.sangkeumi.mojimoji.dto.game.*;
+import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
+import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
+import com.sangkeumi.mojimoji.service.*;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 
 @Controller
 @RequestMapping("/game")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "Game API", description = "게임 관련 API")
 public class GameController {
 
     private final GameService gameService;
+    private final KanjiCollectionService kanjiCollectionService;
 
     @GetMapping("/screen")
     public String game() {
+
         return "game/screen";
     }
 
-    @PostMapping("/start")
+    @GetMapping("/start/{bookId}")
+    @ResponseBody
     @Operation(summary = "게임 시작", description = "새로운 게임을 시작합니다.")
-    public ResponseEntity<Map<String, Object>> startGame() {
-        Long bookId = gameService.startGame();
-
-        return ResponseEntity.ok(Map.of(
-            "bookId", bookId,
-            "message", "게임이 시작되었습니다!"
-        ));
+    public ResponseEntity<GameStartResponse> gameStart(
+            @PathVariable("bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        return ResponseEntity.ok(gameService.gameStart(bookId, principal));
     }
 
-    @PostMapping("/send")
-    @Operation(summary = "OpenAI 대답 요청", description = "OpenAI 대답 요청을 처리합니다.")
-    public ResponseEntity<String> sendMessage(@RequestBody MessageSendRequest request) throws InterruptedException, ExecutionException {
-        CompletableFuture<String> response = gameService.getChatResponse(request);
+    @ResponseBody
+    @PostMapping(value = "/send/{bookId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> sendMessage(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam("message") String message) {
+        return gameService.getChatResponseStream(bookId, message);
+    }
 
-        return ResponseEntity.ok(response.get());
+    @ResponseBody
+    @GetMapping("/state/{bookId}")
+    public ResponseEntity<GameStateResponse> getGameState(@PathVariable("bookId") Long bookId) {
+        return ResponseEntity.ok(gameService.getGameState(bookId));
+    }
+
+    @ResponseBody
+    @GetMapping("/end/{bookId}")
+    public ResponseEntity<GameEndResponse> gameEnd(@PathVariable("bookId") Long bookId) {
+        return ResponseEntity.ok(gameService.gameEnd(bookId));
+    }
+
+    @ResponseBody
+    @PostMapping("/addCollection")
+    public void addCollection(
+            @RequestParam("kanjiId") Long kanjiId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        kanjiCollectionService.addCollection(kanjiId, principal);
     }
 }

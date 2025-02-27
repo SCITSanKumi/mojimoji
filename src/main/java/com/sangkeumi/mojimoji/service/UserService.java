@@ -1,5 +1,7 @@
 package com.sangkeumi.mojimoji.service;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +71,13 @@ public class UserService {
     }
 
     public User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Optional<User> temp = userRepository.findById(userId);
+
+        if (temp.isPresent()) {
+            User user = temp.get();
+            return user;
+        }
+        return null;
     }
 }
