@@ -12,14 +12,6 @@
     <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <style>
-        #correctKanji {
-            color: blue;
-        }
-
-        #wrongKanji {
-            color: red;
-        }
-
         .modal-content {
             padding: 20px;
             background: #ffffff;
@@ -31,6 +23,7 @@
             let bookId = -1;
             let kanjiList = [];
             let currentQuestionIndex = 0;
+            let correctIndexes = [];
             let score = 0;
 
             $("#start-btn").click(() => {
@@ -159,9 +152,10 @@
                 let onyomiInput = $(".onyomi-input").val().trim();
 
                 if (
-                    kunyomiInput.toLowerCase() === kanjiData.korKunyomi.toLowerCase() ||
+                    kunyomiInput.toLowerCase() === kanjiData.korKunyomi.toLowerCase() &&
                     onyomiInput.toLowerCase() === kanjiData.korOnyomi.toLowerCase()
                 ) {
+                    correctIndexes.push(currentQuestionIndex);
                     score++;
                     alert("정답입니다!");
 
@@ -217,14 +211,42 @@
             }
 
             function endQuiz() {
-                $(".quiz-item").addClass("d-none");
-                let gameResult = $("#game-result");
-                gameResult.removeClass("d-none").html(`<h3>퀴즈 종료!</h3><p>최종 점수: ${score}</p>`);
+                let resultHtml = "";
 
-                setTimeout(() => {
-                    $("#quiz-modal").modal("hide");
-                }, 3000);
+                for (let i = 0; i < kanjiList.length; i++) {
+                    let kanji = kanjiList[i].kanji;
+
+                    if (correctIndexes.includes(i)) {
+                        resultHtml += `<span style="color: blue;">${kanji}</span> `;
+                    } else {
+                        resultHtml += `<span style="color: red;">${kanji}</span> `;
+                    }
+                }
+
+                // 결과 표시
+                $("#quiz-container").hide();
+                $("#game-result").removeClass("d-none").html(`
+                    <h3 class="text-center">퀴즈 종료!</h3>
+                    <p><strong>퀴즈 결과:</strong> ${resultHtml}</p>
+                    <p>맞힌 한자 개수: <strong>${score}</strong>개</p>
+                    <p>틀린 한자 개수: <strong>${kanjiList.length - score}</strong>개</p>
+                    <div class="text-center mt-3">
+                        <button id="toMain" class="btn btn-primary">메인으로</button>
+                        <button id="toStoryList" class="btn btn-secondary">스토리 공유하기</button>
+                    </div>
+                `);
+
+                // 버튼 이벤트 추가 (중복 등록 방지)
+                $("#toMain").off("click").on("click", () => location.href = "/");
+                $("#toStoryList").off("click").on("click", () => location.href = "/board/story/list");
             }
+
+            // 모달 닫힘 방지
+            $('#quiz-modal').on('hide.bs.modal', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            });
         });
     </script>
 </head>
@@ -259,8 +281,8 @@
     </div>
 
     <!-- 퀴즈 모달 -->
-    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content p-4">
                 <h2 class="text-center">한자 퀴즈</h2>
                 <div id="quiz-container">
@@ -273,7 +295,6 @@
                         <button class="answer-btn btn btn-primary mt-2">제출</button>
                     </div>
                 </div>
-                <button id="next-btn" class="btn btn-success mt-3 d-none">다음 문제</button>
                 <div id="game-result" class="mt-3 d-none"></div>
             </div>
         </div>
