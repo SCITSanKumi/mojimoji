@@ -2,6 +2,7 @@ package com.sangkeumi.mojimoji.controller;
 
 import java.util.List;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +38,7 @@ public class KanjiController {
             @RequestParam(name = "jlptRank", defaultValue = "") String jlptRank,
             @RequestParam(name = "kanjiSearch", defaultValue = "") String kanjiSearch,
             @RequestParam(name = "kanjiSort", defaultValue = "한자번호순") String kanjiSort,
-            @RequestParam(name = "sortDirection") String sortDirection, Model model) {
+            @RequestParam(name = "sortDirection", defaultValue = "오름차순") String sortDirection, Model model) {
         if (principal != null && principal.getUserId() != null) {
 
             Long userId = principal.getUserId();

@@ -51,8 +51,7 @@ public class KanjiCollectionService {
                         Sort, sortDirection);
         }
 
-        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category, jlptRank, kanjiSearch, 1,
-                "asc");
+        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category, jlptRank, kanjiSearch, 1, "asc");
 
     }
 

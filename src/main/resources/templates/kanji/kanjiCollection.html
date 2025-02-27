@@ -111,8 +111,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             padding: 20px;
-            /* background: #ffffff;
-            border-radius: 20px; */
+
         }
 
         /* 모달 */
@@ -157,6 +156,8 @@
         }
 
         .detailCategory {
+            margin-top: 5px;
+            margin-bottom: 5px;
             float: left;
             margin-left: 25px;
             margin-top: 5px;
@@ -168,6 +169,8 @@
             font-weight: bold;
             text-align: right;
             margin-right: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
         .detailYomi {
@@ -181,9 +184,13 @@
             color: #1063FE;
             float: left;
             margin-left: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
         .detailCreatedAt {
+            margin-top: 5px;
+            margin-bottom: 5px;
             font-size: 15px;
             float: right;
             margin-right: 25px;
@@ -217,7 +224,7 @@
                 let korOnyomi = $(this).data('koronyomi');
                 let jpnKunyomi = $(this).data('jpnkunyomi');
                 let jpnOnyomi = $(this).data('jpnonyomi');
-                //let meaning = $(this).data('meaning').replace('\n', '<br>');
+
                 let meaning = $(this).attr('data-meaning').replace(/\\n/g, '<br>');
                 let createdAt = $(this).data('createdat');
 
