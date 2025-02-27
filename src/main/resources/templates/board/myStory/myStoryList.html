@@ -17,7 +17,7 @@
 <body>
     <header th:insert="~{fragments/header :: header}"></header>
     <div class="container px-4 py-5" id="custom-cards">
-        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5">
+        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5" id="myStory-container">
             <div class="col" th:each="myStory : ${myStoryList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                     th:style="'background-image: url(' + ${myStory.thumbnailUrl} + ');'">
@@ -28,18 +28,15 @@
                                     th:attr="onclick=|shareStory(${myStory.bookId})|">
                                     공유
                                 </button>
-                                <button type="button" class="btn btn-danger btn-sm me-2"
-                                    th:attr="onclick=|deleteStory(${myStory.bookId})|">
+                                <button type="button" class="btn btn-danger btn-sm me-2" th:attr="onclick=|deleteStory(${myStory.bookId})|">
                                     삭제
                                 </button>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
-                                <a th:href="@{/board/story/detail(bookId=${myStory.bookId})}"
-                                    class="text-white text-decoration-none" th:text="${myStory.title}">스토리 제목</a>
-                            </h3>
-                        </div>
+                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+                            <a th:href="@{/board/myStory/detail(bookId=${myStory.bookId})}"
+                                class="text-white text-decoration-none" th:text="${myStory.title}">스토리 제목</a>
+                        </h3>
                         <h5 th:text="${myStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
@@ -47,23 +44,20 @@
                                     class="rounded-circle border border-white">
                             </li>
                             <li class="d-flex align-items-center me-3">
-                                <svg class="bi me-2" width="1em" height="1em">
-                                    <use xlink:href="#geo-fill" />
-                                </svg>
                                 <small>조회수</small>
                             </li>
                             <li class="d-flex align-items-center">
-                                <svg class="bi me-2" width="1em" height="1em">
-                                    <use xlink:href="#calendar3" />
-                                </svg>
-                                <small th:text="${myStory.hitCount}">2,000</small>
+                                <small th:text="${myStory.hitCount}">조회수</small>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- 로딩 인디케이터 -->
+        <div id="loading" style="display:none; text-align:center;">Loading...</div>
     </div>
+    <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
 
 </html>

@@ -103,6 +103,7 @@ function emailCheck() {
     if (!EMAIL_REGEX.test(email)) {
         $('#email').css('border-color', 'red');
         emailMsg.text('이메일 형식이 올바르지 않습니다.');
+        EmailCheck = false;
         return false;
     } else {
         $('#email').css('border-color', '');
@@ -192,7 +193,7 @@ function signUp() {
         data: JSON.stringify(data),
         success: function (response) {
             if (response === true) {
-                window.location.replace('/');
+                window.location.replace('/user/login?success=true&message=' + encodeURIComponent('회원가입 성공'));
             } else {
                 showToast('회원가입에 실패했습니다.');
             }

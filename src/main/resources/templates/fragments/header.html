@@ -1,6 +1,7 @@
 <nav th:fragment="header" class="navbar navbar-expand-lg navbar-light bg-white border-bottom container-fluid p-3 mb-3">
     <!-- 브랜드 로고 -->
-    <a href="/" class="navbar-brand">もじもじ</a>
+    <a href="/" class="navbar-brand">
+        <img th:src="@{/image/logo.png}" style="height: 40px; "></a>
     <!-- 모바일 토글 버튼 -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +22,8 @@
             <li class="nav-item dropdown d-none d-lg-block">
                 <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                    <img src="https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png" alt="user"
+                        width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
                     <th:block sec:authorize="isAuthenticated()">
