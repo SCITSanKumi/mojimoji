@@ -5,11 +5,257 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <style>
+        #kanjiCurrent {
+            font-size: 20px;
+            font-weight: bold;
+            float: left;
+            margin-left: 50px;
+            width: 100px;
+        }
+
+        #kanjiSort {
+            float: left;
+            margin-left: 10px;
+        }
+
+        #searchRight {
+            float: right;
+        }
+
+
+
+        .toKanjiDetail {
+            display: inline-block;
+
+        }
+
+        .kanjiCard {
+            width: 245px;
+            height: 367px;
+            border: 1px solid gray;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-right: 3px;
+        }
+
+        .notKanjiCard {
+            width: 245px;
+            height: 367px;
+            border: 1px solid gray;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-right: 3px;
+            background-color: lightgray;
+            opacity: 0.5;
+        }
+
+        .kanji {
+            font-size: 100px;
+            font-weight: bold;
+        }
+
+        .kanjiExplain {
+            text-align: left;
+            font-size: 16px;
+            margin-left: 10px;
+
+        }
+
+        .category {
+            line-height: 15px;
+        }
+
+        .jlptRank {
+            line-height: 15px;
+            font-weight: bold;
+            text-align: left;
+            margin-top: 5px;
+        }
+
+        .yomi {
+            text-align: center;
+            font-size: 40px;
+            margin-top: 10px;
+        }
+
+        .kanjiId {
+            margin-top: 50px;
+            font-size: 15px;
+            color: #1063FE;
+            float: left;
+        }
+
+        .createdAt {
+            margin-top: 50px;
+            font-size: 15px;
+            float: right;
+            margin-right: 10px;
+        }
+
+        .modal {
+            text-align: center;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal .modal_popup {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+
+        }
+
+        /* 모달 */
+
+        .toKanjiList {
+            display: inline-block;
+            background-color: white;
+            width: 340px;
+            /* height: 537px; */
+            border-radius: 10px;
+            border: 1px solid gray;
+            text-align: center;
+
+        }
+
+        .detailKanjiCard {
+            width: 298px;
+            /* height: 471px; */
+            border: 1px solid lightgray;
+            text-align: center;
+            margin-bottom: 10px;
+            margin: auto;
+        }
+
+        .detailKanji {
+            display: inline-block;
+            font-size: 130px;
+            width: 278px;
+            height: 192px;
+            font-weight: bold;
+            border: 1px solid lightgray;
+            margin-top: 10px;
+        }
+
+
+
+        .detailKanjiExplain {
+            text-align: left;
+            font-size: 16px;
+            margin-left: 10px;
+
+        }
+
+        .detailCategory {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            float: left;
+            margin-left: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+
+        }
+
+        .detailJlptRank {
+            font-weight: bold;
+            text-align: right;
+            margin-right: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .detailYomi {
+            text-align: center;
+            font-size: 40px;
+            margin-top: 10px;
+        }
+
+        .detailKanjiId {
+            font-size: 15px;
+            color: #1063FE;
+            float: left;
+            margin-left: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .detailCreatedAt {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 15px;
+            float: right;
+            margin-right: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        pre {
+            margin-top: 0px;
+            height: 168px;
+        }
+    </style>
     <script>
         $(function () {
-            $('.toKanjiDetail').on('click', function () {
-                location.href = '/kanji/detail';
+
+            $("#kanjiSort").on('change', function () {
+                $('#searchForm').submit();
+            })
+
+            $("#sortDirection").on('change', function () {
+                $('#searchForm').submit();
+            })
+
+            $('.toModal').on('click', function () {
+
+                let kanjiId = $(this).attr('data-kanjiId');
+                let kanji = $(this).data('kanji');
+                let category = $(this).data('category');
+                let jlptRank = $(this).data('jlptrank');
+                let korKunyomi = $(this).data('korkunyomi');
+                let korOnyomi = $(this).data('koronyomi');
+                let jpnKunyomi = $(this).data('jpnkunyomi');
+                let jpnOnyomi = $(this).data('jpnonyomi');
+
+                let meaning = $(this).attr('data-meaning').replace(/\\n/g, '<br>');
+                let createdAt = $(this).data('createdat');
+
+                $(".detailKanjiId").text('No.' + `${kanjiId}`);
+                $(".detailKanji").text(`${kanji}`);
+                $(".detailCategory").text('카테고리 : ' + `${category}`);
+                $(".detailJlptRank").text(`${jlptRank}`);
+                $(".detailYomi").text(`${korKunyomi}` + ' ' + `${korOnyomi}`);
+                $(".detailJpnKunyomi").text('훈독 : ' + `${jpnKunyomi}`);
+                $(".detailJpnOnyomi").text('음독 : ' + `${jpnOnyomi}`);
+                $(".detailMeaning").html('의미 :<br>' + `${meaning}`);
+                $(".detailCreatedAt").text(`${createdAt}`);
+
+
+                $(".modal").css("display", "block");
+
             });
+
+            $('.modal').on('click', function () {
+
+                if ($(".modal").css("display") == 'block') {
+
+                    $(".modal").css("display", "none");
+                }
+            })
+
+            $('.notKanjiCard').on('click', function () {
+                alert('본인이 등록한 한자만 볼 수 있습니다.');
+            });
+
+
         })
     </script>
     <title>Document</title>
@@ -22,55 +268,121 @@
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-    <h2>한자 수집북</h2>
-    <table style="border-collapse: collapse;">
-        <tr>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자1</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자2</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자3</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자4</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자5</div>
-            </td>
-        </tr>
-        <tr>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자1</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자2</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자3</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자4</div>
-            </td>
-            <td style="width: 100px; height: 150px;" class="toKanjiDetail">
-                <div style="display: inline-block; width: 100px; height: 150px; border: 1px solid black;">
-                    한자5</div>
-            </td>
-        </tr>
+    <div class="container px-4 py-5" id="custom-cards"><br><br><br>
+        <h2>한자 수집북</h2><br>
+        <span id="kanjiCurrent" th:text="${collected} + '/' + ${myCollection.size()}"></span>
+        <form th:action="@{/kanji/collection}" method="get" id="searchForm">
+            <select id="kanjiSort" name="kanjiSort">
+                <option value="한자번호순" th:selected="${kanjiSort} == '한자번호순'">한자번호순</option>
+                <option value="최근등록순" th:selected="${kanjiSort} == '최근등록순'">최근등록순</option>
+                <!-- <option value="즐겨찾기순">즐겨찾기순</option> -->
+            </select>
+            <select id="sortDirection" name="sortDirection">
+                <option value="오름차순" th:selected="${sortDirection} == '오름차순'">오름차순</option>
+                <option value="내림차순" th:selected="${sortDirection} == '내림차순'">내림차순</option>
+            </select>
+            <span id="searchRight">
+                카테고리 : <select name="category">
+                    <option value="" th:selected="${category} == ''">전체</option>
+                    <option value="가족" th:selected="${category} == '가족'">가족</option>
+                    <option value="감각" th:selected="${category} == '감각'">감각</option>
+                    <option value="감정" th:selected="${category} == '감정'">감정</option>
+                    <option value="국가" th:selected="${category} == '국가'">국가</option>
+                    <option value="금속" th:selected="${category} == '금속'">금속</option>
+                    <option value="동물" th:selected="${category} == '동물'">동물</option>
+                    <option value="문서" th:selected="${category} == '문서'">문서</option>
+                    <option value="방위" th:selected="${category} == '방위'">방위</option>
+                    <option value="사계" th:selected="${category} == '사계'">사계</option>
+                    <option value="사상" th:selected="${category} == '사상'">사상</option>
+                    <option value="색감" th:selected="${category} == '색감'">색감</option>
+                    <option value="수계" th:selected="${category} == '수계'">수계</option>
+                    <option value="수학" th:selected="${category} == '수학'">수학</option>
+                    <option value="시간" th:selected="${category} == '시간'">시간</option>
+                    <option value="식물" th:selected="${category} == '식물'">식물</option>
+                    <option value="신체" th:selected="${category} == '신체'">신체</option>
+                    <option value="음식" th:selected="${category} == '음식'">음식</option>
+                    <option value="의류" th:selected="${category} == '의류'">의류</option>
+                    <option value="인공" th:selected="${category} == '인공'">인공</option>
+                    <option value="자연" th:selected="${category} == '자연'">자연</option>
+                    <option value="작용" th:selected="${category} == '작용'">작용</option>
+                    <option value="장소" th:selected="${category} == '장소'">장소</option>
+                    <option value="종교" th:selected="${category} == '종교'">종교</option>
+                    <option value="지칭" th:selected="${category} == '지칭'">지칭</option>
+                    <option value="직업" th:selected="${category} == '직업'">직업</option>
+                    <option value="형용사" th:selected="${category} == '형용사'">형용사</option>
+                </select>
+                급수 :
+                <select name="jlptRank">
+                    <option value="" th:selected="${jlptRank} == ''">전체</option>
+                    <option value="N1" th:selected="${jlptRank} == 'N1'">N1</option>
+                    <option value="N2" th:selected="${jlptRank} == 'N2'">N2</option>
+                    <option value="N3" th:selected="${jlptRank} == 'N3'">N3</option>
+                    <option value="N4" th:selected="${jlptRank} == 'N4'">N4</option>
+                    <option value="N5" th:selected="${jlptRank} == 'N5'">N5</option>
+                </select>
+                <input type="text" name="kanjiSearch" th:value="${kanjiSearch}" placeholder="한자를 입력해주세요">
+                <input type="submit" value="검색">
+            </span>
+        </form>
+        <br><br><br>
 
 
-    </table>
+
+        <div th:each="kanji : ${myCollection}" class="toKanjiDetail">
+            <div th:if="${kanji.isCollected} == 1" class="kanjiCard toModal" th:data-kanjiId="${kanji.kanjiId}"
+                th:data-kanji="${kanji.kanji}" th:data-category="${kanji.category}" th:data-jlptRank="${kanji.jlptRank}"
+                th:data-korKunyomi="${kanji.korKunyomi}" th:data-korOnyomi="${kanji.KorOnyomi}"
+                th:data-jpnKunyomi="${kanji.jpnKunyomi}" th:data-jpnOnyomi="${kanji.jpnOnyomi}"
+                th:data-meaning="${kanji.meaning}"
+                th:data-createdAt="${#temporals.format(kanji.firstCollectedAt,'yyyy-MM-dd')}">
+                <span class="kanji">[[${kanji.kanji}]]</span>
+                <hr>
+                <div class="kanjiExplain">
+                    <div class="category">카테고리 : [[${kanji.category}]]</div>
+                    <div class="jlptRank">[[${kanji.jlptRank}]]</div>
+                    <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}">
+                    </div>
+                    <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
+                </div>
+                <div class="createdAt" th:text="${#temporals.format(kanji.firstCollectedAt,'yyyy-MM-dd')}"></div>
+            </div>
+            <div th:unless="${kanji.isCollected} == 1" class="notKanjiCard">
+                <span class="kanji">[[${kanji.Kanji}]]</span>
+                <hr>
+                <div class="kanjiExplain">
+                    <div class="category">카테고리 : [[${kanji.category}]]</div>
+                    <div class="jlptRank">[[${kanji.JlptRank}]]</div>
+                    <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}">
+                    </div>
+                    <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
+                </div>
+                <div class="createdAt">미등록</div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal">
+        <div class="modal_popup">
+            <div class="toKanjiList">
+                <div class="detailKanjiId"></div>
+                <div class="detailJlptRank">N3</div>
+                <div class="detailKanjiCard">
+                    <span class="detailKanji">一</span>
+                    <div class="detailKanjiExplain">
+                        <div class="detailYomi">하나 일
+                        </div>
+                        <div class="detailJpnKunyomi">음독 :</div>
+                        <div class="detailJpnOnyomi">훈독 :</div>
+                        <pre class="detailMeaning">의미:</pre>
+                    </div>
+                </div>
+                <div class="detailCategory">카테고리 :</div>
+                <div class="detailCreatedAt">날짜</div>
+            </div>
+        </div>
 </body>
 
 </html>

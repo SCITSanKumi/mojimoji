@@ -1,18 +1,23 @@
 package com.sangkeumi.mojimoji.service;
 
+import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.sangkeumi.mojimoji.dto.kanji.KanjiDetailResponse;
 import com.sangkeumi.mojimoji.entity.Kanji;
-import com.sangkeumi.mojimoji.entity.KanjiCollection;
-import com.sangkeumi.mojimoji.repository.KanjiCollectionsRepository;
 import com.sangkeumi.mojimoji.repository.KanjiRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import com.sangkeumi.mojimoji.dto.kanji.KanjiDetailResponse;
+
+import com.sangkeumi.mojimoji.entity.KanjiCollection;
+import com.sangkeumi.mojimoji.repository.KanjiCollectionsRepository;
+
+import jakarta.transaction.Transactional;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -85,6 +90,13 @@ public class KanjiService {
                 kanji.getJpnKunyomi(),
                 kanji.getMeaning(),
                 obtainedAt);
+    }
+
+    public List<Kanji> getKanjiList(String category, String jlptRank, String kanjiSearch) {
+        List<Kanji> kanjiList = kanjiRepository.findAllByCategoryContainsAndJlptRankContainsAndKanjiContains(category,
+                jlptRank,
+                kanjiSearch);
+        return kanjiList;
     }
 
 }

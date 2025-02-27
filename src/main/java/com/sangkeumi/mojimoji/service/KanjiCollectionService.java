@@ -1,20 +1,27 @@
 package com.sangkeumi.mojimoji.service;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
+import com.sangkeumi.mojimoji.entity.Kanji;
+import com.sangkeumi.mojimoji.entity.KanjiCollection;
+import com.sangkeumi.mojimoji.entity.User;
+import com.sangkeumi.mojimoji.repository.KanjiRepository;
+
+import lombok.RequiredArgsConstructor;
+
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
-import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
 import com.sangkeumi.mojimoji.dto.mypage.*;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
-import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -28,17 +35,16 @@ public class KanjiCollectionService {
     public void addCollection(Long kanjiId, MyPrincipal principal) {
         // 1) kanjiId, userId로 DB에서 엔티티 조회
         Kanji kanji = kanjiRepository.findById(kanjiId)
-            .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
 
         User user = userRepository.findById(principal.getUserId())
-            .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
+                .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
 
         // 2) DB에 저장
         kanjiCollectionsRepository.save(KanjiCollection.builder()
-            .kanji(kanji) // Kanji 엔티티
-            .user(user) // User 엔티티
-            .build()
-        );
+                .kanji(kanji) // Kanji 엔티티
+                .user(user) // User 엔티티
+                .build());
     }
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {
@@ -71,6 +77,36 @@ public class KanjiCollectionService {
                 .collect(Collectors.groupingBy(CategoryKanjiRow::getCategory));
 
         return grouped;
+    }
+
+    public List<myCollectionRequest> getMyCollection(Long userId, String category, String jlptRank,
+            String kanjiSearch, String kanjiSort, String sortDirection) {
+
+        switch (kanjiSort) {
+            case "한자번호순":
+                Integer Sort = 1;
+                sortDirection = "";
+                if (sortDirection == "오름차순") {
+                    sortDirection = "asc";
+                } else {
+                    sortDirection = "desc";
+                }
+                return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category,
+                        jlptRank, kanjiSearch,
+                        Sort, sortDirection);
+            case "최근등록순":
+                Sort = 11;
+                if (sortDirection == "오름차순") {
+                    sortDirection = "asc";
+                } else {
+                    sortDirection = "desc";
+                }
+                return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category,
+                        jlptRank, kanjiSearch,
+                        Sort, sortDirection);
+        }
+
+        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category, jlptRank, kanjiSearch, 1, "asc");
     }
 
 }

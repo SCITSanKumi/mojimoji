@@ -1,7 +1,6 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,9 +8,9 @@ import lombok.*;
 @Table(name = "Kanji_Collections")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
 public class KanjiCollection {
     /**
