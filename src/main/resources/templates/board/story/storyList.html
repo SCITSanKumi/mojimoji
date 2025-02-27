@@ -3,52 +3,140 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>스토리 목록</title>
+
     <!-- jQuery -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <!-- Bootstrap JS -->
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
     <script defer th:src="@{/js/storyListPaging.js}"></script>
+
+    <style>
+        /* 마우스 오버 시 배경색과 텍스트 색상 변경 */
+        .sort-btn:hover {
+            background-color: #EE697D;
+            color: #fff;
+        }  
+
+        /* 정렬 버튼 영역 - 둥근 버튼 */
+        .sort-btn {
+            border-radius: 9999px !important;
+            color: #EE697D;
+            border-color: #EE697D;
+        }
+
+        /* 내 스토리 버튼+검색 영역을 한 줄로 유지 */
+        .top-actions {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 내 스토리 버튼은 축소 가능하도록 기본 flex 속성 사용 */
+        .top-actions .btn.btn-dark {
+            border-radius: 9999px;
+        }
+
+        /* 검색 영역 (내부 돋보기 포함) */
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        /* 검색 조건 select 둥글게 */
+        .search-wrapper select.form-select {
+            border-radius: 9999px;
+            width: 100px;
+            min-width: 100px;
+        }
+
+        /* 검색어 입력 필드 둥글게 및 아이콘 자리 확보 */
+        .search-container {
+            position: relative;
+            flex: 1;
+            /* 최소 폭을 낮춰 축소 허용 */
+            min-width: 200px;
+        }
+
+        .search-container input[type="text"] {
+            width: 100%;
+            border-radius: 9999px;
+            padding-right: 3rem;
+        }
+
+        /* 돋보기 아이콘 버튼 */
+        .search-container button {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            cursor: pointer;
+        }
+
+        .search-container .bi-search {
+            font-size: 1.2rem;
+        }
+
+        /* 상단 영역과 게시글 영역 간 간격 조정 */
+        .top-area {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 
 <body>
     <header th:insert="~{fragments/header :: header}"></header>
+
     <div class="container px-4 py-5" id="custom-cards">
-        <div class="row">
-            <div class="col-12 d-flex justify-content-between align-items-center">
-                <button type="button" id="myStoryBtn" class="btn btn-dark">내스토리</button>
-                <form action="/board/story/list" method="get" class="d-flex align-items-center gap-2 flex-nowrap">
-                    <div class="input-group">
-                        <select name="searchItem" id="searchItem" class="form-select" style="max-width: 120px;">
+        <h2 class="text-center mb-4">공유된 스토리</h2>
+        <div class="row top-area">
+            <div class="col-12">
+                <!-- 정렬 버튼 영역 -->
+                <div class="d-flex justify-content-end align-items-center mb-2">
+                    <input type="hidden" id="sortOption" th:value="${sortOption}">
+                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
+                        class="btn btn-sm me-1 sort-btn">추천순</a>
+                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='viewCount')}"
+                        class="btn btn-sm me-1 sort-btn">조회순</a>
+                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
+                        class="btn btn-sm sort-btn">날짜순</a>
+                </div>
+                <!-- 내스토리 버튼 + 검색 폼 영역 -->
+                <div class="top-actions">
+                    <button type="button" id="myStoryBtn" class="btn btn-dark">
+                        내스토리
+                    </button>
+                    <form action="/board/story/list" method="get" class="search-wrapper">
+                        <select name="searchItem" id="searchItem" class="form-select">
                             <option value="title" th:selected="${searchItem == 'title'}">제목</option>
                             <option value="user" th:selected="${searchItem == 'user'}">작성자</option>
                         </select>
-                        <input type="text" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요"
-                            th:value="${searchWord}" class="form-control" style="min-width: 400px;">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </div>
-                </form>
+                        <div class="search-container">
+                            <input type="text" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요"
+                                th:value="${searchWord}" class="form-control">
+                            <button type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <div class="row mt-2">
-            <div class="col-12 text-end">
-                <span class="fw-bold me-2">정렬:</span>
-                <input type="hidden" id="sortOption" th:value="${sortOption}">
-                <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
-                    class="btn btn-outline-secondary btn-sm me-1">추천순</a>
-                <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='viewCount')}"
-                    class="btn btn-outline-secondary btn-sm me-1">조회순</a>
-                <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
-                    class="btn btn-outline-secondary btn-sm">날짜순</a>
-            </div>
-        </div>
-
-        <!-- 초기 렌더링된 6개 스토리 카드 -->
-        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5" id="story-container">
+        <!-- 스토리 카드 목록 -->
+        <div class="row row-cols-1 row-cols-lg-3 g-4" id="story-container">
             <div class="col" th:each="sharedStory : ${sharedStoryList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                     th:style="'background-image: url(' + ${sharedStory.thumbnailUrl} + ');'">
@@ -60,7 +148,8 @@
                         <h5 th:text="${sharedStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${sharedStory.profileUrl}" alt="Profile" width="32" height="32" class="rounded-circle border border-white">
+                                <img th:src="${sharedStory.profileUrl}" alt="Profile" width="32" height="32"
+                                    class="rounded-circle border border-white">
                             </li>
                             <li class="d-flex align-items-center me-3">
                                 <small>조회수</small>
@@ -75,9 +164,11 @@
                 </div>
             </div>
         </div>
+
         <!-- 로딩 인디케이터 -->
-        <div id="loading" style="display:none; text-align:center;">Loading...</div>
+        <div id="loading" style="display:none; text-align:center; margin-top: 50px;">Loading...</div>
     </div>
+
     <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
 

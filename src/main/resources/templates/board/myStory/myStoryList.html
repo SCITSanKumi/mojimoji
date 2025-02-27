@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>내 스토리</title>
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
     <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
@@ -16,19 +15,25 @@
 
 <body>
     <header th:insert="~{fragments/header :: header}"></header>
+
     <div class="container px-4 py-5" id="custom-cards">
-        <div class="row row-cols-1 row-cols-lg-3 g-4 py-5" id="myStory-container">
+        <h2 class="text-center mb-4">내스토리</h2>
+
+        <!-- myStoryList가 비어있지 않은 경우에만 카드 목록 표시 -->
+        <div th:if="${not #lists.isEmpty(myStoryList)}" class="row row-cols-1 row-cols-lg-3 g-4 py-5" id="myStory-container">
             <div class="col" th:each="myStory : ${myStoryList}">
-                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                    th:style="'background-image: url(' + ${myStory.thumbnailUrl} + ');'">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" th:style="'background-image: url(' + ${myStory.thumbnailUrl} + ');'">
                     <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 position-relative">
                         <div class="position-absolute top-0 end-0 p-2">
                             <div class="d-flex">
+                                <!-- 공유 버튼: 공유되지 않은 경우에만 표시 -->
                                 <button type="button" class="btn btn-primary btn-sm me-2" th:if="${!myStory.shared}"
                                     th:attr="onclick=|shareStory(${myStory.bookId})|">
                                     공유
                                 </button>
-                                <button type="button" class="btn btn-danger btn-sm me-2" th:attr="onclick=|deleteStory(${myStory.bookId})|">
+                                <!-- 삭제 버튼 -->
+                                <button type="button" class="btn btn-danger btn-sm me-2"
+                                    th:attr="onclick=|deleteStory(${myStory.bookId})|">
                                     삭제
                                 </button>
                             </div>
@@ -54,9 +59,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- myStoryList가 비어있는 경우 -->
+        <div th:if="${#lists.isEmpty(myStoryList)}" class="text-center py-5">
+            <p class="fs-4">내 스토리가 없습니다.</p>
+        </div>
+
         <!-- 로딩 인디케이터 -->
-        <div id="loading" style="display:none; text-align:center;">Loading...</div>
+        <div id="loading" style="display:none; text-align:center; margin-top: 50px;">Loading...</div>
     </div>
+
     <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
 
