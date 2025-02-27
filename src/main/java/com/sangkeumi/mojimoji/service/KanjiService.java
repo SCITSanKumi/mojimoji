@@ -1,6 +1,7 @@
 package com.sangkeumi.mojimoji.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,15 @@ public class KanjiService {
                 jlptRank,
                 kanjiSearch);
         return kanjiList;
+    }
+
+    public Kanji getKanji(Long kanjiId) {
+
+        Optional<Kanji> temp = kanjiRepository.findById(kanjiId);
+
+        if (temp.isPresent()) {
+            return temp.get();
+        }
+        return null;
     }
 }
