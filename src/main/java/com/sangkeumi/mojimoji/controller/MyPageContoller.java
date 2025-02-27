@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@Slf4j
 @RequiredArgsConstructor
 @Tag(name = "Mypage API", description = "유저 통계 관련 API")
 public class MyPageContoller {

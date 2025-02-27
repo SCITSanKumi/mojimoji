@@ -1,154 +1,64 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>태백산맥</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-    <!-- Bootstrap Bundle JS -->
-    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <title>내 스토리 상세</title>
     <!-- jQuery -->
-    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
-
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}">
+    <!-- Bootstrap JS -->
+    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script defer th:src="@{/js/myStory.js}"></script>
     <style>
-        /* 본문 스타일 */
+        /* 내 스토리 내용을 감싸는 박스 스타일 (스크롤 적용 가능) */
         .story-box {
-            background-color: #dee2e6;
+            border: 1px solid #ccc;
             padding: 20px;
             border-radius: 8px;
+            background-color: #f8f9fa;
             margin-top: 20px;
-        }
-
-
-        /* 댓글 목록 스타일 */
-        .comment-list {
-            max-height: 200px;
-            /* 스크롤 가능 */
+            max-height: 400px;
+            /* 내용이 길면 최대 높이 지정 후 스크롤 */
             overflow-y: auto;
         }
 
-
-        /* 사용자 정보 박스 스타일 */
-        .user-info {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
+        /* 버튼 영역 스타일 */
+        .btn-wrapper {
+            margin-bottom: 15px;
         }
     </style>
 </head>
 
+<body>
+    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
 
-<body class="bg-light">
+    <!-- 로그인 사용자 ID -->
+    <input type="hidden" id="currentUserId" th:value="${#authentication.principal.userId}">
 
+    <div class="container mt-5 pt-5">
+        <div class="btn-wrapper" style="float: right;">
+            <button type="button" class="btn btn-primary btn-sm me-2"
+                th:attr="onclick=|shareStory(${myStoryInfo.bookId})|">
+                공유
+            </button>
+            <button type="button" class="btn btn-danger btn-sm me-2"
+                th:attr="onclick=|deleteStory(${myStoryInfo.bookId})|">
+                삭제
+            </button>
+        </div>
+        <h1 th:text="${myStoryInfo.title}">책제목</h1>
 
-    <!-- 네비게이션 바 -->
-    <nav class="navbar navbar-light bg-white border-bottom">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">📖 もじもじ</a>
-            <div>
-                <a href="#" class="text-dark me-3">스토리 시작</a>
-                <a href="#" class="text-dark me-3">스토리 구경하기</a>
-                <a href="#" class="text-dark">이용방법</a>
+        <!-- 내 스토리 내용을 하나의 박스에 표시 (내용이 길면 스크롤 생김) -->
+        <div class="story-box">
+            <div th:each="myStory : ${myStoryContent}">
+                <p th:text="${myStory.content}"></p>
             </div>
         </div>
-    </nav>
-
-
-    <!-- 메인 컨텐츠 -->
-    <div class="container mt-4">
-        <!-- 제목과 삭제 버튼을 같은 줄에 배치 (간격 조정) -->
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h2 class="fw-bold mb-0">태백산맥</h2>
-            <button class="btn btn-danger btn-lg fw-bold fs-5">삭제</button>
-        </div>
-
-
-        <!-- 소설 본문 -->
-        <div class="card story-box p-3">
-            <div class="card-body bg-light">
-                <pre>
-어느날 박혜선은 잠에서 깬 뒤 소스라치게 놀라고 만다.
-어젯밤 박혜선은 분명 자신의 안방에서 잠에 들었다.
-그러나 지금 그는 어둡고 침침한 숲속 한 가운데 있다.
-이게 도대체 어떻게 된 일일까.
-아무리 생각해도 이유를 알 수 없다. 그때 근처에서 괴상한 울음소리가 들린다.
-박혜선은 본능적으로 어딘가로 도망쳐야 한다고 생각했다.
-        </pre>
-            </div>
-        </div>
-
-
-        <div class="row mt-4 align-items-center">
-            <!-- 댓글 섹션 -->
-            <div class="col-md-8">
-                <h5>댓글</h5>
-
-
-                <!-- 입력창과 버튼을 함께 배치 -->
-                <div class="input-group">
-                    <input type="text" id="comment-input" class="form-control" placeholder="Share your thoughts">
-                    <button class="btn btn-dark" id="add-comment">댓글 등록</button>
-                </div>
-
-
-                <!-- 댓글 목록 (스크롤 가능) -->
-                <ul class="list-group comment-list mt-3" id="comment-list">
-                    <li class="list-group-item"><strong>철수:</strong> 스토리 재밌어요</li>
-                    <li class="list-group-item"><strong>영희:</strong> 스토리 흥미로워요</li>
-                    <li class="list-group-item"><strong>보람:</strong> 스토리 노잼이에요</li>
-                    <li class="list-group-item"><strong>철구:</strong> 노벨문학상 받아도 되겠어요</li>
-                    <li class="list-group-item"><strong>현상:</strong> 혹시 작가님이세요?</li>
-                    <li class="list-group-item"><strong>예신:</strong> 꿀잼!</li>
-                </ul>
-            </div>
-
-
-            <!-- 작성자 정보 (조금 아래로 내리기 위해 mt-4 추가) -->
-            <div class="col-md-4 mt-4">
-                <div class="card user-info">
-                    <div class="card-header text-center bg-light fw-bold">조정래</div>
-                    <div class="card-body text-center">
-                        <p><strong>태백산맥</strong></p>
-                        <p>👍 11.3k 👀 25.6k</p>
-                        <p>작성일: 2025/02/05</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-        <!-- 푸터 -->
-        <footer class="text-center py-4 mt-4 bg-white border-top">
-            주식회사 모지모지 © 2025. All rights reserved. 대표이사 김현
-        </footer>
-
-
-        <script>
-            $(document).ready(function () {
-                $('#add-comment').click(function () {
-                    let commentText = $('#comment-input').val().trim();
-                    if (commentText) {
-                        let newComment = '<li class="list-group-item"><strong>익명:</strong> ' + commentText + '</li>';
-                        $('#comment-list').append(newComment);
-                        $('#comment-input').val('');
-
-
-                        // 댓글이 추가될 때 자동 스크롤 다운
-                        let commentList = document.getElementById("comment-list");
-                        commentList.scrollTop = commentList.scrollHeight;
-                    }
-                });
-            });
-        </script>
-
-
+    </div>
 </body>
-
 
 </html>
