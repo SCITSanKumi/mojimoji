@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>스토리 목록</title>
-
     <!-- jQuery -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <!-- Bootstrap CSS -->
@@ -16,7 +15,6 @@
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
     <script defer th:src="@{/js/storyListPaging.js}"></script>
-
     <style>
         /* 마우스 오버 시 배경색과 텍스트 색상 변경 */
         .sort-btn:hover {
@@ -134,7 +132,6 @@
                 </div>
             </div>
         </div>
-
         <!-- 스토리 카드 목록 -->
         <div class="row row-cols-1 row-cols-lg-3 g-4" id="story-container">
             <div class="col" th:each="sharedStory : ${sharedStoryList}">
@@ -148,8 +145,7 @@
                         <h5 th:text="${sharedStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${sharedStory.profileUrl}" alt="Profile" width="32" height="32"
-                                    class="rounded-circle border border-white">
+                                <img th:src="${sharedStory.profileUrl}" alt="Profile" width="32" height="32" class="rounded-circle border border-white">
                             </li>
                             <li class="d-flex align-items-center me-3">
                                 <small>조회수</small>
@@ -164,12 +160,9 @@
                 </div>
             </div>
         </div>
-
         <!-- 로딩 인디케이터 -->
         <div id="loading" style="display:none; text-align:center; margin-top: 50px;">Loading...</div>
     </div>
-
     <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
-
 </html>
