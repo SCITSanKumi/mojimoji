@@ -95,7 +95,7 @@
 </head>
 
 <body>
-    <header th:insert="~{fragments/header :: header}"></header>
+    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
 
     <div class="container px-4 py-5" id="custom-cards">
         <h2 class="text-center mb-4">공유된 스토리</h2>
@@ -133,7 +133,7 @@
             </div>
         </div>
         <!-- 스토리 카드 목록 -->
-        <div class="row row-cols-1 row-cols-lg-3 g-4" id="story-container">
+        <div class="row row-cols-1 row-cols-lg-4 g-4" id="story-container">
             <div class="col" th:each="sharedStory : ${sharedStoryList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                     th:style="|background-image: url(${sharedStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">

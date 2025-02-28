@@ -29,6 +29,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
+     * 
      * @param searchWord
      * @param searchItem
      * @param sortOption
@@ -41,9 +42,9 @@ public class BoardController {
             @RequestParam(name = "searchItem", required = false, defaultValue = "title") String searchItem,
             @RequestParam(name = "sortOption", required = false, defaultValue = "date") String sortOption,
             Model model) {
-        // 첫 페이지(0번 페이지)에서 6개만 가져오기
+        // 첫 페이지(0번 페이지)에서 8개만 가져오기
         List<SharedStoryListResponse> sharedStoryList = boardService.searchAndSortSharedBooks(searchWord, searchItem,
-                sortOption, 0, 6);
+                sortOption, 0, 8);
         model.addAttribute("sharedStoryList", sharedStoryList);
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("searchItem", searchItem);
@@ -53,6 +54,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 AJAX용 엔드포인트 (페이지네이션)
+     * 
      * @param searchWord
      * @param searchItem
      * @param sortOption
@@ -67,12 +69,13 @@ public class BoardController {
             @RequestParam(name = "searchItem", required = false, defaultValue = "title") String searchItem,
             @RequestParam(name = "sortOption", required = false, defaultValue = "date") String sortOption,
             @RequestParam(name = "page", defaultValue = "1") int page, // 두번째 페이지부터 시작
-            @RequestParam(name = "size", defaultValue = "6") int size) {
+            @RequestParam(name = "size", defaultValue = "8") int size) {
         return boardService.searchAndSortSharedBooks(searchWord, searchItem, sortOption, page, size);
     }
 
     /**
      * 공유된 스토리의 상세 페이지를 반환하는 메서드
+     * 
      * @param bookId
      * @param model
      * @return
@@ -108,6 +111,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 추천 수 토글 메서드
+     * 
      * @param sharedBookId
      * @param principal
      * @return
@@ -130,6 +134,7 @@ public class BoardController {
 
     /**
      * 댓글 목록 조회
+     * 
      * @param sharedBookId
      * @return
      */
@@ -144,6 +149,7 @@ public class BoardController {
 
     /**
      * 댓글 추가
+     * 
      * @param principal
      * @param request
      * @return
@@ -158,6 +164,7 @@ public class BoardController {
 
     /**
      * 댓글 삭제
+     * 
      * @param sharedBookReplyId
      */
     @DeleteMapping("/story/comment")
@@ -168,6 +175,7 @@ public class BoardController {
 
     /**
      * 내 스토리 목록을 보여주는 페이지를 반환하는 메서드
+     * 
      * @param model
      * @param principal
      * @return
@@ -175,8 +183,8 @@ public class BoardController {
     @GetMapping("/myStory/list")
     public String myStoryList(Model model, @AuthenticationPrincipal MyPrincipal principal) {
         Long userId = principal.getUserId();
-        // 첫 페이지(0번 페이지)에서 6개만 가져오기
-        List<MyStoryListResponse> myStoryList = boardService.getMyBooksPaginated(userId, 0, 6);
+        // 첫 페이지(0번 페이지)에서 8개만 가져오기
+        List<MyStoryListResponse> myStoryList = boardService.getMyBooksPaginated(userId, 0, 8);
         model.addAttribute("myStoryList", myStoryList);
         // 초기 렌더링 시 전체 목록이 아니라 첫 페이지 데이터만 보여줌
         return "board/myStory/myStoryList";
@@ -184,6 +192,7 @@ public class BoardController {
 
     /**
      * 내 스토리 AJAX용 엔드포인트 (페이지네이션)
+     * 
      * @param page
      * @param size
      * @param principal
@@ -193,7 +202,7 @@ public class BoardController {
     @ResponseBody
     public List<MyStoryListResponse> ajaxMyStoryList(
             @RequestParam(name = "page", defaultValue = "1") int page, // 초기 렌더링 후 다음 페이지부터 (0페이지는 초기 렌더링)
-            @RequestParam(name = "size", defaultValue = "6") int size,
+            @RequestParam(name = "size", defaultValue = "8") int size,
             @AuthenticationPrincipal MyPrincipal principal) {
         Long userId = principal.getUserId();
         return boardService.getMyBooksPaginated(userId, page, size);
@@ -226,6 +235,7 @@ public class BoardController {
 
     /**
      * 내 스토리의 상세 페이지를 반환하는 메서드
+     * 
      * @param bookId
      * @param model
      * @param principal

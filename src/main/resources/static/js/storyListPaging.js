@@ -1,6 +1,6 @@
 $(document).ready(function () {
     var page = 1; // 초기 렌더링은 서버에서 처리됨 (0페이지). 이후 AJAX는 1페이지부터 로드
-    var size = 6;
+    var size = 8;
     var loading = false;
     var noMoreData = false;
 
