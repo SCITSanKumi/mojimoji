@@ -21,8 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sangkeumi.mojimoji.dto.kanji.KanjiDetailResponse;
+import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Controller
@@ -36,19 +38,13 @@ public class KanjiController {
     private final KanjiService kanjiService;
 
     @GetMapping("/collection")
-    public String kanjiCollection(@AuthenticationPrincipal MyPrincipal principal,
-            @RequestParam(name = "category", defaultValue = "") String category,
-            @RequestParam(name = "jlptRank", defaultValue = "") String jlptRank,
-            @RequestParam(name = "kanjiSearch", defaultValue = "") String kanjiSearch,
-            @RequestParam(name = "kanjiSort", defaultValue = "한자번호순") String kanjiSort,
-            @RequestParam(name = "sortDirection", defaultValue = "오름차순") String sortDirection, Model model) {
-        if (principal != null && principal.getUserId() != null) {
-
-            Long userId = principal.getUserId();
+    public String kanjiCollection(
+        @RequestBody KanjiSearchRequest searchRequest,
+        @AuthenticationPrincipal MyPrincipal principal,
+        Model model) {
             Integer collected = 0;
 
-            List<myCollectionRequest> myCollection = kanjiCollectionService.getMyCollection(userId, category, jlptRank,
-                    kanjiSearch, kanjiSort, sortDirection);
+            List<myCollectionRequest> myCollection = kanjiCollectionService.getMyCollection(searchRequest, principal.getUserId());
 
             for (myCollectionRequest count : myCollection) {
                 if (count.getIsCollected() == 1) {
@@ -57,17 +53,15 @@ public class KanjiController {
             }
 
             model.addAttribute("myCollection", myCollection);
-            model.addAttribute("category", category);
-            model.addAttribute("jlptRank", jlptRank);
-            model.addAttribute("kanjiSearch", kanjiSearch);
-            model.addAttribute("kanjiSort", kanjiSort);
-            model.addAttribute("sortDirection", sortDirection);
+            model.addAttribute("category", searchRequest.category());
+            model.addAttribute("jlptRank", searchRequest.jlptRank());
+            model.addAttribute("kanjiSearch", searchRequest.kanjiSearch());
+            model.addAttribute("kanjiSort", searchRequest.kanjiSort());
+            model.addAttribute("sortDirection", searchRequest.sortDirection());
             model.addAttribute("collected", collected);
+
             return "kanji/kanjiCollection";
         }
-
-        return "kanji/kanjiCollection";
-    }
 
     @GetMapping("/detail")
     public String kanjiDetail(@RequestParam(name = "kanjiId") Long kanjiId, Model model) {

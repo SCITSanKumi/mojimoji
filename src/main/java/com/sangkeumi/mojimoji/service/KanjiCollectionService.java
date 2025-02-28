@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchRequest;
 import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
 import com.sangkeumi.mojimoji.entity.Kanji;
 import com.sangkeumi.mojimoji.entity.KanjiCollection;
@@ -79,34 +80,15 @@ public class KanjiCollectionService {
         return grouped;
     }
 
-    public List<myCollectionRequest> getMyCollection(Long userId, String category, String jlptRank,
-            String kanjiSearch, String kanjiSort, String sortDirection) {
+    public List<myCollectionRequest> getMyCollection(KanjiSearchRequest searchRequest, Long userId) {
 
-        switch (kanjiSort) {
-            case "한자번호순":
-                Integer Sort = 1;
-                sortDirection = "";
-                if (sortDirection == "오름차순") {
-                    sortDirection = "asc";
-                } else {
-                    sortDirection = "desc";
-                }
-                return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category,
-                        jlptRank, kanjiSearch,
-                        Sort, sortDirection);
-            case "최근등록순":
-                Sort = 11;
-                if (sortDirection == "오름차순") {
-                    sortDirection = "asc";
-                } else {
-                    sortDirection = "desc";
-                }
-                return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category,
-                        jlptRank, kanjiSearch,
-                        Sort, sortDirection);
-        }
+        Integer sort = switch (searchRequest.kanjiSort()) {
+            case "한자번호순" -> 1;
+            case "최근등록순" -> 11;
+            default -> 1;
+        };
 
-        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category, jlptRank, kanjiSearch, 1, "asc");
+        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, searchRequest.category(), searchRequest.jlptRank(), searchRequest.kanjiSearch(), sort, searchRequest.sortDirection());
     }
 
 }

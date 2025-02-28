@@ -278,8 +278,8 @@
                 <!-- <option value="즐겨찾기순">즐겨찾기순</option> -->
             </select>
             <select id="sortDirection" name="sortDirection">
-                <option value="오름차순" th:selected="${sortDirection} == '오름차순'">오름차순</option>
-                <option value="내림차순" th:selected="${sortDirection} == '내림차순'">내림차순</option>
+                <option value="asc" th:selected="${sortDirection} == 'asc'">오름차순</option>
+                <option value="desc" th:selected="${sortDirection} == 'desc'">내림차순</option>
             </select>
             <span id="searchRight">
                 카테고리 : <select name="category">
