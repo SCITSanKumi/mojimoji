@@ -511,21 +511,30 @@
                         data: chartValues,
                         backgroundColor: '#EE697D',
                         borderColor: '#EE697D',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        maxBarThickness: 50,  // 바의 최대 너비 제한
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true } },
+                    scales: {
+                        x: {
+                            categoryPercentage: 0.5,
+                            barPercentage: 0.8
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
                     animation: { duration: 2500 },
                     plugins: { title: { display: false } }
                 },
-
             });
+
         });
 
         /* -------------------------------
-           (3) 카테고리 목록 페이지네이션
+           (3) 카테고리 목록 페이지네이션 
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             const ITEMS_PER_PAGE = 5;
@@ -552,7 +561,7 @@
         });
 
         /* -------------------------------
-           (4) 카테고리 달성도 ProgressBar
+           (4) 카테고리 달성도 ProgressBar 
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             const progressData = [];

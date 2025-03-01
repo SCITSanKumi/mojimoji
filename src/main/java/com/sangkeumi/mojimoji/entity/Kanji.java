@@ -82,4 +82,8 @@ public class Kanji {
      */
     @OneToMany(mappedBy = "kanji", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<KanjiCollection> kanjiCollections;
+
+    // ★ KanjiCollectionSummary와 1:N 관계
+    @OneToMany(mappedBy = "kanji", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<KanjiCollectionSummary> kanjiCollectionSummaries;
 }
