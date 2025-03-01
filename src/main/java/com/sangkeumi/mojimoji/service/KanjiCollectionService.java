@@ -1,19 +1,22 @@
 package com.sangkeumi.mojimoji.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.sangkeumi.mojimoji.dto.kanji.KanjiCollectionSummaryId;
 import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchRequest;
 import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
 import com.sangkeumi.mojimoji.entity.Kanji;
 import com.sangkeumi.mojimoji.entity.KanjiCollection;
+import com.sangkeumi.mojimoji.entity.KanjiCollectionSummary;
 import com.sangkeumi.mojimoji.entity.User;
-import com.sangkeumi.mojimoji.repository.KanjiRepository;
 
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +34,7 @@ public class KanjiCollectionService {
     private final KanjiCollectionsRepository kanjiCollectionsRepository;
     private final UserRepository userRepository;
     private final KanjiRepository kanjiRepository;
+    private final KanjiCollectionSummaryRepository kanjiCollectionSummaryRepository;
 
     @Transactional
     public void addCollection(Long kanjiId, MyPrincipal principal) {
@@ -46,6 +50,40 @@ public class KanjiCollectionService {
                 .kanji(kanji) // Kanji 엔티티
                 .user(user) // User 엔티티
                 .build());
+
+        // 3) 요약 테이블(Kanji_Collection_Summary) 업데이트
+        // 복합키를 구성하기 위한 임베디드 ID 생성
+        KanjiCollectionSummaryId summaryId = new KanjiCollectionSummaryId(
+                user.getUserId(),
+                kanji.getKanjiId());
+
+        // (a) 요약 레코드가 이미 존재하는지 확인
+        Optional<KanjiCollectionSummary> optionalSummary = kanjiCollectionSummaryRepository.findById(summaryId);
+
+        if (optionalSummary.isPresent()) {
+            // (b) 이미 있으면 collection_count + 1, 마지막 수집 시각 갱신
+            KanjiCollectionSummary summary = optionalSummary.get();
+            summary.setCollectionCount(summary.getCollectionCount() + 1);
+
+            if (summary.getFirstCollectedAt() == null) {
+                summary.setFirstCollectedAt(LocalDateTime.now());
+            }
+            summary.setLastCollectedAt(LocalDateTime.now());
+
+            kanjiCollectionSummaryRepository.save(summary);
+
+        } else {
+            // (c) 없으면 새로 생성 (collection_count=1, first/last_collected_at=now)
+            KanjiCollectionSummary summary = new KanjiCollectionSummary();
+            summary.setId(summaryId);
+            summary.setUser(user); // @MapsId("userId")와 매핑
+            summary.setKanji(kanji); // @MapsId("kanjiId")와 매핑
+            summary.setCollectionCount(1);
+            summary.setFirstCollectedAt(LocalDateTime.now());
+            summary.setLastCollectedAt(LocalDateTime.now());
+
+            kanjiCollectionSummaryRepository.save(summary);
+        }
     }
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {
@@ -88,7 +126,8 @@ public class KanjiCollectionService {
             default -> 1;
         };
 
-        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, searchRequest.category(), searchRequest.jlptRank(), searchRequest.kanjiSearch(), sort, searchRequest.sortDirection());
+        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, searchRequest.category(),
+                searchRequest.jlptRank(), searchRequest.kanjiSearch(), sort, searchRequest.sortDirection());
     }
 
 }
