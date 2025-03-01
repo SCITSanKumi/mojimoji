@@ -1,8 +1,6 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
-
-import groovy.transform.ToString;
 import jakarta.persistence.*;
 import lombok.*;
 
