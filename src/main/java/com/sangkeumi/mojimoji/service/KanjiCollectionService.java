@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.sangkeumi.mojimoji.dto.kanji.KanjiCollectionSummaryId;
+import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
 import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchRequest;
 import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
 import com.sangkeumi.mojimoji.entity.Kanji;
@@ -118,16 +119,55 @@ public class KanjiCollectionService {
         return grouped;
     }
 
-    public List<myCollectionRequest> getMyCollection(KanjiSearchRequest searchRequest, Long userId) {
+    /**
+     * 무한 스크롤: page 당 10개 조회
+     */
+    public List<myCollectionRequest> getMyCollection(KanjiSearchRequest searchRequest, Long userId, int page) {
+        // fallback
+        String sortType = searchRequest.kanjiSort();
+        if (!"한자번호순".equals(sortType) && !"최근등록순".equals(sortType)) {
+            sortType = "한자번호순";
+        }
+        String sortDir = searchRequest.sortDirection();
+        if (!"asc".equalsIgnoreCase(sortDir) && !"desc".equalsIgnoreCase(sortDir)) {
+            sortDir = "asc";
+        }
 
-        Integer sort = switch (searchRequest.kanjiSort()) {
-            case "한자번호순" -> 1;
-            case "최근등록순" -> 11;
-            default -> 1;
-        };
+        int pageSize = 10;
+        int offset = (page - 1) * pageSize;
 
-        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, searchRequest.category(),
-                searchRequest.jlptRank(), searchRequest.kanjiSearch(), sort, searchRequest.sortDirection());
+        String category = searchRequest.category();
+        String jlptRank = searchRequest.jlptRank();
+        String searchTerm = searchRequest.kanjiSearch();
+
+        // 정렬 분기
+        if ("한자번호순".equals(sortType)) {
+            // 한자번호순
+            if ("desc".equalsIgnoreCase(sortDir)) {
+                return kanjiRepository.findKanjiOrderByKanjiIdDesc(userId, category, jlptRank, searchTerm, pageSize,
+                        offset);
+            } else {
+                return kanjiRepository.findKanjiOrderByKanjiIdAsc(userId, category, jlptRank, searchTerm, pageSize,
+                        offset);
+            }
+        } else {
+            // 최근등록순
+            if ("desc".equalsIgnoreCase(sortDir)) {
+                return kanjiRepository.findKanjiOrderByCollectedDesc(userId, category, jlptRank, searchTerm, pageSize,
+                        offset);
+            } else {
+                return kanjiRepository.findKanjiOrderByCollectedAsc(userId, category, jlptRank, searchTerm, pageSize,
+                        offset);
+            }
+        }
+    }
+
+    public KanjiCount findTotalAndCollected(KanjiSearchRequest req, Long userId) {
+        return kanjiCollectionsRepository.findTotalAndCollected(
+                userId,
+                req.category(),
+                req.jlptRank(),
+                req.kanjiSearch());
     }
 
 }

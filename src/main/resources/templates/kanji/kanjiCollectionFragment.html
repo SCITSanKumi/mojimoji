@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>mojimoji</title>
+</head>
+
+<body>
+
+    <!-- 
+  1) th:fragment="cardList"
+  2) th:each="kanji : ${myCollection}"
+  3) 각 아이템이 "직접" <div>로 생성 
+-->
+    <div th:fragment="cardList" th:each="kanji : ${myCollection}">
+        <div th:if="${kanji.isCollected} == 1" th:class="kanjiCard" th:classappend="
+        ${kanji.collectionCount} >= 10 ? ' border-lv3' :
+        (${kanji.collectionCount} >= 5 ? ' border-lv2' :
+        (${kanji.collectionCount} >= 1 ? ' border-lv1' : ''))
+        ">
+            <span class="kanji" th:text="${kanji.kanji}">水</span>
+            <hr>
+            <div class="kanjiExplain">
+                <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
+                <div class="jlptRank" th:text="${kanji.jlptRank}">N5</div>
+                <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}"></div>
+                <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
+            </div>
+            <div class="createdAt" th:text="${#temporals.format(kanji.firstCollectedAt,'yyyy-MM-dd')}"></div>
+        </div>
+        <div th:unless="${kanji.isCollected} == 1" th:class="notKanjiCard" th:classappend="
+        ${kanji.collectionCount} >= 10 ? ' border-lv3' :
+        (${kanji.collectionCount} >= 5 ? ' border-lv2' :
+        (${kanji.collectionCount} >= 1 ? ' border-lv1' : ''))
+        ">
+            <span class="kanji" th:text="${kanji.kanji}">火</span>
+            <hr>
+            <div class="kanjiExplain">
+                <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
+                <div class="jlptRank" th:text="${kanji.jlptRank}">N5</div>
+                <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}"></div>
+                <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
+            </div>
+            <div class="createdAt">미등록</div>
+        </div>
+    </div>
+
+</body>
+
+</html>
