@@ -12,21 +12,111 @@
     <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <style>
-        body { background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .game-container { width: 600px; position: relative; display: flex; flex-direction: column; align-items: center; }
-        .chat-container { height: 500px; width: 100%; border: 1px solid #ddd; border-radius: 5px; background: white; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; position: relative; }
-        .chat-container::-webkit-scrollbar { width: 8px; }
-        .chat-container::-webkit-scrollbar-thumb { background-color: #0d6efd; border-radius: 4px; }
-        .message { display: flex; flex-direction: column; align-items: flex-start; margin: 10px 0; }
-        .user-message { align-items: flex-end; text-align: right; }
-        .text-box { background: #0d6efd; color: white; padding: 10px; border-radius: 0 10px 10px 10px; max-width: 80%; word-wrap: break-word; white-space: pre-wrap; overflow-wrap: break-word; margin-top: 5px; }
-        .user-message .text-box { background: #007bff; border-radius: 10px 0 10px 10px; }
-        .result-box { background: #198754; }
-        .profile-container { display: flex; align-items: center; margin-bottom: 5px; }
-        .profile-pic { width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; }
-        .profile-name { font-weight: bold; color: #333; font-size: 14px; }
-        .turn-counter { position: absolute; top: 10px; right: 10px; font-size: 16px; font-weight: bold; color: #555; }
-        .status-label { width: 60px; text-align: right; }
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .game-container {
+            width: 600px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-container {
+            height: 500px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #0d6efd;
+            border-radius: 4px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 10px 0;
+        }
+
+        .user-message {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .text-box {
+            background: #0d6efd;
+            color: white;
+            padding: 10px;
+            border-radius: 0 10px 10px 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .user-message .text-box {
+            background: #007bff;
+            border-radius: 10px 0 10px 10px;
+        }
+
+        .result-box {
+            background: #198754;
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .profile-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .turn-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .status-label {
+            width: 60px;
+            text-align: right;
+        }
+
         .scroll-button {
             position: absolute;
             bottom: 80px;
@@ -46,25 +136,29 @@
             opacity: 0;
             visibility: hidden;
         }
+
         .scroll-button.show {
             opacity: 1;
             visibility: visible;
         }
-        #bottomDetector { width: 100%; height: 10px; }
-        .modal-content { padding: 20px; background: #ffffff; border-radius: 10px; }
+
+        .modal-content {
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+        }
     </style>
     <script>
         $(() => {
             let bookId = -1;
+            let isGameEnded = false;
             let questionList = [];
             let currentIndex = 0;
             let correctAnswerIndexes = [];
             let score = 0;
-            let turn = 1;
-            let chatBox = $("#chatBox");
-            let bottomDetector = $("#bottomDetector");
-            let scrollButton = $("#scrollButton");
-            let isAutoScrolling = false;
+
+            const chatBox = $("#chatBox");
+            const scrollButton = $("#scrollButton");
 
             /** 이벤트 리스너 등록 */
             $("#submit-btn").click(sendUserMessage);
@@ -74,7 +168,6 @@
                     sendUserMessage();
                 }
             });
-            scrollButton.on("click", scrollToBottom);
 
             /** 게임 시작 */
             $("#start-btn").click(() => {
@@ -102,7 +195,7 @@
                 let inputDiv = $("<div>").addClass("text-box p-2").text(inputText);
 
                 messageDiv.append(inputDiv);
-                chatBox.append(messageDiv, bottomDetector);
+                chatBox.append(messageDiv);
                 inputField.val("");
 
                 scrollToBottom();
@@ -120,33 +213,54 @@
             async function processResponseStream(response) {
                 const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
                 let resultDiv = createMessageBox();
+                let jsonBuffer = "";
+                let isCollectingJson = false; // JSON 수집 중 여부
 
                 while (true) {
                     const { done, value } = await reader.read();
-                    
-                    if (done) {
-                        checkGameState();
-                        break;
-                    }
-                    
-                    let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
-                    resultDiv.append(cleanedValue);
+                    if (done) break;
 
+                    let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
+
+                    // JSON 데이터 감지 및 버퍼링
+                    if (cleanedValue.includes("{")) {
+                        isCollectingJson = true;
+                        jsonBuffer = cleanedValue; // JSON 수집 시작
+                        continue;
+                    }
+                    if (isCollectingJson) {
+                        jsonBuffer += cleanedValue; // JSON 데이터 추가
+                        if (cleanedValue.includes("}")) {
+                            isCollectingJson = false; // JSON 수집 종료
+                            try {
+                                let gameState = JSON.parse(jsonBuffer);
+                                updateGameStats(gameState);
+                            } catch (error) {
+                                console.error("JSON 파싱 오류:", error);
+                            }
+                            jsonBuffer = ""; // 버퍼 초기화
+                        }
+                        continue; // JSON 데이터는 화면에 출력하지 않음
+                    }
+
+                    // 일반 텍스트는 즉시 출력
+                    resultDiv.append(cleanedValue);
                     scrollToBottom();
                 }
             }
 
-            /** 게임 상태 확인 */
-            function checkGameState() {
-                $.ajax({
-                    url: `/game/state/${bookId}`,
-                    type: "GET",
-                    success: (response) => {
-                        $("#healthDisplay").text(`체력: ${response.health}`);
-                        if (response.isEnded) alert("게임이 종료되었습니다!");
-                    },
-                    error: () => alert("게임 정보 확인 중 오류 발생")
-                });
+            /** 게임 상태 업데이트 */
+            function updateGameStats(gameState) {
+                if (gameState.HP !== undefined) {
+                    $("#healthBar").css("width", `${gameState.HP}%`).text(gameState.HP);
+                }
+                if (gameState.MP !== undefined) {
+                    $("#mentalBar").css("width", `${gameState.MP}%`).text(gameState.MP);
+                }
+                if (gameState.isEnded) {
+                    isGameEnded = true;
+                    $("#end-btn").removeClass("d-none");
+                }
             }
 
             /** 메시지 박스 생성 */
@@ -158,16 +272,18 @@
                     .addClass("profile-pic");
                 let profileName = $("<span>").addClass("profile-name").text("GPT");
                 let resultDiv = $("<div>").addClass("text-box result-box p-2");
-                
+
                 profileContainer.append(profilePic, profileName);
                 messageDiv.append(profileContainer, resultDiv);
-                chatBox.append(messageDiv, bottomDetector);
-                
+                chatBox.append(messageDiv);
+
                 return resultDiv;
             }
 
             /** 게임 종료 및 퀴즈 시작 */
             $("#end-btn").click(() => {
+                if (!isGameEnded) return;
+
                 $.ajax({
                     url: `/game/end/${bookId}`,
                     type: "GET",
@@ -210,17 +326,14 @@
                     onyomiAnswer.toLowerCase() === question.korOnyomi.toLowerCase()) {
                     correctAnswerIndexes.push(currentIndex);
                     score++;
-                    alert("정답입니다!");
 
-                    if (confirm("컬렉션에 추가하시겠습니까?")) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/game/addCollection",
-                            data: { "kanjiId": question.kanjiId },
-                            success: () => alert("컬렉션에 추가되었습니다."),
-                            error: () => alert("컬렉션 추가 중 오류 발생")
-                        });
-                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/kanji/addCollection",
+                        data: { "kanjiId": question.kanjiId },
+                        success: () => alert("정답입니다!, 컬렉션에 추가되었습니다."),
+                        error: () => alert("컬렉션 추가 중 오류 발생")
+                    });
                 } else {
                     alert("오답입니다!");
                 }
@@ -280,22 +393,10 @@
                 return false;
             });
 
-            /** 스크롤 감지 및 버튼 표시/숨김 */
-            let observer = new IntersectionObserver(entries => {
-                if (!isAutoScrolling) {
-                    scrollButton.toggle(!entries[0].isIntersecting);
-                }
-            }, { root: chatBox[0], threshold: 1.0 });
-
-            observer.observe(bottomDetector[0]);
-
             /** 스크롤을 맨 아래로 이동 */
             function scrollToBottom() {
-                isAutoScrolling = true;
-                chatBox.scrollTop(chatBox[0].scrollHeight);
                 requestAnimationFrame(() => {
-                    isAutoScrolling = false;
-                    scrollButton.hide();
+                    chatBox.scrollTop(chatBox[0].scrollHeight);
                 });
             }
         });
@@ -321,15 +422,12 @@
         </div>
         <div class="chat-container" id="chatBox">
             <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
-            <div id="bottomDetector"></div>
         </div>
-        <button id="scrollButton" class="scroll-button">▼</button>
-        <button class="btn btn-danger mt-3 d-none show-at-game-start" id="end-btn">마치기</button>
-
         <div class="input-group mt-3 w-100 d-none show-at-game-start">
             <input type="text" id="userInput" class="form-control" placeholder="입력하세요...">
             <button class="btn btn-primary" id="submit-btn">입력</button>
         </div>
+        <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
     </div>
 
     <!-- 퀴즈 모달 -->

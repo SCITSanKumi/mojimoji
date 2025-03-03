@@ -53,6 +53,15 @@ public class KanjiController {
 
             return "kanji/kanjiCollection";
         }
+    
+    @ResponseBody
+    @PostMapping("/addCollection")
+    @Operation(summary = "한자컬렉션 추가", description = "해당 kanjiId에 해당하는 한자를 컬렉션에 추가한다")
+    public void addCollection(
+            @RequestParam("kanjiId") Long kanjiId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        kanjiCollectionService.addCollection(kanjiId, principal.getUserId());
+    }
 
     @GetMapping("/detail")
     public String kanjiDetail(@RequestParam(name = "kanjiId") Long kanjiId, Model model) {
@@ -71,14 +80,5 @@ public class KanjiController {
             @AuthenticationPrincipal MyPrincipal principal) {
 
         return kanjiService.getKanjiDetail(kanjiId, principal.getUserId());
-    }
-    
-    @ResponseBody
-    @PostMapping("/addCollection")
-    @Operation(summary = "한자컬렉션 추가", description = "해당 kanjiId에 해당하는 한자를 컬렉션에 추가한다")
-    public void addCollection(
-            @RequestParam("kanjiId") Long kanjiId,
-            @AuthenticationPrincipal MyPrincipal principal) {
-        kanjiCollectionService.addCollection(kanjiId, principal.getUserId());
     }
 }

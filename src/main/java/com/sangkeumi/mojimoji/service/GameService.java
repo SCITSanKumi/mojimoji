@@ -207,16 +207,6 @@ public class GameService {
                 .map(response -> response.getContent());
     }
 
-    public GameStateResponse getGameState(Long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
-
-        BookLine bookLine = bookLineRepository.findTopByBookAndRoleOrderBySequenceDesc(book, "assistant")
-                .orElseThrow(() -> new RuntimeException("해당 bookLine이 존재하지 않습니다."));
-
-        return new GameStateResponse(bookLine.getHp(), bookLine.getMp(), book.isEnded());
-    }
-
     @Transactional
     public GameEndResponse gameEnd(Long bookId) {
         Book book = bookRepository.findById(bookId)

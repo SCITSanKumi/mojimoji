@@ -49,12 +49,6 @@ public class GameController {
     }
 
     @ResponseBody
-    @GetMapping("/state/{bookId}")
-    public ResponseEntity<GameStateResponse> getGameState(@PathVariable("bookId") Long bookId) {
-        return ResponseEntity.ok(gameService.getGameState(bookId));
-    }
-
-    @ResponseBody
     @GetMapping("/end/{bookId}")
     public ResponseEntity<GameEndResponse> gameEnd(@PathVariable("bookId") Long bookId) {
         return ResponseEntity.ok(gameService.gameEnd(bookId));
