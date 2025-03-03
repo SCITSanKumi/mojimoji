@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.sangkeumi.mojimoji.dto.mypage.CategoryCollectionSummary;
-import com.sangkeumi.mojimoji.dto.mypage.CategoryKanjiRow;
-import com.sangkeumi.mojimoji.dto.mypage.DailyAcquisitionStats;
-import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
-import com.sangkeumi.mojimoji.entity.KanjiCollection;
+import com.sangkeumi.mojimoji.dto.mypage.*;
+import com.sangkeumi.mojimoji.entity.*;
 
 public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollection, Long> {
+    // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
+    Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
+    Optional<KanjiCollection> findByKanjiAndUser(Kanji kanji, User user);
 
     @Query(value = """
         SELECT
@@ -108,10 +108,6 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
                     ON k.kanji_id = kc.kanji_id
                     AND kc.user_id = :userId
             ORDER BY k.category, k.kanji_id;
-
             """, nativeQuery = true)
     List<CategoryKanjiRow> findCategoryKanjiRows(@Param("userId") Long userId);
-
-    // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
-    Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
 }

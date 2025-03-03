@@ -91,12 +91,10 @@ public class KanjiService {
                 kanji.getMeaning(),
                 obtainedAt);
     }
-
-    public List<Kanji> getKanjiList(String category, String jlptRank, String kanjiSearch) {
-        List<Kanji> kanjiList = kanjiRepository.findAllByCategoryContainsAndJlptRankContainsAndKanjiContains(category,
-                jlptRank,
-                kanjiSearch);
-        return kanjiList;
-    }
-
+    // public List<Kanji> getKanjiList(String category, String jlptRank, String kanjiSearch) {
+    //     List<Kanji> kanjiList = kanjiRepository.findAllByCategoryContainsAndJlptRankContainsAndKanjiContains(category,
+    //             jlptRank,
+    //             kanjiSearch);
+    //     return kanjiList;
+    // } TODO: 사용 안하면 지우기
 }

@@ -16,7 +16,7 @@ public record KanjiSearchRequest(
         this.category = category != null ? category : "";
         this.jlptRank = jlptRank != null ? jlptRank : "";
         this.kanjiSearch = kanjiSearch != null ? kanjiSearch : "";
-        this.kanjiSort = kanjiSort != null ? kanjiSort : "한자번호순";
-        this.sortDirection = sortDirection != null ? sortDirection : "오름차순";
+        this.kanjiSort = kanjiSort != null ? kanjiSort : "kanjiId";
+        this.sortDirection = sortDirection != null ? sortDirection : "ASC";
     }
 }
