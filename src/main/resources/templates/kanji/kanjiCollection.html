@@ -164,7 +164,7 @@
             }
         }
 
-        /* 등급별 좀더 화려한 효과 
+
         .border-lv3 {
             animation: neonFlicker3 1.5s infinite;
         }
@@ -172,7 +172,7 @@
         .border-lv2 {
             animation: neonFlicker2 1.5s infinite;
         }
-        */
+
 
         /* placeholder: 카드 원래 자리를 차지 (투명) */
         .placeholder {
@@ -280,17 +280,17 @@
         }
 
         .kanji:hover {
-            text-shadow: 0 0 10px rgba(16, 99, 254, 0.8);
+            text-shadow: 0 0 10px rgba(125, 125, 125, 0.8);
             animation: textPulse 1s infinite alternate;
         }
 
         @keyframes textPulse {
             from {
-                text-shadow: 0 0 10px rgba(16, 99, 254, 0.8);
+                text-shadow: 0 0 10px rgba(125, 125, 125, 0.8);
             }
 
             to {
-                text-shadow: 0 0 20px rgba(16, 99, 254, 1);
+                text-shadow: 0 0 20px rgba(125, 125, 125, 1);
             }
         }
 
@@ -352,6 +352,33 @@
             margin-top: 10px;
             letter-spacing: 1px;
             opacity: 0.8;
+        }
+
+        /* 스크롤 맨 위로 가는 버튼 */
+        .scroll-to-top-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #ffffff;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1000;
+            display: none;
+        }
+
+        .scroll-to-top-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -498,6 +525,11 @@
     <div id="activeLayer"></div>
     <!-- 아래 화살표 -->
     <div class="scroll-arrow" id="scrollArrow">⬇</div>
+
+    <!-- 스크롤 맨 위로 가는 버튼 -->
+    <div id="scrollToTopBtn" class="scroll-to-top-btn">
+        ↑
+    </div>
 
     <script>
         $(function () {
@@ -789,6 +821,28 @@
                 gsap.globalTimeline.resume();
             }
         });
+
+
+        // 페이지 로드 시 스크립트 실행
+        document.addEventListener('DOMContentLoaded', function () {
+            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+            // 스크롤 이벤트 리스너 추가
+            window.addEventListener('scroll', function () {
+                if (window.scrollY > 300) {
+                    scrollToTopBtn.style.display = 'flex';
+                } else {
+                    scrollToTopBtn.style.display = 'none';
+                }
+            });
+
+            // 버튼 클릭 시 맨 위로 스크롤
+            scrollToTopBtn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+
 
 
 
