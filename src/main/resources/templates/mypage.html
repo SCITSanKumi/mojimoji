@@ -413,7 +413,7 @@
     <!-- ================== JS (Thymeleaf inline) ================== -->
     <script th:inline="javascript">
         /* -------------------------------
-           (1) JLPT 통계 (게이지 차트)
+            (1) JLPT 통계 (게이지 차트)
            ------------------------------- */
         const statsData = /*[[${stats}]]*/[];
         const rankTotals = {
@@ -484,7 +484,7 @@
         }
 
         /* -------------------------------
-           (2) 날짜별 Bar 차트
+            (2) 날짜별 Bar 차트
            ------------------------------- */
         const dailyStatsData = /*[[${dailyStats}]]*/[];
         const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
@@ -534,7 +534,7 @@
         });
 
         /* -------------------------------
-           (3) 카테고리 목록 페이지네이션 
+            (3) 카테고리 목록 페이지네이션 
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             const ITEMS_PER_PAGE = 5;
@@ -561,7 +561,7 @@
         });
 
         /* -------------------------------
-           (4) 카테고리 달성도 ProgressBar 
+            (4) 카테고리 달성도 ProgressBar 
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             const progressData = [];
@@ -614,7 +614,7 @@
         });
 
         /* -------------------------------
-           (5) 달성률 정렬 아이콘 (예시)
+            (5) 달성률 정렬 아이콘 (예시)
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             const sortIcon = document.querySelector('.category-sort-icon');
@@ -640,7 +640,7 @@
         });
 
         /* -------------------------------
-           (6) 카테고리 블록 클릭 -> 이동
+            (6) 카테고리 블록 클릭 -> 이동
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.category-block').forEach(block => {
@@ -652,7 +652,7 @@
         });
 
         /* -------------------------------
-           (7) kanji-collected/kanji-not-collected 클릭 시 모달
+            (7) kanji-collected/kanji-not-collected 클릭 시 모달
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.kanji-collected, .kanji-not-collected')

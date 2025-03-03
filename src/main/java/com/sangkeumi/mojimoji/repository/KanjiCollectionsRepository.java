@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
 import com.sangkeumi.mojimoji.dto.mypage.CategoryCollectionSummary;
 import com.sangkeumi.mojimoji.dto.mypage.CategoryKanjiRow;
 import com.sangkeumi.mojimoji.dto.mypage.DailyAcquisitionStats;
@@ -16,23 +17,23 @@ import com.sangkeumi.mojimoji.entity.KanjiCollection;
 public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollection, Long> {
 
     @Query(value = """
-        SELECT
-            '전체' AS jlptRank,
-            COUNT(DISTINCT kc2.kanji_id) AS collected
-        FROM Kanji_Collections kc2
-        WHERE kc2.user_id = :userId
+            SELECT
+                '전체' AS jlptRank,
+                COUNT(DISTINCT kc2.kanji_id) AS collected
+            FROM Kanji_Collections kc2
+            WHERE kc2.user_id = :userId
 
-        UNION ALL
+            UNION ALL
 
-        SELECT
-            k.jlpt_rank AS jlptRank,
-            COUNT(DISTINCT kc.kanji_id) AS collected
-        FROM Kanjis k
-        LEFT JOIN Kanji_Collections kc
-            ON k.kanji_id = kc.kanji_id
-            AND kc.user_id = :userId
-        GROUP BY k.jlpt_rank
-        """, nativeQuery = true)
+            SELECT
+                k.jlpt_rank AS jlptRank,
+                COUNT(DISTINCT kc.kanji_id) AS collected
+            FROM Kanjis k
+            LEFT JOIN Kanji_Collections kc
+                ON k.kanji_id = kc.kanji_id
+                AND kc.user_id = :userId
+            GROUP BY k.jlpt_rank
+            """, nativeQuery = true)
     // ↑ 멀티라인 문자열(JDK 15+) 또는 기존 문자열 결합 사용 가능
     // (문자열 안에 세미콜론은 넣지 않는 것이 안전)
     List<JlptCollectionStats> findJlptStatsByUserId(@Param("userId") Long userId);
@@ -114,4 +115,34 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
 
     // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
     Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
+
+    @Query(value = """
+                SELECT
+                    COUNT(k.kanji_id) AS totalCount,
+                    SUM(CASE WHEN c.kanji_id IS NOT NULL THEN 1 ELSE 0 END) AS collectedCount
+                FROM Kanjis k
+                LEFT JOIN (
+                    SELECT
+                        kc.kanji_id
+                        -- 여기선 MIN(...) 불필요, 그냥 수집 여부만 확인
+                    FROM Kanji_Collections kc
+                    WHERE kc.user_id = :userId
+                    GROUP BY kc.kanji_id
+                ) c ON k.kanji_id = c.kanji_id
+                WHERE (:category IS NULL OR :category = '' OR k.category = :category)
+                  AND (:jlptRank IS NULL OR :jlptRank = '' OR k.jlpt_rank = :jlptRank)
+                  AND (
+                       :searchTerm IS NULL OR :searchTerm = ''
+                       OR k.kanji       LIKE CONCAT('%', :searchTerm, '%')
+                       OR k.kor_onyomi  LIKE CONCAT('%', :searchTerm, '%')
+                       OR k.kor_kunyomi LIKE CONCAT('%', :searchTerm, '%')
+                       OR k.jpn_onyomi  LIKE CONCAT('%', :searchTerm, '%')
+                       OR k.jpn_kunyomi LIKE CONCAT('%', :searchTerm, '%')
+                  )
+            """, nativeQuery = true)
+    KanjiCount findTotalAndCollected(
+            @Param("userId") Long userId,
+            @Param("category") String category,
+            @Param("jlptRank") String jlptRank,
+            @Param("searchTerm") String searchTerm);
 }

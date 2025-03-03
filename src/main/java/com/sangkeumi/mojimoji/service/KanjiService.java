@@ -92,11 +92,4 @@ public class KanjiService {
                 obtainedAt);
     }
 
-    public List<Kanji> getKanjiList(String category, String jlptRank, String kanjiSearch) {
-        List<Kanji> kanjiList = kanjiRepository.findAllByCategoryContainsAndJlptRankContainsAndKanjiContains(category,
-                jlptRank,
-                kanjiSearch);
-        return kanjiList;
-    }
-
 }

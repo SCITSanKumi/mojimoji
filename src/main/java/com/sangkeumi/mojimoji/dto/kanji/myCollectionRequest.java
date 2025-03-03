@@ -23,16 +23,9 @@ public interface myCollectionRequest {
 
     Integer getIsCollected();
 
+    Integer getCollectionCount();
+
     LocalDateTime getFirstCollectedAt();
-    // Long kanjiId,
-    // String kanji,
-    // String jlptRank,
-    // String category,
-    // String korOnyomi,
-    // String korKunyomi,
-    // String jpnOnyomi,
-    // String jpnKunyomi,
-    // String meaning,
-    // Integer isCollected,
-    // LocalDateTime firstCollectedAt
+
+    LocalDateTime getLastCollectedAt();
 }
