@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.sangkeumi.mojimoji.dto.user.CustomUser;
 import com.sangkeumi.mojimoji.dto.user.UserSignup;
+import com.sangkeumi.mojimoji.dto.user.UserUpdateView;
 import com.sangkeumi.mojimoji.entity.User;
 import com.sangkeumi.mojimoji.repository.UserRepository;
 
@@ -79,5 +80,59 @@ public class UserService {
             return user;
         }
         return null;
+    }
+
+    public UserUpdateView findById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
+        return new UserUpdateView(
+                user.getUserId(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getNickname(),
+                user.getEmail(),
+                user.getSocialAccounts() != null && !user.getSocialAccounts().isEmpty());
+    }
+    
+    @Transactional
+    public boolean updateProfile(Long userId, String nickname, String email) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user.setNickname(nickname);
+            user.setEmail(email);
+            return true;
+        } catch (Exception e) {
+            log.error("프로필 업데이트 실패", e);
+            return false;
+        }
+    }
+
+    @Transactional
+    public boolean updatePassword(Long userId, String currentPassword, String newPassword) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            // 현재 비밀번호 확인
+            if (!bCryptPasswordEncoder.matches(currentPassword, user.getPassword())) {
+                return false;
+            }
+            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+            return true;
+        } catch (Exception e) {
+            log.error("비밀번호 변경 실패", e);
+            return false;
+        }
+    }
+    
+    @Transactional
+    public boolean deleteUser(Long userId) {
+        try {
+            userRepository.deleteById(userId);
+            return true;
+        } catch (Exception e) {
+            log.error("계정 삭제 실패", e);
+            return false;
+        }
     }
 }
