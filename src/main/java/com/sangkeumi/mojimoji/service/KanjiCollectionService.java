@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,18 +46,19 @@ public class KanjiCollectionService {
         kanjiCollection.setCollectedCount(kanjiCollection.getCollectedCount() + 1);
         kanjiCollectionsRepository.save(kanjiCollection);
     }
-    
-    public List<KanjiSearchResponse> getMyCollection(KanjiSearchRequest searchRequest, Long userId) {
-    
+
+    public Page<KanjiSearchResponse> getMyCollection(Long userId, KanjiSearchRequest searchRequest, int page) {
+
         Sort sort = Sort.by(
             searchRequest.sortDirection().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
             searchRequest.kanjiSort()
         );
-    
-        return kanjiRepository.findMyCollection(userId, searchRequest.category(), searchRequest.jlptRank(), searchRequest.kanjiSearch(), 
-            PageRequest.of(0, Integer.MAX_VALUE, sort)).getContent();
+
+        return kanjiRepository.findMyCollection(userId, searchRequest.category(), searchRequest.jlptRank(), searchRequest.kanjiSearch(),
+            PageRequest.of(page - 1, 10, sort));
     }
-    
+
+
     /**
      * 카테고리별 한자 목록 + 수집 여부를 Map 형태로 반환.
      * key : category (String)
@@ -65,11 +67,11 @@ public class KanjiCollectionService {
     public Map<String, List<CategoryKanjiRow>> getCategoryKanjiMap(Long userId) {
         // 1) DB에서 모든 한자 + 수집 여부 가져옴
         List<CategoryKanjiRow> rows = kanjiCollectionsRepository.findCategoryKanjiRows(userId);
-        
+
         // 2) Java Stream으로 category별 grouping
         Map<String, List<CategoryKanjiRow>> grouped = rows.stream()
         .collect(Collectors.groupingBy(CategoryKanjiRow::getCategory));
-        
+
         return grouped;
     }
 
