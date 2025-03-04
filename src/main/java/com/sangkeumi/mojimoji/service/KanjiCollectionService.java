@@ -169,5 +169,4 @@ public class KanjiCollectionService {
                 req.jlptRank(),
                 req.kanjiSearch());
     }
-
 }
