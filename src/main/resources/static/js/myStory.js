@@ -1,6 +1,6 @@
 $(document).ready(function () {
     var page = 1; // 초기 렌더링은 서버에서 처리됨 (0페이지). 이후 AJAX는 페이지 1부터 로드
-    var size = 6; // 한 번에 불러올 데이터 수
+    var size = 8; // 한 번에 불러올 데이터 수
     var loading = false; // AJAX 요청 중복 실행 방지
     var noMoreData = false; // 더 이상 불러올 데이터가 없음을 체크
 

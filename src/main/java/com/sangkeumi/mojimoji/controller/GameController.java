@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.sangkeumi.mojimoji.dto.game.*;
-import com.sangkeumi.mojimoji.dto.kanji.AddKanjiCollection;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
 import com.sangkeumi.mojimoji.service.*;
 
