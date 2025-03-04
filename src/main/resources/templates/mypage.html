@@ -278,6 +278,7 @@
             font-weight: bold;
             border: 1px solid lightgray;
             margin-top: 10px;
+            font-family: メイリオ;
         }
 
         .detailKanjiExplain {
@@ -407,6 +408,11 @@
         .detailKanjiId,
         .detailJlptRank {
             font-size: 15px;
+        }
+
+        .kanji {
+            font-family: メイリオ;
+            font-weight: bold;
         }
     </style>
 
@@ -794,7 +800,7 @@
                                 th:classappend="${row.isCollected} == 1 ? 'kanji-collected' : 'kanji-not-collected'"
                                 th:attr="data-kanji-id=${row.kanjiId}">
                                 <div class="kanji-box">
-                                    <h5 th:text="${row.kanji}">漢</h5>
+                                    <h5 class="kanji" th:text="${row.kanji}">漢</h5>
                                     <h5 th:text="${row.jlptRank}">N1</h5>
                                 </div>
                             </li>
