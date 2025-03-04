@@ -62,7 +62,7 @@ public class KanjiService {
      * 해당 한자의 상세 정보를 조회합니다.
      * - 한자 정보는 무조건 반환 (kanjis 테이블)
      * - 사용자가 해당 한자를 획득했으면 획득 날짜를, 아니면 "미수집" 표시
-     * 
+     *
      * @param kanjiId 한자 ID
      * @param userId  사용자 ID
      * @return KanjiDetailResponse record
@@ -91,12 +91,4 @@ public class KanjiService {
                 kanji.getMeaning(),
                 obtainedAt);
     }
-
-    public List<Kanji> getKanjiList(String category, String jlptRank, String kanjiSearch) {
-        List<Kanji> kanjiList = kanjiRepository.findAllByCategoryContainsAndJlptRankContainsAndKanjiContains(category,
-                jlptRank,
-                kanjiSearch);
-        return kanjiList;
-    }
-
 }
