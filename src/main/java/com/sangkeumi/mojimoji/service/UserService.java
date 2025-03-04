@@ -2,6 +2,10 @@ package com.sangkeumi.mojimoji.service;
 
 import java.util.Optional;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final LoginUserDetailsService loginUserDetailsService;
 
     // UserSignup DTO로부터 User 엔티티 생성
     public boolean signUp(UserSignup userSignup) {
@@ -93,7 +98,7 @@ public class UserService {
                 user.getEmail(),
                 user.getSocialAccounts() != null && !user.getSocialAccounts().isEmpty());
     }
-    
+
     @Transactional
     public boolean updateProfile(Long userId, String nickname, String email) {
         try {
@@ -101,11 +106,29 @@ public class UserService {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             user.setNickname(nickname);
             user.setEmail(email);
+            reAuthenticateUser(user.getUsername());
             return true;
         } catch (Exception e) {
             log.error("프로필 업데이트 실패", e);
             return false;
         }
+    }
+
+    private void reAuthenticateUser(String username) {
+        // 3-1) 변경된 사용자 정보를 기반으로 UserDetails 다시 생성
+        UserDetails updatedUserDetails = loginUserDetailsService.loadUserByUsername(username);
+
+        // 3-2) 기존 Authentication 가져오기
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+
+        // 3-3) 새로운 Authentication 생성
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                updatedUserDetails,
+                currentAuth.getCredentials(),
+                updatedUserDetails.getAuthorities());
+
+        // 3-4) SecurityContextHolder 업데이트
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 
     @Transactional
@@ -124,7 +147,7 @@ public class UserService {
             return false;
         }
     }
-    
+
     @Transactional
     public boolean deleteUser(Long userId) {
         try {
