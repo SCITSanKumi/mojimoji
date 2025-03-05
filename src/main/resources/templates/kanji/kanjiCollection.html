@@ -394,8 +394,8 @@
         <!-- 검색 폼 -->
         <form th:action="@{/kanji/collection}" method="get" id="searchForm">
             <select id="kanjiSort" name="kanjiSort">
-                <option value="한자번호순" th:selected="${kanjiSort} == '한자번호순'">한자번호순</option>
-                <option value="최근등록순" th:selected="${kanjiSort} == '최근등록순'">최근등록순</option>
+                <option value="kanjiId" th:selected="${kanjiSort} == 'kanjiId'">한자번호순</option>
+                <option value="firstCollectedAt" th:selected="${kanjiSort} == 'firstCollectedAt'">최근등록순</option>
             </select>
             <select id="sortDirection" name="sortDirection">
                 <option value="asc" th:selected="${sortDirection} == 'asc'">오름차순</option>
@@ -451,11 +451,11 @@
 
         <!-- 초기 카드 목록(서버 렌더링된 10개) -->
         <div class="grid-container" id="cardContainer">
-            <div th:each="kanji : ${myCollection}">
-                <div th:if="${kanji.isCollected} == 1" th:class="kanjiCard" th:classappend="
-        ${kanji.collectionCount} >= 10 ? ' border-lv3' :
-        (${kanji.collectionCount} >= 5 ? ' border-lv2' :
-        (${kanji.collectionCount} >= 1 ? ' border-lv1' : ''))
+            <div th:each="kanji : ${searchResponse}">
+                <div th:if="${kanji.collectedCount} > 0" th:class="kanjiCard" th:classappend="
+        ${kanji.collectedCount} >= 10 ? ' border-lv3' :
+        (${kanji.collectedCount} >= 5 ? ' border-lv2' :
+        (${kanji.collectedCount} >= 1 ? ' border-lv1' : ''))
         ">
 
                     <div class="card-face card-front">
@@ -496,7 +496,7 @@
                     </div>
                     <span class="shine"></span>
                 </div>
-                <div th:unless="${kanji.isCollected} == 1" th:class="notKanjiCard" th:classappend="border-lv0">
+                <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
                     <div class="card-face card-front">
                         <span class="kanji" th:text="${kanji.kanji}">火</span>
                         <hr>
@@ -840,13 +840,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
-
-
-
-
-
     </script>
-
 </body>
 
 </html>

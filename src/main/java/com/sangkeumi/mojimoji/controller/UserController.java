@@ -1,6 +1,9 @@
 package com.sangkeumi.mojimoji.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.sangkeumi.mojimoji.dto.user.*;
@@ -58,4 +61,61 @@ public class UserController {
     public boolean emailCheck(@RequestParam(name = "email") String email) {
         return userService.existByEmail(email); // true 면 중복아님 사용가능 , false 면 중복 사용 불가
     }
+
+    /**
+     * 회원 정보 수정 페이지를 반환하는 메서드
+     * @param principal
+     * @param model
+     * @return
+     */
+    @GetMapping("/update")
+    public String profileUpdate(@AuthenticationPrincipal MyPrincipal principal, Model model) {
+        Long userId = principal.getUserId();
+        UserUpdateView user = userService.findById(userId);
+        model.addAttribute("user", user);
+        return "user/profileUpdate";
+    }
+
+    /**
+     * 닉네임 및 이메일 수정
+     * @param principal
+     * @param updateRequest
+     * @return
+     */
+    @PostMapping("/update")
+    @ResponseBody
+    @Operation(summary = "회원 정보 수정", description = "닉네임과 이메일을 수정한다.")
+    public boolean updateProfile(@AuthenticationPrincipal MyPrincipal principal,
+            @RequestBody UserUpdateRequest updateRequest) {
+        Long userId = principal.getUserId();
+        return userService.updateProfile(userId, updateRequest.nickname(), updateRequest.email());
+    }
+    
+    /**
+     * 비밀번호 수정 (AJAX 요청)
+     * @param principal
+     * @param passwordRequest
+     * @return
+     */
+    @PostMapping("/update/password")
+    @ResponseBody
+    @Operation(summary = "비밀번호 변경", description = "기존 비밀번호 확인 후 새 비밀번호로 변경한다.")
+    public ResponseEntity<Boolean> updatePassword(
+            @AuthenticationPrincipal com.sangkeumi.mojimoji.dto.user.MyPrincipal principal,
+            @RequestBody PasswordUpdateRequest passwordRequest) {
+        Long userId = principal.getUserId();
+        boolean result = userService.updatePassword(userId, passwordRequest.currentPassword(),
+                passwordRequest.newPassword());
+        return ResponseEntity.ok(result);
+    }
+    
+    @PostMapping("/delete")
+    @ResponseBody
+    @Operation(summary = "계정 삭제", description = "계정을 삭제한다.")
+    public ResponseEntity<Boolean> deleteAccount(@AuthenticationPrincipal MyPrincipal principal) {
+        Long userId = principal.getUserId();
+        boolean result = userService.deleteUser(userId);
+        return ResponseEntity.ok(result);
+    }
+
 }

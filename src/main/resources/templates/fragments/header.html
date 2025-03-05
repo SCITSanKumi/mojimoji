@@ -27,8 +27,8 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
                     <th:block sec:authorize="isAuthenticated()">
-                        <li><a class="dropdown-item text-danger" href="#"><span
-                                    sec:authentication="principal.nickname"></span></a></li>
+                        <li><a class="dropdown-item text-danger" th:href="@{/user/update}"><span
+                                sec:authentication="principal.nickname"></span></a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

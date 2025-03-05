@@ -12,6 +12,136 @@
     <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .game-container {
+            width: 600px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-container {
+            height: 500px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #0d6efd;
+            border-radius: 4px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 10px 0;
+        }
+
+        .user-message {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .text-box {
+            background: #0d6efd;
+            color: white;
+            padding: 10px;
+            border-radius: 0 10px 10px 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .user-message .text-box {
+            background: #007bff;
+            border-radius: 10px 0 10px 10px;
+        }
+
+        .result-box {
+            background: #198754;
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .profile-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .turn-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .status-label {
+            width: 60px;
+            text-align: right;
+        }
+
+        .scroll-button {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            text-align: center;
+            line-height: 50px;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .scroll-button.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .modal-content {
             padding: 20px;
             background: #ffffff;
@@ -21,10 +151,23 @@
     <script>
         $(() => {
             let bookId = -1;
+            let isGameEnded = false;
             let questionList = [];
             let currentIndex = 0;
             let correctAnswerIndexes = [];
             let score = 0;
+
+            const chatBox = $("#chatBox");
+            const scrollButton = $("#scrollButton");
+
+            /** 이벤트 리스너 등록 */
+            $("#submit-btn").click(sendUserMessage);
+            $("#userInput").off("keydown").on("keydown", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    sendUserMessage();
+                }
+            });
 
             /** 게임 시작 */
             $("#start-btn").click(() => {
@@ -34,29 +177,33 @@
                     success: (response) => {
                         bookId = response.bookId;
                         $("#start-btn").addClass("d-none");
-                        $(".dialogue-container, .input-group, #end-btn").removeClass("d-none");
-                        $(".dialogue").append(response.message);
+                        $(".show-at-game-start").removeClass("d-none");
+
+                        let resultDiv = createMessageBox();
+                        resultDiv.append(response.message);
                     },
                     error: () => alert("게임 시작 중 오류가 발생했습니다.")
                 });
             });
 
-            /** 사용자 입력 처리 */
-            $("#submit-btn").click(sendUserMessage);
-            $("#userInput").keyup((event) => {
-                if (event.key === "Enter") sendUserMessage();
-            });
-
             function sendUserMessage() {
-                let userText = $("#userInput").val().trim();
-                if (!userText || bookId === -1) return;
+                let inputField = $("#userInput");
+                let inputText = inputField.val().trim();
+                if (inputText === "" || bookId === -1) return;
 
-                $("#userInput").val("");
+                let messageDiv = $("<div>").addClass("message user-message");
+                let inputDiv = $("<div>").addClass("text-box p-2").text(inputText);
+
+                messageDiv.append(inputDiv);
+                chatBox.append(messageDiv);
+                inputField.val("");
+
+                scrollToBottom();
 
                 fetch(`/game/send/${bookId}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: new URLSearchParams({ message: userText })
+                    body: new URLSearchParams({ message: inputText })
                 })
                 .then(response => response.ok ? processResponseStream(response) : Promise.reject("메시지 전송 중 오류가 발생했습니다."))
                 .catch(error => alert(error));
@@ -65,33 +212,78 @@
             /** 서버에서 스트리밍 응답을 처리 */
             async function processResponseStream(response) {
                 const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+                let resultDiv = createMessageBox();
+                let jsonBuffer = "";
+                let isCollectingJson = false; // JSON 수집 중 여부
+
                 while (true) {
                     const { done, value } = await reader.read();
-                    if (done) {
-                        checkGameState();
-                        break;
-                    }
+                    if (done) break;
+
                     let cleanedValue = value.replace(/^data:/gm, "").replace(/\n\n/g, "");
-                    $(".dialogue-container").removeClass("d-none");
-                    $(".dialogue").append(cleanedValue);
+
+                    // JSON 데이터 감지 및 버퍼링
+                    if (cleanedValue.includes("{")) {
+                        isCollectingJson = true;
+                        jsonBuffer = cleanedValue; // JSON 수집 시작
+                        continue;
+                    }
+                    if (isCollectingJson) {
+                        jsonBuffer += cleanedValue; // JSON 데이터 추가
+                        if (cleanedValue.includes("}")) {
+                            isCollectingJson = false; // JSON 수집 종료
+                            try {
+                                let gameState = JSON.parse(jsonBuffer);
+                                updateGameStats(gameState);
+                            } catch (error) {
+                                console.error("JSON 파싱 오류:", error);
+                            }
+                            jsonBuffer = ""; // 버퍼 초기화
+                        }
+                        continue; // JSON 데이터는 화면에 출력하지 않음
+                    }
+
+                    // 일반 텍스트는 즉시 출력
+                    resultDiv.append(cleanedValue);
+                    scrollToBottom();
                 }
             }
 
-            /** 게임 상태 확인 */
-            function checkGameState() {
-                $.ajax({
-                    url: `/game/state/${bookId}`,
-                    type: "GET",
-                    success: (response) => {
-                        $("#healthDisplay").text(`체력: ${response.health}`);
-                        if (response.isEnded) alert("게임이 종료되었습니다!");
-                    },
-                    error: () => alert("게임 정보 확인 중 오류 발생")
-                });
+            /** 게임 상태 업데이트 */
+            function updateGameStats(gameState) {
+                if (gameState.HP !== undefined) {
+                    $("#healthBar").css("width", `${gameState.HP}%`).text(gameState.HP);
+                }
+                if (gameState.MP !== undefined) {
+                    $("#mentalBar").css("width", `${gameState.MP}%`).text(gameState.MP);
+                }
+                if (gameState.isEnded) {
+                    isGameEnded = true;
+                    $("#end-btn").removeClass("d-none");
+                }
+            }
+
+            /** 메시지 박스 생성 */
+            function createMessageBox() {
+                let messageDiv = $("<div>").addClass("message");
+                let profileContainer = $("<div>").addClass("profile-container");
+                let profilePic = $("<img>")
+                    .attr("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/ChatGPT-Logo.svg/512px-ChatGPT-Logo.svg.png")
+                    .addClass("profile-pic");
+                let profileName = $("<span>").addClass("profile-name").text("GPT");
+                let resultDiv = $("<div>").addClass("text-box result-box p-2");
+
+                profileContainer.append(profilePic, profileName);
+                messageDiv.append(profileContainer, resultDiv);
+                chatBox.append(messageDiv);
+
+                return resultDiv;
             }
 
             /** 게임 종료 및 퀴즈 시작 */
             $("#end-btn").click(() => {
+                if (!isGameEnded) return;
+
                 $.ajax({
                     url: `/game/end/${bookId}`,
                     type: "GET",
@@ -134,17 +326,14 @@
                     onyomiAnswer.toLowerCase() === question.korOnyomi.toLowerCase()) {
                     correctAnswerIndexes.push(currentIndex);
                     score++;
-                    alert("정답입니다!");
 
-                    if (confirm("컬렉션에 추가하시겠습니까?")) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/game/addCollection",
-                            data: { "kanjiId": question.kanjiId },
-                            success: () => alert("컬렉션에 추가되었습니다."),
-                            error: () => alert("컬렉션 추가 중 오류 발생")
-                        });
-                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/kanji/addCollection",
+                        data: { "kanjiId": question.kanjiId },
+                        success: () => alert("정답입니다!, 컬렉션에 추가되었습니다."),
+                        error: () => alert("컬렉션 추가 중 오류 발생")
+                    });
                 } else {
                     alert("오답입니다!");
                 }
@@ -203,34 +392,46 @@
                 e.stopPropagation();
                 return false;
             });
+
+            /** 스크롤을 맨 아래로 이동 */
+            function scrollToBottom() {
+                requestAnimationFrame(() => {
+                    chatBox.scrollTop(chatBox[0].scrollHeight);
+                });
+            }
         });
     </script>
 </head>
-
 <body class="bg-light text-center p-3">
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-    <div class="container mt-5">
-        <div class="card shadow-lg mx-auto p-3" style="max-width: 600px;">
-            <h2 class="text-primary">カミゲ</h2>
-            <h4 id="healthDisplay" class="mb-3">체력: 100</h4>
-            <div class="story-box border rounded position-relative d-flex align-items-center justify-content-center"
-                style="height: 300px; background: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/979461/ss_b6ec5c1b67cafc41fc8ec35e4cbed4bd531a55e1.1920x1080.jpg?t=1729702976') no-repeat center center; background-size: cover;">
-
-                <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
-                <div class="dialogue-container bg-dark text-white p-2 rounded w-100 position-absolute bottom-0 start-0 d-none overflow-auto" style="max-height: 300px;">
-                    <p class="dialogue m-0 text-start"></p>
+    <div class="game-container">
+        <div class="turn-counter d-none show-at-game-start" id="turnCounter">턴: 1</div>
+        <div class="mb-3 w-100 d-flex flex-column align-items-start">
+            <div class="d-flex align-items-center mb-2 d-none show-at-game-start">
+                <span class="status-label me-2">체력</span>
+                <div class="progress" style="width: 150px; height: 15px;">
+                    <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%">100</div>
                 </div>
             </div>
-            <div class="input-group mt-3 d-none">
-                <input type="text" id="userInput" class="form-control" placeholder="다음 대사를 입력하세요...">
-                <button class="btn btn-primary input-group-append" id="submit-btn">입력</button>
+            <div class="d-flex align-items-center d-none show-at-game-start">
+                <span class="status-label me-2">정신력</span>
+                <div class="progress" style="width: 150px; height: 15px;">
+                    <div id="mentalBar" class="progress-bar bg-primary" role="progressbar" style="width: 100%">100</div>
+                </div>
             </div>
-            <button class="btn btn-danger d-none mt-3" id="end-btn">마치기</button>
         </div>
+        <div class="chat-container" id="chatBox">
+            <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
+        </div>
+        <div class="input-group mt-3 w-100 d-none show-at-game-start">
+            <input type="text" id="userInput" class="form-control" placeholder="입력하세요...">
+            <button class="btn btn-primary" id="submit-btn">입력</button>
+        </div>
+        <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
     </div>
 
     <!-- 퀴즈 모달 -->
-    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content p-4">
                 <h2 class="text-center">한자 퀴즈</h2>

@@ -24,7 +24,6 @@ import org.springframework.http.MediaType;
 public class GameController {
 
     private final GameService gameService;
-    private final KanjiCollectionService kanjiCollectionService;
 
     @GetMapping("/screen")
     public String game() {
@@ -50,22 +49,8 @@ public class GameController {
     }
 
     @ResponseBody
-    @GetMapping("/state/{bookId}")
-    public ResponseEntity<GameStateResponse> getGameState(@PathVariable("bookId") Long bookId) {
-        return ResponseEntity.ok(gameService.getGameState(bookId));
-    }
-
-    @ResponseBody
     @GetMapping("/end/{bookId}")
     public ResponseEntity<GameEndResponse> gameEnd(@PathVariable("bookId") Long bookId) {
         return ResponseEntity.ok(gameService.gameEnd(bookId));
-    }
-
-    @ResponseBody
-    @PostMapping("/addCollection")
-    public void addCollection(
-            @RequestParam("kanjiId") Long kanjiId,
-            @AuthenticationPrincipal MyPrincipal principal) {
-        kanjiCollectionService.addCollection(kanjiId, principal);
     }
 }
