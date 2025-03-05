@@ -8,16 +8,16 @@
 
 <body>
 
-    <!-- 
+    <!--
     1) th:fragment="cardList"
     2) th:each="kanji : ${myCollection}"
-    3) 각 아이템이 "직접" <div>로 생성 
+    3) 각 아이템이 "직접" <div>로 생성
 -->
-    <div th:fragment="cardList" th:each="kanji : ${myCollection}">
-        <div th:if="${kanji.isCollected} == 1" th:class="kanjiCard" th:classappend="
-                ${kanji.collectionCount} >= 10 ? ' border-lv3' :
-                (${kanji.collectionCount} >= 5 ? ' border-lv2' :
-                (${kanji.collectionCount} >= 1 ? ' border-lv1' : ''))
+    <div th:fragment="cardList" th:each="kanji : ${searchResponse}">
+        <div th:if="${kanji.collectedCount} > 0" th:class="kanjiCard" th:classappend="
+                ${kanji.collectedCount} >= 10 ? ' border-lv3' :
+                (${kanji.collectedCount} >= 5 ? ' border-lv2' :
+                (${kanji.collectedCount} >= 1 ? ' border-lv1' : ''))
                 ">
             <div class="card-face card-front">
                 <span class="kanji" th:text="${kanji.kanji}">水</span>
@@ -56,7 +56,7 @@
                 </div>
             </div>
         </div>
-        <div th:unless="${kanji.isCollected} == 1" th:class="notKanjiCard" th:classappend="border-lv0">
+        <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
             <div class="card-face card-front">
                 <span class="kanji" th:text="${kanji.kanji}">火</span>
                 <hr>

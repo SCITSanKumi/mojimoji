@@ -1,6 +1,5 @@
 package com.sangkeumi.mojimoji.service;
 
-import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -27,36 +26,6 @@ public class KanjiService {
 
     private final KanjiRepository kanjiRepository;
     private final KanjiCollectionsRepository kanjiCollectionsRepository;
-
-    public boolean checkAnswer(String korOnyomi, String korKunyomi, Long kanjiId) {
-
-        Optional<Kanji> temp = kanjiRepository.findById(kanjiId);
-
-        Kanji kanji = null;
-
-        if (temp.isPresent()) {
-            kanji = temp.get();
-            log.info("==={}", kanji);
-
-            boolean result = kanji.getKorOnyomi().equals(korOnyomi) && kanji.getKorKunyomi().equals(korKunyomi);
-            return result;
-        }
-
-        return false;
-    }
-
-    public Kanji getKanji(Long kanjiId) {
-        Optional<Kanji> temp = kanjiRepository.findById(kanjiId);
-
-        Kanji kanji = null;
-
-        if (temp.isPresent()) {
-            kanji = temp.get();
-            return kanji;
-        }
-
-        return null;
-    }
 
     /**
      * 해당 한자의 상세 정보를 조회합니다.
