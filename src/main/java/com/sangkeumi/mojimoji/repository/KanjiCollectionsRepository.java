@@ -11,7 +11,7 @@ import com.sangkeumi.mojimoji.dto.mypage.*;
 import com.sangkeumi.mojimoji.entity.*;
 
 public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollection, Long> {
-    // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
+    /** userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환 */
     Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
     Optional<KanjiCollection> findByKanjiAndUser(Kanji kanji, User user);
 

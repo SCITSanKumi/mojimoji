@@ -5,6 +5,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sangkeumi.mojimoji.config.GameConfiguraton;
 import com.sangkeumi.mojimoji.dto.game.*;
 import com.sangkeumi.mojimoji.dto.kanji.KanjiDTO;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
@@ -19,7 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import reactor.core.publisher.Flux;
@@ -28,9 +30,6 @@ import reactor.core.publisher.Flux;
 @Slf4j
 @RequiredArgsConstructor
 public class GameService {
-    private final int defaultHP = 100;
-    private final int defaultMP = 100;
-
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final UsedBookKanjiRepository usedBookKanjiRepository;
@@ -38,7 +37,8 @@ public class GameService {
     private final KanjiRepository kanjiRepository;
 
     private final WebClient webClient;
-    private final GameMessageProvider messageProvider;
+    private final GameConfiguraton gameConfiguraton;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /** 게임 시작 메서드 */
     @Transactional
@@ -57,38 +57,38 @@ public class GameService {
                     // 초기 메시지 저장
                     bookLineRepository.save(BookLine.builder()
                             .book(newBook)
-                            .role("assistant")
-                            .content(messageProvider.getIntroMessage())
-                            .hp(defaultHP)
-                            .mp(defaultMP)
-                            .sequence(0)
+                            .gptContent(gameConfiguraton.getIntroMessage())
+                            .hp(gameConfiguraton.getDefaultHP())
+                            .mp(gameConfiguraton.getDefaultMP())
+                            .currentLocation(gameConfiguraton.getDefaultLocation())
+                            .turnCount(0)
                             .build());
 
                     return newBook;
                 });
 
-        return new GameStartResponse(book.getBookId(), messageProvider.getIntroMessage());
+        return new GameStartResponse(book.getBookId(), gameConfiguraton.getIntroMessage()); //TODO 이어하기 만들려면 수정해야함
     }
 
-    /** OpenAI API와 스트리밍 통신을 위한 Flux<String> */
     @Transactional
     public Flux<String> getChatResponseStream(Long bookId, String message) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
-        List<BookLine> history = bookLineRepository.findTop10ByBookAndRoleOrderBySequenceDesc(book, "assistant");
-        Collections.reverse(history);
+        List<BookLine> history = bookLineRepository.findTop10ByBookOrderByTurnCountDesc(book);
+        Collections.reverse(history); //TODO 대가리 안돌아가서 내일 해햐알듯
 
-        int lastSequence = history.isEmpty() ? 0 : history.get(history.size() - 1).getSequence();
-        int currentHP = history.isEmpty() ? defaultHP : history.get(history.size() - 1).getHp();
-        int currentMP = history.isEmpty() ? defaultMP : history.get(history.size() - 1).getMp();
-
-        int nextSequence = lastSequence + 1;
+        int currentTurn = history.isEmpty() ? 0 : history.get(history.size() - 1).getTurnCount() + 1;
+        int currentHP = history.isEmpty() ? 100 : history.get(history.size() - 1).getHp();
+        int currentMP = history.isEmpty() ? 100 : history.get(history.size() - 1).getMp();
+        String currentLocation = history.isEmpty() ? "" : history.get(history.size() - 1).getCurrentLocation();
 
         List<Map<String, String>> messages = new ArrayList<>();
-        messages.add(Map.of("role", "system", "content", messageProvider.getSystemMessage()));
-        history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getContent())));
-        messages.add(Map.of("role", "assistant", "content", "현재 HP: " + currentHP + "현재 MP: " + currentMP));
+        messages.add(Map.of("role", "system", "content", gameConfiguraton.getSystemMessage()));
+        history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getGptContent())));
+        messages.add(Map.of("role", "assistant", "content",
+            String.format("[현재 플레이어 상태: 채력: %d 정신력: %d 위치: %s]", currentHP, currentMP, currentLocation)
+        ));
         messages.add(Map.of("role", "user", "content", message));
 
         log.info("Messages: {}", messages);
@@ -96,94 +96,92 @@ public class GameService {
         // 사용자 입력 저장
         BookLine bookLine = bookLineRepository.save(BookLine.builder()
                 .book(book)
-                .role("user")
-                .content(message)
-                .hp(currentHP)
-                .mp(currentMP)
-                .sequence(nextSequence)
+                .userContent(gameConfiguraton.getIntroMessage())
+                .turnCount(currentTurn)
                 .build());
 
+        // 사용자 입력 중 한자 파싱
         for (int i = 0; i < message.length(); i++) {
-            String kanjiCharacter = String.valueOf(message.charAt(i));
-
-            if (!Character.UnicodeBlock.of(kanjiCharacter.charAt(0))
-                    .equals(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)) {
+            // Kanji 엔티티를 찾기 전 한자인지 우선 검사
+            if (!Character.UnicodeBlock.of(message.charAt(i))
+            .equals(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)) {
                 break;
             }
 
             // Kanji 엔티티를 DB에서 찾기
-            Kanji kanji = kanjiRepository.findByKanji(kanjiCharacter)
-                    .orElseThrow(() -> new RuntimeException("Kanji not found"));
+            Kanji kanji = kanjiRepository.findByKanji(String.valueOf(message.charAt(i)))
+                    .orElseThrow(() -> new RuntimeException("해당 한자가 존재하지 않습니다."));
 
-            // 새 UsedBookKanji 객체를 생성하여 리스트에 추가
-            UsedBookKanji usedBookKanji = UsedBookKanji.builder()
+            // 사용자 입력 한자를 저장
+            usedBookKanjiRepository.save(UsedBookKanji.builder()
                     .bookLine(bookLine)
                     .kanji(kanji)
-                    .build();
-
-            usedBookKanjiRepository.save(usedBookKanji);
+                    .build());
         }
 
         StringBuilder contentResponse = new StringBuilder();
-        StringBuilder jsonResponse = new StringBuilder();
-        AtomicBoolean isJsonStarted = new AtomicBoolean(false);
 
         return getChatResponseFromApi(messages)
-                .doOnNext(chunk -> {
-                    // JSON 시작 감지
-                    if (!isJsonStarted.get() && chunk.trim().startsWith("{")) {
-                        isJsonStarted.set(true); // JSON 감지 후 상태 변경
-                    }
+                .doOnNext(chunk -> {contentResponse.append(chunk);})
+                .doOnComplete(() -> {handleChatResponse(contentResponse.toString(), bookLine);});
+    }
 
-                    // JSON 데이터 수집
-                    if (isJsonStarted.get()) {
-                        jsonResponse.append(chunk);
-                    } else {
-                        contentResponse.append(chunk);
-                    }
-                })
-                // .filter(chunk -> !isJsonStarted.get()) // JSON 데이터는 Flux에서 제외
-                .doOnComplete(() -> {
-                    int updatedHP = currentHP;
-                    int updatedMP = currentMP;
 
-                    try {
-                        Map<String, Object> extractedState = new ObjectMapper().readValue(jsonResponse.toString(),
-                                Map.class);
+    @Transactional
+    public GameEndResponse gameEnd(Long bookId) {
+        List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(bookId);
+        List<KanjiDTO> kanjiDTOs = kanjis.stream()
+                .map(kanji -> new KanjiDTO(kanji.getKanjiId(), kanji.getKanji(), kanji.getKorOnyomi(), kanji.getKorKunyomi()))
+                .collect(Collectors.toList());
 
-                        // 상태 업데이트
-                        if (extractedState.containsKey("HP") && extractedState.get("HP") instanceof Integer) {
-                            updatedHP = (int) extractedState.get("HP");
-                        }
+        return new GameEndResponse(kanjiDTOs);
+    }
 
-                        if (extractedState.containsKey("MP") && extractedState.get("MP") instanceof Integer) {
-                            updatedMP = (int) extractedState.get("MP");
-                        }
+    @Transactional
+    public void handleChatResponse(String content, BookLine bookLine) {
+        log.info("contentathandleChatResponse: {}", content);
 
-                        if (extractedState.containsKey("isEnded")
-                                && extractedState.get("isEnded") instanceof Boolean
-                                && (boolean) extractedState.get("isEnded")) {
-                            book.setEnded(true);
-                            bookRepository.save(book);
-                        }
-                    } catch (JsonProcessingException e) {
-                        log.error("JSON 처리 중 오류 발생: ", e);
-                    }
+        StringBuilder dialogue = new StringBuilder();
+        String extractedJson = null;
 
-                    // 응답 저장 (JSON 제외)
-                    bookLineRepository.save(BookLine.builder()
-                            .book(book)
-                            .role("assistant")
-                            .content(contentResponse.toString().trim())
-                            .hp(updatedHP)
-                            .mp(updatedMP)
-                            .sequence(nextSequence + 1)
-                            .build());
-                });
+        // 정규식 패턴: {"name": "xxx"} 를 찾아서 "xxx :"로 변환
+        Matcher matcher = Pattern.compile("\\{\"name\":\\s*\"([^\"]+)\"\\}").matcher(content);
+
+        int lastEnd = 0;
+        while (matcher.find()) {
+            dialogue.append(content, lastEnd, matcher.start()); // 기존 텍스트 추가
+            dialogue.append(matcher.group(1)).append(" : "); // "xxx :" 형식으로 변환
+            lastEnd = matcher.end();
+        }
+        dialogue.append(content.substring(lastEnd)); // 남은 부분 추가
+
+        bookLine.setGptContent(dialogue.toString()); //TODO 자리 옮기기
+
+        // JSON 추출 (마지막에 있는 JSON 객체)
+        Matcher jsonMatcher = Pattern.compile("\\{\\s*\"hp\"\\s*:\\s*\\d+.*?\\}").matcher(content);
+        if (jsonMatcher.find()) {
+            extractedJson = jsonMatcher.group();
+        }
+
+        // extractedJson이 null인지 확인
+        if (extractedJson != null) {
+            try {
+                Map<String, Object> extractedState = objectMapper.readValue(extractedJson, Map.class);
+                bookLine.setHp((int) extractedState.getOrDefault("hp", 100));
+                bookLine.setMp((int) extractedState.getOrDefault("mp", 100));
+                bookLine.setCurrentLocation((String) extractedState.getOrDefault("currentLocation", ""));
+                bookLine.getBook().setEnded((boolean) extractedState.getOrDefault("isEnded", false));
+            } catch (JsonProcessingException e) {
+                log.error("JSON 처리 중 오류 발생: {}", e.getMessage());
+            }
+        } else {
+            // 매칭되는 JSON이 없을 경우 처리 (로그를 남기거나, 기본값으로 처리하는 등)
+            log.warn("JSON 상태 정보가 없어 처리하지 않았습니다.");
+        }
     }
 
     /** OpenAI API 스트리밍 요청 처리 */
-    public Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
+    private Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
         return webClient.post()
                 .bodyValue(Map.of(
                         "model", "gpt-4o-mini",
@@ -205,22 +203,5 @@ public class GameService {
                         .filter(content -> !content.isEmpty())
                         .isPresent())
                 .map(response -> response.getContent());
-    }
-
-    @Transactional
-    public GameEndResponse gameEnd(Long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
-
-        book.setEnded(true);
-
-        List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(bookId);
-
-        List<KanjiDTO> kanjiDTOs = kanjis.stream()
-                .map(kanji -> new KanjiDTO(kanji.getKanjiId(), kanji.getKanji(), kanji.getKorOnyomi(),
-                        kanji.getKorKunyomi()))
-                .collect(Collectors.toList());
-
-        return new GameEndResponse(kanjiDTOs);
     }
 }

@@ -29,34 +29,38 @@ public class BookLine {
     private Book book;
 
     /**
-     * 사용자의 대답인지 openAI의 대답인지 ("user", "assistant", 또는 "system")
+     * 해당 줄의 내용 (사용자)
      */
-    @Column(nullable = false)
-    private String role;
+    @Column(name = "user_content", columnDefinition = "TEXT")
+    private String userContent;
 
     /**
-     * 해당 줄의 내용 (텍스트)
+     * 해당 줄의 내용 (GPT)
      */
-    @Column(columnDefinition = "TEXT")
-    private String content;
+    @Column(name = "gpt_content", columnDefinition = "TEXT")
+    private String gptContent;
 
     /**
      * 플레이어의 hp를 나타내는 컬럼
      */
-    @Column(nullable = false)
     private int hp;
 
     /**
      * 플레이어의 mp를 나타내는 컬럼
      */
-    @Column(nullable = false)
     private int mp;
+
+    /**
+     * 플레이어의 mp를 나타내는 컬럼
+     */
+    @Column(name = "current_location")
+    private String currentLocation;
 
     /**
      * 책 내에서의 순서를 나타내는 필드
      */
-    @Column(nullable = false)
-    private int sequence;
+    @Column(name = "turn_count", nullable = false)
+    private int turnCount;
 
     /**
      * 생성일시
