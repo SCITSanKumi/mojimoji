@@ -14,13 +14,13 @@
 </head>
 
 <body>
-    <header th:insert="~{fragments/header :: header}"></header>
+    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
 
     <div class="container px-4 py-5" id="custom-cards">
         <h2 class="text-center mb-4">내스토리</h2>
 
         <!-- myStoryList가 비어있지 않은 경우에만 카드 목록 표시 -->
-        <div th:if="${not #lists.isEmpty(myStoryList)}" class="row row-cols-1 row-cols-lg-3 g-4 py-5"
+        <div th:if="${not #lists.isEmpty(myStoryList)}" class="row row-cols-1 row-cols-lg-4 g-4 py-5"
             id="myStory-container">
             <div class="col" th:each="myStory : ${myStoryList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"

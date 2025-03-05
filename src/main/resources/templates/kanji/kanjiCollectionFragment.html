@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>mojimoji</title>
+</head>
+
+<body>
+
+    <!--
+    1) th:fragment="cardList"
+    2) th:each="kanji : ${myCollection}"
+    3) 각 아이템이 "직접" <div>로 생성
+-->
+    <div th:fragment="cardList" th:each="kanji : ${searchResponse}">
+        <div th:if="${kanji.collectedCount} > 0" th:class="kanjiCard" th:classappend="
+                ${kanji.collectedCount} >= 10 ? ' border-lv3' :
+                (${kanji.collectedCount} >= 5 ? ' border-lv2' :
+                (${kanji.collectedCount} >= 1 ? ' border-lv1' : ''))
+                ">
+            <div class="card-face card-front">
+                <span class="kanji" th:text="${kanji.kanji}">水</span>
+                <hr>
+                <div class="kanjiExplain">
+                    <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
+                    <div class="jlptRank" th:text="${kanji.jlptRank}">N5</div>
+                    <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}"></div>
+                    <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
+                </div>
+                <div class="createdAt" th:text="${#temporals.format(kanji.firstCollectedAt,'yyyy-MM-dd')}">
+                </div>
+            </div>
+            <div class="card-face card-back">
+                <div class="toKanjiList">
+                    <div class="detail-header">
+                        <div class="detailKanjiId" th:text="'No. ' +${kanji.kanjiId}"></div>
+                        <div class="detailJlptRank" th:text="${kanji.jlptRank}"></div>
+                    </div>
+                    <div class="detailKanjiCard">
+                        <span class="detailKanji" th:text="${kanji.kanji}"></span>
+                        <div class="detailKanjiExplain">
+                            <div class="detailYomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}">
+                            </div>
+                            <div th:text="'음독 : ' + ${kanji.jpnOnyomi}"></div>
+                            <div th:text="'훈독 : ' + ${kanji.jpnKunyomi}"></div>
+                            <pre
+                                th:utext="'의미:<br>' + ${#strings.replace(#strings.replace(kanji.meaning, '\n','<br>'), ';', ',')}"></pre>
+                        </div>
+                    </div>
+                    <div class="detail-info">
+                        <div class="detailCategory" th:text="'카테고리: ' + ${kanji.category}"></div>
+                        <div class="detailCreatedAt"
+                            th:text="'날짜: ' + ${#temporals.format(kanji.firstCollectedAt,'yyyy-MM-dd')}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
+            <div class="card-face card-front">
+                <span class="kanji" th:text="${kanji.kanji}">火</span>
+                <hr>
+                <div class="kanjiExplain">
+                    <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
+                    <div class="jlptRank" th:text="${kanji.jlptRank}">N5</div>
+                    <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}"></div>
+                    <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
+                </div>
+                <div class="createdAt">미등록</div>
+            </div>
+            <div class="card-face card-back">
+                <div class="card-back-inner">
+                    <div class="card-back-content">
+                        <h2 class="card-back-title">MOJIMOJI</h2>
+                        <div class="card-back-subtitle">한자 수집 카드</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

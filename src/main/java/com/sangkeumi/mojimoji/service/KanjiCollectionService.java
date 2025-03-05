@@ -1,27 +1,22 @@
 package com.sangkeumi.mojimoji.service;
 
 import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
-import com.sangkeumi.mojimoji.entity.Kanji;
-import com.sangkeumi.mojimoji.entity.KanjiCollection;
-import com.sangkeumi.mojimoji.entity.User;
-import com.sangkeumi.mojimoji.repository.KanjiRepository;
-
-import lombok.RequiredArgsConstructor;
-
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import com.sangkeumi.mojimoji.dto.kanji.*;
 import com.sangkeumi.mojimoji.dto.mypage.*;
-import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
+import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -32,19 +27,52 @@ public class KanjiCollectionService {
     private final KanjiRepository kanjiRepository;
 
     @Transactional
-    public void addCollection(Long kanjiId, MyPrincipal principal) {
+    public void addCollection(Long kanjiId, Long userId) {
         // 1) kanjiId, userId로 DB에서 엔티티 조회
         Kanji kanji = kanjiRepository.findById(kanjiId)
                 .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
 
-        User user = userRepository.findById(principal.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
 
         // 2) DB에 저장
-        kanjiCollectionsRepository.save(KanjiCollection.builder()
-                .kanji(kanji) // Kanji 엔티티
-                .user(user) // User 엔티티
+        KanjiCollection kanjiCollection = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user)
+            .orElse(KanjiCollection.builder()
+                .kanji(kanji)
+                .user(user)
+                .collectedCount(0)
                 .build());
+
+        kanjiCollection.setCollectedCount(kanjiCollection.getCollectedCount() + 1);
+        kanjiCollectionsRepository.save(kanjiCollection);
+    }
+
+    public Page<KanjiSearchResponse> getMyCollection(Long userId, KanjiSearchRequest searchRequest, int page) {
+
+        Sort sort = Sort.by(
+            searchRequest.sortDirection().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
+            searchRequest.kanjiSort()
+        );
+
+        return kanjiRepository.findMyCollection(userId, searchRequest.category(), searchRequest.jlptRank(), searchRequest.kanjiSearch(),
+            PageRequest.of(page - 1, 10, sort));
+    }
+
+
+    /**
+     * 카테고리별 한자 목록 + 수집 여부를 Map 형태로 반환.
+     * key : category (String)
+     * value : 해당 category에 속한 한자들(List<CategoryKanjiRow>)
+     */
+    public Map<String, List<CategoryKanjiRow>> getCategoryKanjiMap(Long userId) {
+        // 1) DB에서 모든 한자 + 수집 여부 가져옴
+        List<CategoryKanjiRow> rows = kanjiCollectionsRepository.findCategoryKanjiRows(userId);
+
+        // 2) Java Stream으로 category별 grouping
+        Map<String, List<CategoryKanjiRow>> grouped = rows.stream()
+        .collect(Collectors.groupingBy(CategoryKanjiRow::getCategory));
+
+        return grouped;
     }
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {
@@ -62,51 +90,4 @@ public class KanjiCollectionService {
     public CategoryCollectionSummary getCategoryCollectionSummary(Long userId) {
         return kanjiCollectionsRepository.findCategoryCollectionSummary(userId);
     }
-
-    /**
-     * 카테고리별 한자 목록 + 수집 여부를 Map 형태로 반환.
-     * key : category (String)
-     * value : 해당 category에 속한 한자들(List<CategoryKanjiRow>)
-     */
-    public Map<String, List<CategoryKanjiRow>> getCategoryKanjiMap(Long userId) {
-        // 1) DB에서 모든 한자 + 수집 여부 가져옴
-        List<CategoryKanjiRow> rows = kanjiCollectionsRepository.findCategoryKanjiRows(userId);
-
-        // 2) Java Stream으로 category별 grouping
-        Map<String, List<CategoryKanjiRow>> grouped = rows.stream()
-                .collect(Collectors.groupingBy(CategoryKanjiRow::getCategory));
-
-        return grouped;
-    }
-
-    public List<myCollectionRequest> getMyCollection(Long userId, String category, String jlptRank,
-            String kanjiSearch, String kanjiSort, String sortDirection) {
-
-        switch (kanjiSort) {
-            case "한자번호순":
-                Integer Sort = 1;
-                sortDirection = "";
-                if (sortDirection == "오름차순") {
-                    sortDirection = "asc";
-                } else {
-                    sortDirection = "desc";
-                }
-                return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category,
-                        jlptRank, kanjiSearch,
-                        Sort, sortDirection);
-            case "최근등록순":
-                Sort = 11;
-                if (sortDirection == "오름차순") {
-                    sortDirection = "asc";
-                } else {
-                    sortDirection = "desc";
-                }
-                return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category,
-                        jlptRank, kanjiSearch,
-                        Sort, sortDirection);
-        }
-
-        return kanjiRepository.findKanjiCollectionStatusByUserId(userId, category, jlptRank, kanjiSearch, 1, "asc");
-    }
-
 }

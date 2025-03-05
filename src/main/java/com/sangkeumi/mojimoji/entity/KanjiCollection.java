@@ -36,6 +36,20 @@ public class KanjiCollection {
     private User user;
 
     /**
+     * 즐겨찾기 여부
+     */
+    @Column(name = "bookmarked", nullable = false)
+    @Builder.Default
+    private boolean bookmarked = false;
+
+    /**
+     * 수집된 횟수
+     */
+    @Column(name = "collected_count", nullable = false)
+    @Builder.Default
+    private int collectedCount = 0;
+
+    /**
      * 생성일시
      */
     @Column(name = "created_at", nullable = false, updatable = false)

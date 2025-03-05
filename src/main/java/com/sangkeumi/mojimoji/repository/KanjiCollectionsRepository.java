@@ -7,32 +7,32 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.sangkeumi.mojimoji.dto.mypage.CategoryCollectionSummary;
-import com.sangkeumi.mojimoji.dto.mypage.CategoryKanjiRow;
-import com.sangkeumi.mojimoji.dto.mypage.DailyAcquisitionStats;
-import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
-import com.sangkeumi.mojimoji.entity.KanjiCollection;
+import com.sangkeumi.mojimoji.dto.mypage.*;
+import com.sangkeumi.mojimoji.entity.*;
 
 public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollection, Long> {
+    // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
+    Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
+    Optional<KanjiCollection> findByKanjiAndUser(Kanji kanji, User user);
 
     @Query(value = """
-        SELECT
-            '전체' AS jlptRank,
-            COUNT(DISTINCT kc2.kanji_id) AS collected
-        FROM Kanji_Collections kc2
-        WHERE kc2.user_id = :userId
+            SELECT
+                '전체' AS jlptRank,
+                COUNT(DISTINCT kc2.kanji_id) AS collected
+            FROM Kanji_Collections kc2
+            WHERE kc2.user_id = :userId
 
-        UNION ALL
+            UNION ALL
 
-        SELECT
-            k.jlpt_rank AS jlptRank,
-            COUNT(DISTINCT kc.kanji_id) AS collected
-        FROM Kanjis k
-        LEFT JOIN Kanji_Collections kc
-            ON k.kanji_id = kc.kanji_id
-            AND kc.user_id = :userId
-        GROUP BY k.jlpt_rank
-        """, nativeQuery = true)
+            SELECT
+                k.jlpt_rank AS jlptRank,
+                COUNT(DISTINCT kc.kanji_id) AS collected
+            FROM Kanjis k
+            LEFT JOIN Kanji_Collections kc
+                ON k.kanji_id = kc.kanji_id
+                AND kc.user_id = :userId
+            GROUP BY k.jlpt_rank
+            """, nativeQuery = true)
     // ↑ 멀티라인 문자열(JDK 15+) 또는 기존 문자열 결합 사용 가능
     // (문자열 안에 세미콜론은 넣지 않는 것이 안전)
     List<JlptCollectionStats> findJlptStatsByUserId(@Param("userId") Long userId);
@@ -108,10 +108,6 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
                     ON k.kanji_id = kc.kanji_id
                     AND kc.user_id = :userId
             ORDER BY k.category, k.kanji_id;
-
             """, nativeQuery = true)
     List<CategoryKanjiRow> findCategoryKanjiRows(@Param("userId") Long userId);
-
-    // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
-    Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
 }

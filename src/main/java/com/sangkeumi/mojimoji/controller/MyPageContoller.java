@@ -8,13 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.sangkeumi.mojimoji.dto.mypage.CategoryCollectionSummary;
-import com.sangkeumi.mojimoji.dto.mypage.CategoryKanjiRow;
-import com.sangkeumi.mojimoji.dto.mypage.DailyAcquisitionStats;
-import com.sangkeumi.mojimoji.dto.mypage.JlptCollectionStats;
+import com.sangkeumi.mojimoji.dto.mypage.*;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
-import com.sangkeumi.mojimoji.service.BoardService;
-import com.sangkeumi.mojimoji.service.KanjiCollectionService;
+import com.sangkeumi.mojimoji.service.*;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

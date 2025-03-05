@@ -1,6 +1,5 @@
 package com.sangkeumi.mojimoji.service;
 
-import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -28,41 +27,11 @@ public class KanjiService {
     private final KanjiRepository kanjiRepository;
     private final KanjiCollectionsRepository kanjiCollectionsRepository;
 
-    public boolean checkAnswer(String korOnyomi, String korKunyomi, Long kanjiId) {
-
-        Optional<Kanji> temp = kanjiRepository.findById(kanjiId);
-
-        Kanji kanji = null;
-
-        if (temp.isPresent()) {
-            kanji = temp.get();
-            log.info("==={}", kanji);
-
-            boolean result = kanji.getKorOnyomi().equals(korOnyomi) && kanji.getKorKunyomi().equals(korKunyomi);
-            return result;
-        }
-
-        return false;
-    }
-
-    public Kanji getKanji(Long kanjiId) {
-        Optional<Kanji> temp = kanjiRepository.findById(kanjiId);
-
-        Kanji kanji = null;
-
-        if (temp.isPresent()) {
-            kanji = temp.get();
-            return kanji;
-        }
-
-        return null;
-    }
-
     /**
      * 해당 한자의 상세 정보를 조회합니다.
      * - 한자 정보는 무조건 반환 (kanjis 테이블)
      * - 사용자가 해당 한자를 획득했으면 획득 날짜를, 아니면 "미수집" 표시
-     * 
+     *
      * @param kanjiId 한자 ID
      * @param userId  사용자 ID
      * @return KanjiDetailResponse record
@@ -91,12 +60,4 @@ public class KanjiService {
                 kanji.getMeaning(),
                 obtainedAt);
     }
-
-    public List<Kanji> getKanjiList(String category, String jlptRank, String kanjiSearch) {
-        List<Kanji> kanjiList = kanjiRepository.findAllByCategoryContainsAndJlptRankContainsAndKanjiContains(category,
-                jlptRank,
-                kanjiSearch);
-        return kanjiList;
-    }
-
 }

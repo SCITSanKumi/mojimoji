@@ -35,10 +35,11 @@
             flex-wrap: nowrap;
             align-items: center;
             gap: 0.5rem;
+
         }
 
         /* 내 스토리 버튼은 축소 가능하도록 기본 flex 속성 사용 */
-        .top-actions .btn.btn-dark {
+        #myStoryBtn {
             border-radius: 9999px;
         }
 
@@ -95,14 +96,17 @@
 </head>
 
 <body>
-    <header th:insert="~{fragments/header :: header}"></header>
+    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
 
     <div class="container px-4 py-5" id="custom-cards">
         <h2 class="text-center mb-4">공유된 스토리</h2>
         <div class="row top-area">
             <div class="col-12">
-                <!-- 정렬 버튼 영역 -->
-                <div class="d-flex justify-content-end align-items-center mb-2">
+
+
+                <!-- 정렬 버튼 영역 + 내스토리 버튼 -->
+                <div class="Sort d-flex justify-content-flex-start align-items-center mb-1">
+
                     <input type="hidden" id="sortOption" th:value="${sortOption}">
                     <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
                         class="btn btn-sm me-1 sort-btn">추천순</a>
@@ -110,17 +114,20 @@
                         class="btn btn-sm me-1 sort-btn">조회순</a>
                     <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
                         class="btn btn-sm sort-btn">날짜순</a>
-                </div>
-                <!-- 내스토리 버튼 + 검색 폼 영역 -->
-                <div class="top-actions">
-                    <button type="button" id="myStoryBtn" class="btn btn-dark">
+                    <button type="button" id="myStoryBtn" class="btn btn-dark d-flex ms-auto mb-2">
                         내스토리
                     </button>
+                </div>
+
+                <!-- 검색 폼 영역 -->
+                <div class="top-actions">
+
                     <form action="/board/story/list" method="get" class="search-wrapper">
                         <select name="searchItem" id="searchItem" class="form-select">
                             <option value="title" th:selected="${searchItem == 'title'}">제목</option>
                             <option value="user" th:selected="${searchItem == 'user'}">작성자</option>
                         </select>
+
                         <div class="search-container">
                             <input type="text" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요"
                                 th:value="${searchWord}" class="form-control">
@@ -132,15 +139,17 @@
                 </div>
             </div>
         </div>
+
         <!-- 스토리 카드 목록 -->
-        <div class="row row-cols-1 row-cols-lg-3 g-4" id="story-container">
+        <div class="row row-cols-1 row-cols-lg-4 g-4" id="story-container">
             <div class="col" th:each="sharedStory : ${sharedStoryList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                     th:style="|background-image: url(${sharedStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">
                     <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
                         <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
                             <a th:href="@{/board/story/detail(bookId=${sharedStory.bookId})}"
-                                class="text-white text-decoration-none" th:text="${sharedStory.title}">스토리 제목</a>
+                                class="text-white text-decoration-none" th:text="${sharedStory.title}">스토리
+                                제목</a>
                         </h3>
                         <h5 th:text="${sharedStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">

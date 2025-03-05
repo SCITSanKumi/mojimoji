@@ -1,26 +1,22 @@
 package com.sangkeumi.mojimoji.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
-import com.sangkeumi.mojimoji.entity.Kanji;
-
-import com.sangkeumi.mojimoji.service.KanjiCollectionService;
-import com.sangkeumi.mojimoji.service.KanjiService;
+import com.sangkeumi.mojimoji.dto.kanji.*;
+import com.sangkeumi.mojimoji.service.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sangkeumi.mojimoji.dto.kanji.KanjiDetailResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,46 +32,38 @@ public class KanjiController {
     private final KanjiService kanjiService;
 
     @GetMapping("/collection")
-    public String kanjiCollection(@AuthenticationPrincipal MyPrincipal principal,
-            @RequestParam(name = "category", defaultValue = "") String category,
-            @RequestParam(name = "jlptRank", defaultValue = "") String jlptRank,
-            @RequestParam(name = "kanjiSearch", defaultValue = "") String kanjiSearch,
-            @RequestParam(name = "kanjiSort", defaultValue = "한자번호순") String kanjiSort,
-            @RequestParam(name = "sortDirection", defaultValue = "오름차순") String sortDirection, Model model) {
-        if (principal != null && principal.getUserId() != null) {
+    public String kanjiCollection(
+            @AuthenticationPrincipal MyPrincipal principal,
+            @ModelAttribute KanjiSearchRequest searchRequest,
+            Model model) {
+        int page = 1;
 
-            Long userId = principal.getUserId();
-            Integer collected = 0;
+        Page<KanjiSearchResponse> searchResponse = kanjiCollectionService.getMyCollection(principal.getUserId(), searchRequest, page);
 
-            List<myCollectionRequest> myCollection = kanjiCollectionService.getMyCollection(userId, category, jlptRank,
-                    kanjiSearch, kanjiSort, sortDirection);
-
-            for (myCollectionRequest count : myCollection) {
-                if (count.getIsCollected() == 1) {
-                    collected++;
-                }
-            }
-
-            model.addAttribute("myCollection", myCollection);
-            model.addAttribute("category", category);
-            model.addAttribute("jlptRank", jlptRank);
-            model.addAttribute("kanjiSearch", kanjiSearch);
-            model.addAttribute("kanjiSort", kanjiSort);
-            model.addAttribute("sortDirection", sortDirection);
-            model.addAttribute("collected", collected);
-            return "kanji/kanjiCollection";
-        }
+        model.addAttribute("searchRequest", searchRequest);
+        model.addAttribute("searchResponse", searchResponse.getContent());
 
         return "kanji/kanjiCollection";
     }
 
-    @GetMapping("/detail")
-    public String kanjiDetail(@RequestParam(name = "kanjiId") Long kanjiId, Model model) {
-        Kanji kanji = kanjiService.getKanji(kanjiId);
+    /**
+     * 무한 스크롤로 page=2,3... 요청 시 AJAX로 partial HTML 반환
+     */
+    @GetMapping("/collectionAjax")
+    @Operation(summary = "한자 목록 AJAX", description = "추가 10개 로딩")
+    public String kanjiCollectionAjax(
+            @AuthenticationPrincipal MyPrincipal principal,
+            @ModelAttribute KanjiSearchRequest searchRequest,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            Model model) {
 
-        model.addAttribute("kanji", kanji);
+        // 다음 페이지 로드
+        Page<KanjiSearchResponse> searchResponse = kanjiCollectionService.getMyCollection(principal.getUserId(), searchRequest, page);
 
-        return "kanji/kanjiDetail";
+        model.addAttribute("searchResponse", searchResponse.getContent());
+
+        // Thymeleaf fragment만 반환
+        return "kanji/kanjiCollectionFragment :: cardList";
     }
 
     @GetMapping("/details")
