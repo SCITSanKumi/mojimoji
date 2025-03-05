@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -73,5 +74,13 @@ public class KanjiController {
             @RequestParam(name = "kanjiId") Long kanjiId,
             @AuthenticationPrincipal MyPrincipal principal) {
         return kanjiService.getKanjiDetail(kanjiId, principal.getUserId());
+    }
+
+    @ResponseBody
+    @PostMapping("/addCollection")
+    public void addCollection(
+            @RequestParam("kanjiId") Long kanjiId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        kanjiCollectionService.addCollection(kanjiId, principal.getUserId());
     }
 }
