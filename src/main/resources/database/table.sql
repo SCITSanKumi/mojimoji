@@ -180,20 +180,6 @@ CREATE TABLE Community_Replies (
 );
 
 ------------------------------------------------------------
--- Kanji_Collection_Summary 테이블: 사용자별/한자별 수집 집계
-------------------------------------------------------------
-CREATE TABLE Kanji_Collection_Summary (
-    user_id INT NOT NULL,             -- 사용자 ID (Users 테이블)
-    kanji_id INT NOT NULL,            -- 한자 ID (Kanjis 테이블)
-    collection_count INT NOT NULL DEFAULT 0,  -- 수집 횟수
-    first_collected_at TIMESTAMP,     -- 최초 수집 시각
-    last_collected_at TIMESTAMP,      -- 마지막 수집 시각
-    PRIMARY KEY (user_id, kanji_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (kanji_id) REFERENCES Kanjis(kanji_id) ON DELETE CASCADE
-);
-
-------------------------------------------------------------
 -- Used_Book_Kanjis 테이블: 각 책 줄에서 사용된 한자 기록
 ------------------------------------------------------------
 CREATE TABLE Used_Book_Kanjis (

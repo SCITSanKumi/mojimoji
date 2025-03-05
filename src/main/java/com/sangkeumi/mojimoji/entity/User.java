@@ -119,10 +119,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SocialAccount> socialAccounts;
 
-    // ★ KanjiCollectionSummary와 1:N 관계
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<KanjiCollectionSummary> kanjiCollectionSummaries;
-
     public enum UserStatus {
         ACTIVE, INACTIVE, BANNED, PENDING, DELETED
     }

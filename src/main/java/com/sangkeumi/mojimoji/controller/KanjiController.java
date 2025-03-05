@@ -1,7 +1,5 @@
 package com.sangkeumi.mojimoji.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -11,21 +9,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.sangkeumi.mojimoji.dto.kanji.myCollectionRequest;
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
-import com.sangkeumi.mojimoji.entity.Kanji;
-
-import com.sangkeumi.mojimoji.service.KanjiCollectionService;
-import com.sangkeumi.mojimoji.service.KanjiService;
+import com.sangkeumi.mojimoji.dto.kanji.*;
+import com.sangkeumi.mojimoji.service.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
-import com.sangkeumi.mojimoji.dto.kanji.KanjiDetailResponse;
-import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchRequest;
-import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
