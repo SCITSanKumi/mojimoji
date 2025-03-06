@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -205,8 +205,8 @@
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: new URLSearchParams({ message: inputText })
                 })
-                .then(response => response.ok ? processResponseStream(response) : Promise.reject("메시지 전송 중 오류가 발생했습니다."))
-                .catch(error => alert(error));
+                    .then(response => response.ok ? processResponseStream(response) : Promise.reject("메시지 전송 중 오류가 발생했습니다."))
+                    .catch(error => alert(error));
             }
 
             /** 서버에서 스트리밍 응답을 처리 */
@@ -402,6 +402,7 @@
         });
     </script>
 </head>
+
 <body class="bg-light text-center p-3">
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="game-container">
@@ -421,7 +422,8 @@
             </div>
         </div>
         <div class="chat-container" id="chatBox">
-            <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
+            <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임
+                시작</button>
         </div>
         <div class="input-group mt-3 w-100 d-none show-at-game-start">
             <input type="text" id="userInput" class="form-control" placeholder="입력하세요...">
@@ -431,7 +433,8 @@
     </div>
 
     <!-- 퀴즈 모달 -->
-    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content p-4">
                 <h2 class="text-center">한자 퀴즈</h2>
@@ -450,4 +453,5 @@
         </div>
     </div>
 </body>
+
 </html>
