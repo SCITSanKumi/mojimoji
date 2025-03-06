@@ -142,7 +142,6 @@ public class GameService {
         log.info("contentathandleChatResponse: {}", content);
 
         StringBuilder dialogue = new StringBuilder();
-        String extractedJson = null;
 
         // 정규식 패턴: {"name": "xxx"} 를 찾아서 "xxx :"로 변환
         Matcher matcher = Pattern.compile("\\{\"name\":\\s*\"([^\"]+)\"\\}").matcher(content);
@@ -156,26 +155,28 @@ public class GameService {
         dialogue.append(content.substring(lastEnd)); // 남은 부분 추가
 
         bookLine.setGptContent(dialogue.toString()); //TODO 자리 옮기기
+        bookLineRepository.save(bookLine); //TODO 없앨 수 있으면 없애기
 
         // JSON 추출 (마지막에 있는 JSON 객체)
-        Matcher jsonMatcher = Pattern.compile("\\{\\s*\"hp\"\\s*:\\s*\\d+.*?\\}").matcher(content);
+        Matcher jsonMatcher = Pattern.compile("\\{\\s*\"hp\"\\s*:\\s*\\d+.*?\\}").matcher(dialogue.toString());
         if (jsonMatcher.find()) {
-            extractedJson = jsonMatcher.group();
-        }
+            String extractedJson = jsonMatcher.group();
 
-        // extractedJson이 null인지 확인
-        if (extractedJson != null) {
             try {
                 Map<String, Object> extractedState = objectMapper.readValue(extractedJson, Map.class);
+
                 bookLine.setHp((int) extractedState.getOrDefault("hp", 100));
                 bookLine.setMp((int) extractedState.getOrDefault("mp", 100));
-                bookLine.setCurrentLocation((String) extractedState.getOrDefault("currentLocation", ""));
+                bookLine.setCurrentLocation((String) extractedState.getOrDefault("current_location", ""));
                 bookLine.getBook().setEnded((boolean) extractedState.getOrDefault("isEnded", false));
+
+                bookLine.setGptContent(dialogue.toString()); //TODO 자리 옮기기
+                bookLineRepository.save(bookLine); //TODO 없앨 수 있으면 없애기
+                bookRepository.save(bookLine.getBook()); //TODO 없앨 수 있으면 없애기
             } catch (JsonProcessingException e) {
                 log.error("JSON 처리 중 오류 발생: {}", e.getMessage());
             }
         } else {
-            // 매칭되는 JSON이 없을 경우 처리 (로그를 남기거나, 기본값으로 처리하는 등)
             log.warn("JSON 상태 정보가 없어 처리하지 않았습니다.");
         }
     }
