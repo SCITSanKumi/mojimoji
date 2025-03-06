@@ -46,13 +46,16 @@ public interface KanjiRepository extends JpaRepository<Kanji, Long> {
                 LEFT JOIN KanjiCollection kc
                     ON k.kanjiId = kc.kanji.kanjiId
                     AND kc.user.id = :userId
-                WHERE k.category LIKE CONCAT('%', :category, '%')
-                    AND k.jlptRank LIKE CONCAT('%', :jlptRank, '%')
-                    AND (k.kanji LIKE CONCAT('%', :kanjiSearch, '%')
-                        OR k.korKunyomi LIKE CONCAT('%', :kanjiSearch, '%')
-                        OR k.korOnyomi LIKE CONCAT('%', :kanjiSearch, '%')
-                        OR k.jpnKunyomi LIKE CONCAT('%', :kanjiSearch, '%')
-                        OR k.jpnOnyomi LIKE CONCAT('%', :kanjiSearch, '%'))
+                WHERE (:category IS NULL OR k.category = :category)
+                    AND (:jlptRank IS NULL OR k.jlptRank = :jlptRank)
+                    AND (
+                        :kanjiSearch IS NULL OR
+                        k.kanji       LIKE CONCAT('%', :kanjiSearch, '%') OR
+                        k.korKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
+                        k.korOnyomi   LIKE CONCAT('%', :kanjiSearch, '%') OR
+                        k.jpnKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
+                        k.jpnOnyomi   LIKE CONCAT('%', :kanjiSearch, '%')
+                        )
             """)
     Page<KanjiSearchResponse> findMyCollection(
             @Param("userId") Long userId,

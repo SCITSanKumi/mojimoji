@@ -56,33 +56,26 @@
                 </div>
             </div>
         </div>
-        <<<<<<< HEAD <div th:unless="${kanji.isCollected} == 1" th:class="notKanjiCard" th:classappend="border-lv0">
-            =======
-            <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
-                >>>>>>> 1941c600577239535210796a30ef008e05325567
-                <div class="card-face card-front">
-                    <span class="kanji" th:text="${kanji.kanji}">火</span>
-                    <hr>
-                    <div class="kanjiExplain">
-                        <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
-                        <div class="jlptRank" th:text="${kanji.jlptRank}">N5</div>
-                        <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}"></div>
-                        <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
-                    </div>
-                    <div class="createdAt">미등록</div>
+        <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
+            <div class="card-face card-front">
+                <span class="kanji" th:text="${kanji.kanji}">火</span>
+                <hr>
+                <div class="kanjiExplain">
+                    <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
+                    <div class="jlptRank" th:text="${kanji.jlptRank}">N5</div>
+                    <div class="yomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}"></div>
+                    <div class="kanjiId" th:text="'No.' + ${kanji.KanjiId}">]</div>
                 </div>
-                <div class="card-face card-back">
-                    <div class="card-back-inner">
-                        <div class="card-back-content">
-                            <<<<<<< HEAD <h2 class="card-back-title">?</h2>
-                                =======
-                                <h2 class="card-back-title">MOJIMOJI</h2>
-                                <div class="card-back-subtitle">한자 수집 카드</div>
-                                >>>>>>> 1941c600577239535210796a30ef008e05325567
-                        </div>
+                <div class="createdAt">미등록</div>
+            </div>
+            <div class="card-face card-back">
+                <div class="card-back-inner">
+                    <div class="card-back-content">
+                        <h2 class="card-back-title">?</h2>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 
 </body>

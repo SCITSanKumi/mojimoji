@@ -41,8 +41,21 @@ public class KanjiController {
                 Page<KanjiSearchResponse> searchResponse = kanjiCollectionService.getMyCollection(principal.getUserId(),
                                 searchRequest, page);
 
+                KanjiCount countDto = kanjiCollectionService.findTotalAndCollected(searchRequest,
+                                principal.getUserId());
+                Long totalCount = (countDto.getTotalCount() != null) ? countDto.getTotalCount() : 0;
+                Long collectedCount = (countDto.getCollectedCount() != null) ? countDto.getCollectedCount() : 0;
+
                 model.addAttribute("searchRequest", searchRequest);
+                model.addAttribute("kanjiSort", searchRequest.kanjiSort());
+                model.addAttribute("sortDirection", searchRequest.sortDirection());
+                model.addAttribute("category", searchRequest.category());
+                model.addAttribute("jlptRank", searchRequest.jlptRank());
+                model.addAttribute("kanjiSearch", searchRequest.kanjiSearch());
                 model.addAttribute("searchResponse", searchResponse.getContent());
+                // 여기서 "전체 결과" 기준으로 collectedCount / totalCount
+                model.addAttribute("collected", collectedCount);
+                model.addAttribute("totalCount", totalCount);
 
                 return "kanji/kanjiCollection";
         }

@@ -1,9 +1,7 @@
 package com.sangkeumi.mojimoji.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ public class KanjiCollectionService {
     private final KanjiCollectionsRepository kanjiCollectionsRepository;
     private final UserRepository userRepository;
     private final KanjiRepository kanjiRepository;
-    private final KanjiCollectionSummaryRepository kanjiCollectionSummaryRepository;
 
     @Transactional
     public void addCollection(Long kanjiId, Long userId) {
@@ -75,6 +72,14 @@ public class KanjiCollectionService {
                 .collect(Collectors.groupingBy(CategoryKanjiRow::getCategory));
 
         return grouped;
+    }
+
+    public KanjiCount findTotalAndCollected(KanjiSearchRequest req, Long userId) {
+        return kanjiCollectionsRepository.findTotalAndCollected(
+                userId,
+                req.category(),
+                req.jlptRank(),
+                req.kanjiSearch());
     }
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {
