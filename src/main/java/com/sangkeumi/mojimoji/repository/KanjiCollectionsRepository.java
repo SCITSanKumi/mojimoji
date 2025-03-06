@@ -7,12 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
 import com.sangkeumi.mojimoji.dto.mypage.*;
 import com.sangkeumi.mojimoji.entity.*;
 
 public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollection, Long> {
     // userId와 kanjiId에 해당하는 첫 번째 획득 기록(생성일 기준)을 반환
     Optional<KanjiCollection> findFirstByUserUserIdAndKanji_KanjiIdOrderByCreatedAtAsc(Long userId, Long kanjiId);
+
     Optional<KanjiCollection> findByKanjiAndUser(Kanji kanji, User user);
 
     @Query(value = """
@@ -110,4 +112,34 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
             ORDER BY k.category, k.kanji_id;
             """, nativeQuery = true)
     List<CategoryKanjiRow> findCategoryKanjiRows(@Param("userId") Long userId);
+
+    @Query(value = """
+                SELECT
+                    COUNT(k.kanji_id) AS totalCount,
+                    SUM(CASE WHEN c.kanji_id IS NOT NULL THEN 1 ELSE 0 END) AS collectedCount
+                FROM Kanjis k
+                LEFT JOIN (
+                    SELECT
+                        kc.kanji_id
+                        -- 여기선 MIN(...) 불필요, 그냥 수집 여부만 확인
+                    FROM Kanji_Collections kc
+                    WHERE kc.user_id = :userId
+                    GROUP BY kc.kanji_id
+                ) c ON k.kanji_id = c.kanji_id
+                WHERE (:category IS NULL OR :category = '' OR k.category = :category)
+                    AND (:jlptRank IS NULL OR :jlptRank = '' OR k.jlpt_rank = :jlptRank)
+                    AND (
+                        :searchTerm IS NULL OR :searchTerm = ''
+                        OR k.kanji       LIKE CONCAT('%', :searchTerm, '%')
+                        OR k.kor_onyomi  LIKE CONCAT('%', :searchTerm, '%')
+                        OR k.kor_kunyomi LIKE CONCAT('%', :searchTerm, '%')
+                        OR k.jpn_onyomi  LIKE CONCAT('%', :searchTerm, '%')
+                        OR k.jpn_kunyomi LIKE CONCAT('%', :searchTerm, '%')
+                    )
+            """, nativeQuery = true)
+    KanjiCount findTotalAndCollected(
+            @Param("userId") Long userId,
+            @Param("category") String category,
+            @Param("jlptRank") String jlptRank,
+            @Param("searchTerm") String searchTerm);
 }
