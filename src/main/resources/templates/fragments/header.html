@@ -16,12 +16,14 @@
         <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a th:href="@{/game/screen}" class="nav-link">스토리 시작</a></li>
             <li class="nav-item"><a th:href="@{/board/story/list}" class="nav-link">스토리 구경하기</a></li>
+            <li class="nav-item"><a th:href="@{rank/rankpage}" class="nav-link">랭크</a></li>
             <li class="nav-item"><a href="#" class="nav-link">이용방법</a></li>
             <!-- 모바일 화면에서 드롭다운 항목을 개별 nav-item으로 표시 -->
             <li class="nav-item d-lg-none"><a th:href="@{/mypage}" class="nav-link">마이 페이지</a></li>
             <li class="nav-item d-lg-none"><a th:href="@{/board/myStory/list}" class="nav-link">내 스토리</a></li>
             <li class="nav-item d-lg-none"><a th:href="@{/kanji/collection}" class="nav-link">한자 컬렉션</a></li>
-            <li class="nav-item d-lg-none"><a href="#" class="nav-link text-danger">로그아웃</a></li>
+            <li class="nav-item d-lg-none"><a href="#" th:href="@{/user/logout}" class="nav-link text-danger">로그아웃</a>
+            </li>
             <!-- 데스크톱에서는 드롭다운 메뉴 유지 -->
             <li class="nav-item dropdown d-none d-lg-block">
                 <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown"
