@@ -96,7 +96,7 @@ public class GameService {
         // 사용자 입력 저장
         BookLine bookLine = bookLineRepository.save(BookLine.builder()
                 .book(book)
-                .userContent(gameConfiguraton.getIntroMessage())
+                .userContent(message)
                 .turnCount(currentTurn)
                 .build());
 
@@ -144,7 +144,7 @@ public class GameService {
         StringBuilder dialogue = new StringBuilder();
 
         // 정규식 패턴: {"name": "xxx"} 를 찾아서 "xxx :"로 변환
-        Matcher matcher = Pattern.compile("\\{\"name\":\\s*\"([^\"]+)\"\\}").matcher(content);
+        Matcher matcher = Pattern.compile("\\{\"name\":\\s*\"([^\"]+)\"\\}").matcher(content); //TODO 간단한 방법으로
 
         int lastEnd = 0;
         while (matcher.find()) {
@@ -154,14 +154,19 @@ public class GameService {
         }
         dialogue.append(content.substring(lastEnd)); // 남은 부분 추가
 
-        bookLine.setGptContent(dialogue.toString()); //TODO 자리 옮기기
-        bookLineRepository.save(bookLine); //TODO 없앨 수 있으면 없애기
+        // dialogue에서 JSON 부분 추출
+        String dialogueText = dialogue.toString();
+        Matcher jsonMatcher = Pattern.compile("\\{\\s*\"hp\"\\s*:\\s*\\d+.*?\\}").matcher(dialogueText);
 
-        // JSON 추출 (마지막에 있는 JSON 객체)
-        Matcher jsonMatcher = Pattern.compile("\\{\\s*\"hp\"\\s*:\\s*\\d+.*?\\}").matcher(dialogue.toString());
+        String extractedJson = null;
         if (jsonMatcher.find()) {
-            String extractedJson = jsonMatcher.group();
+            extractedJson = jsonMatcher.group();
+            // JSON 부분을 제외한 나머지 텍스트 추출
+            dialogueText = dialogueText.replace(extractedJson, "").trim();
+        }
 
+        // JSON이 있는 경우 파싱하여 값 적용
+        if (extractedJson != null) {
             try {
                 Map<String, Object> extractedState = objectMapper.readValue(extractedJson, Map.class);
 
@@ -169,16 +174,17 @@ public class GameService {
                 bookLine.setMp((int) extractedState.getOrDefault("mp", 100));
                 bookLine.setCurrentLocation((String) extractedState.getOrDefault("current_location", ""));
                 bookLine.getBook().setEnded((boolean) extractedState.getOrDefault("isEnded", false));
-
-                bookLine.setGptContent(dialogue.toString()); //TODO 자리 옮기기
-                bookLineRepository.save(bookLine); //TODO 없앨 수 있으면 없애기
-                bookRepository.save(bookLine.getBook()); //TODO 없앨 수 있으면 없애기
             } catch (JsonProcessingException e) {
                 log.error("JSON 처리 중 오류 발생: {}", e.getMessage());
             }
         } else {
             log.warn("JSON 상태 정보가 없어 처리하지 않았습니다.");
         }
+
+        // JSON을 제외한 대화 내용만 저장
+        bookLine.setGptContent(dialogueText); // JSON 부분 제외한 텍스트 저장
+        bookLineRepository.save(bookLine); //TODO 없앨 수 있으면 없애기
+        bookRepository.save(bookLine.getBook()); //TODO 없앨 수 있으면 없애기
     }
 
     /** OpenAI API 스트리밍 요청 처리 */
