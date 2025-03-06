@@ -6,6 +6,7 @@
     <title>mojimoji</title>
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
     <script defer src="../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
@@ -20,21 +21,82 @@
             position: relative;
         }
 
+        #top {
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        /* 검색 영역 (내부 돋보기 포함) */
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 0.5rem;
+            flex: 1;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        /* 검색 조건 select 둥글게 */
+        select.form-select {
+            border-radius: 9999px;
+            width: 130px;
+            min-width: 100px;
+            margin-right: 5px;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            /* 최소 폭을 낮춰 축소 허용 */
+            min-width: 200px;
+        }
+
+        .search-container input[type="text"] {
+            width: 100%;
+            border-radius: 9999px;
+            padding-right: 3rem;
+        }
+
+        /* 돋보기 아이콘 버튼 */
+        .search-container button {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            cursor: pointer;
+        }
+
+        .search-container .bi-search {
+            font-size: 1.2rem;
+        }
+
+
+
         #kanjiCurrent {
             font-size: 20px;
             font-weight: bold;
-            float: left;
-            margin-left: 50px;
             width: 100px;
+            line-height: 60px;
+            /* float: left; */
         }
 
-        #kanjiSort {
+        #kanjiSort,
+        #sortDirection {
             float: left;
             margin-left: 10px;
         }
 
         #searchRight {
-            float: right;
+            display: flex;
+            justify-content: flex-end;
+            margin-left: auto;
         }
 
         /* 그리드: 5열 */
@@ -389,63 +451,73 @@
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
     <div class="container px-4 py-5" id="custom-cards"><br><br><br>
-        <h2>한자 수집북</h2>
-        <span id="kanjiCurrent" th:text="${collected} + '/' + ${totalCount}">0/0</span>
-
-        <!-- 검색 폼 -->
         <form th:action="@{/kanji/collection}" method="get" id="searchForm">
-            <select id="kanjiSort" name="kanjiSort">
-                <option value="kanjiId" th:selected="${kanjiSort} == 'kanjiId'">한자번호순</option>
-                <option value="firstCollectedAt" th:selected="${kanjiSort} == 'firstCollectedAt'">최근등록순</option>
-            </select>
-            <select id="sortDirection" name="sortDirection">
-                <option value="asc" th:selected="${sortDirection} == 'asc'">오름차순</option>
-                <option value="desc" th:selected="${sortDirection} == 'desc'">내림차순</option>
-            </select>
+            <div id="top">
+                <h2>한자 수집북</h2>
+                <span id="kanjiCurrent" th:text="${collected} + '/' + ${totalCount}">0/0</span>
+            </div>
 
-            <span id="searchRight">
-                카테고리 :
-                <select name="category">
-                    <option value="" th:selected="${category} == ''">전체</option>
-                    <option value="가족" th:selected="${category} == '가족'">가족</option>
-                    <option value="감각" th:selected="${category} == '감각'">감각</option>
-                    <option value="감정" th:selected="${category} == '감정'">감정</option>
-                    <option value="국가" th:selected="${category} == '국가'">국가</option>
-                    <option value="금속" th:selected="${category} == '금속'">금속</option>
-                    <option value="동물" th:selected="${category} == '동물'">동물</option>
-                    <option value="문서" th:selected="${category} == '문서'">문서</option>
-                    <option value="방위" th:selected="${category} == '방위'">방위</option>
-                    <option value="사계" th:selected="${category} == '사계'">사계</option>
-                    <option value="사상" th:selected="${category} == '사상'">사상</option>
-                    <option value="색감" th:selected="${category} == '색감'">색감</option>
-                    <option value="수계" th:selected="${category} == '수계'">수계</option>
-                    <option value="수학" th:selected="${category} == '수학'">수학</option>
-                    <option value="시간" th:selected="${category} == '시간'">시간</option>
-                    <option value="식물" th:selected="${category} == '식물'">식물</option>
-                    <option value="신체" th:selected="${category} == '신체'">신체</option>
-                    <option value="음식" th:selected="${category} == '음식'">음식</option>
-                    <option value="의류" th:selected="${category} == '의류'">의류</option>
-                    <option value="인공" th:selected="${category} == '인공'">인공</option>
-                    <option value="자연" th:selected="${category} == '자연'">자연</option>
-                    <option value="작용" th:selected="${category} == '작용'">작용</option>
-                    <option value="장소" th:selected="${category} == '장소'">장소</option>
-                    <option value="종교" th:selected="${category} == '종교'">종교</option>
-                    <option value="지칭" th:selected="${category} == '지칭'">지칭</option>
-                    <option value="직업" th:selected="${category} == '직업'">직업</option>
-                    <option value="형용사" th:selected="${category} == '형용사'">형용사</option>
-                </select>
-                급수 :
-                <select name="jlptRank">
-                    <option value="" th:selected="${jlptRank} == ''">전체</option>
-                    <option value="N1" th:selected="${jlptRank} == 'N1'">N1</option>
-                    <option value="N2" th:selected="${jlptRank} == 'N2'">N2</option>
-                    <option value="N3" th:selected="${jlptRank} == 'N3'">N3</option>
-                    <option value="N4" th:selected="${jlptRank} == 'N4'">N4</option>
-                    <option value="N5" th:selected="${jlptRank} == 'N5'">N5</option>
-                </select>
-                <input type="text" name="kanjiSearch" th:value="${kanjiSearch}" placeholder="한자를 입력해주세요">
-                <input type="submit" value="검색">
-            </span>
+            <!-- 검색 폼 -->
+            <div class="search-wrapper">
+                <span id="search-left">
+                    <select id="kanjiSort" name="kanjiSort" class="form-select">
+                        <option value="kanjiId" th:selected="${kanjiSort} == 'kanjiId'">한자번호순</option>
+                        <option value="firstCollectedAt" th:selected="${kanjiSort} == 'firstCollectedAt'">최근등록순</option>
+                    </select>
+                    <select id="sortDirection" name="sortDirection" class="form-select">
+                        <option value="asc" th:selected="${sortDirection} == 'asc'">오름차순</option>
+                        <option value="desc" th:selected="${sortDirection} == 'desc'">내림차순</option>
+                    </select>
+                </span>
+                <span id="searchRight">
+                    <select name="category" class="form-select">
+                        <option value="" th:selected="${category} == ''">카테고리</option>
+                        <option value="가족" th:selected="${category} == '가족'">가족</option>
+                        <option value="감각" th:selected="${category} == '감각'">감각</option>
+                        <option value="감정" th:selected="${category} == '감정'">감정</option>
+                        <option value="국가" th:selected="${category} == '국가'">국가</option>
+                        <option value="금속" th:selected="${category} == '금속'">금속</option>
+                        <option value="동물" th:selected="${category} == '동물'">동물</option>
+                        <option value="문서" th:selected="${category} == '문서'">문서</option>
+                        <option value="방위" th:selected="${category} == '방위'">방위</option>
+                        <option value="사계" th:selected="${category} == '사계'">사계</option>
+                        <option value="사상" th:selected="${category} == '사상'">사상</option>
+                        <option value="색감" th:selected="${category} == '색감'">색감</option>
+                        <option value="수계" th:selected="${category} == '수계'">수계</option>
+                        <option value="수학" th:selected="${category} == '수학'">수학</option>
+                        <option value="시간" th:selected="${category} == '시간'">시간</option>
+                        <option value="식물" th:selected="${category} == '식물'">식물</option>
+                        <option value="신체" th:selected="${category} == '신체'">신체</option>
+                        <option value="음식" th:selected="${category} == '음식'">음식</option>
+                        <option value="의류" th:selected="${category} == '의류'">의류</option>
+                        <option value="인공" th:selected="${category} == '인공'">인공</option>
+                        <option value="자연" th:selected="${category} == '자연'">자연</option>
+                        <option value="작용" th:selected="${category} == '작용'">작용</option>
+                        <option value="장소" th:selected="${category} == '장소'">장소</option>
+                        <option value="종교" th:selected="${category} == '종교'">종교</option>
+                        <option value="지칭" th:selected="${category} == '지칭'">지칭</option>
+                        <option value="직업" th:selected="${category} == '직업'">직업</option>
+                        <option value="형용사" th:selected="${category} == '형용사'">형용사</option>
+                    </select>
+                    <select name="jlptRank" class="form-select">
+                        <option value="" th:selected="${jlptRank} == ''">급수</option>
+                        <option value="N1" th:selected="${jlptRank} == 'N1'">N1</option>
+                        <option value="N2" th:selected="${jlptRank} == 'N2'">N2</option>
+                        <option value="N3" th:selected="${jlptRank} == 'N3'">N3</option>
+                        <option value="N4" th:selected="${jlptRank} == 'N4'">N4</option>
+                        <option value="N5" th:selected="${jlptRank} == 'N5'">N5</option>
+                    </select>
+                    <div class="search-container">
+                        <input type="text" name="kanjiSearch" th:value="${kanjiSearch}" placeholder="한자를 입력해주세요"
+                            class="form-control">
+                        <button type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </span>
+            </div>
+
+
         </form>
 
         <br><br>
