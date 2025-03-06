@@ -76,7 +76,7 @@ public class GameService {
                 .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
         List<BookLine> history = bookLineRepository.findTop10ByBookOrderByTurnCountDesc(book);
-        Collections.reverse(history); //TODO 대가리 안돌아가서 내일 해햐알듯
+        Collections.reverse(history);
 
         int currentTurn = history.isEmpty() ? 0 : history.get(history.size() - 1).getTurnCount() + 1;
         int currentHP = history.isEmpty() ? 100 : history.get(history.size() - 1).getHp();
@@ -91,7 +91,7 @@ public class GameService {
         ));
         messages.add(Map.of("role", "user", "content", message));
 
-        log.info("Messages: {}", messages);
+        log.info("gpt Request : {}", messages);
 
         // 사용자 입력 저장
         BookLine bookLine = bookLineRepository.save(BookLine.builder()
@@ -139,7 +139,7 @@ public class GameService {
 
     @Transactional
     public void handleChatResponse(String content, BookLine bookLine) {
-        log.info("contentathandleChatResponse: {}", content);
+        log.info("gpt Response : {}", content);
 
         StringBuilder dialogue = new StringBuilder();
 
