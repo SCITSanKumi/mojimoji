@@ -55,7 +55,8 @@
         <!-- 내 스토리 내용을 하나의 박스에 표시 (내용이 길면 스크롤 생김) -->
         <div class="story-box">
             <div th:each="myStory : ${myStoryContent}">
-                <p th:text="${myStory.content}"></p>
+                <p th:text="${myStory.userContent}"></p>
+                <p th:text="${myStory.gptContent}"></p>
             </div>
         </div>
     </div>

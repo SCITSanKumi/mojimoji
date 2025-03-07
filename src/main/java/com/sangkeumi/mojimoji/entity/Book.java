@@ -65,10 +65,10 @@ public class Book {
 
     /**
      * 책을 구성하는 줄들의 목록 (Book_Lines 테이블과 일대다 관계)
-     * turn_count 필드로 정렬하여 책의 순서대로 조회 가능
+     * sequence 필드로 정렬하여 책의 순서대로 조회 가능
      */
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("turnCount ASC")
+    @OrderBy("sequence ASC")
     private List<BookLine> bookLines;
 
     /**
