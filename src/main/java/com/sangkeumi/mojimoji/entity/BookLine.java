@@ -59,8 +59,8 @@ public class BookLine {
     /**
      * 책 내에서의 순서를 나타내는 필드
      */
-    @Column(name = "turn_count", nullable = false)
-    private int turnCount;
+    @Column(name = "sequence", nullable = false)
+    private int sequence;
 
     /**
      * 생성일시

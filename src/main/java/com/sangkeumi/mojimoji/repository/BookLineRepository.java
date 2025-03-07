@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface BookLineRepository extends JpaRepository<BookLine, Long> {
-    List<BookLine> findTop10ByBookOrderByTurnCountDesc(Book book);
-    List<BookLine> findByBook_BookIdOrderByTurnCountAsc(Long bookId);
+    List<BookLine> findTop10ByBookOrderBySequenceDesc(Book book);
+    List<BookLine> findByBook_BookIdOrderBySequenceAsc(Long bookId);
 }

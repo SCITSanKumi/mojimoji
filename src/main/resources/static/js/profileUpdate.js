@@ -1,3 +1,4 @@
+// 모달 관련 이벤트 처리
 $(document).ready(function () {
     $('#changePasswordModal').on('shown.bs.modal', function () {
         $(this).removeAttr('inert');
@@ -15,7 +16,7 @@ $(document).ready(function () {
         $(this).removeAttr('inert');
         $(this).find('button, input').first().focus();
     });
- 
+
     $('#deleteAccountModal').on('hidden.bs.modal', function () {
         if (document.activeElement) {
             document.activeElement.blur();
@@ -23,18 +24,58 @@ $(document).ready(function () {
         $('#profileUpdateBtn').focus();
     });
 
-    // 프로필 수정 버튼 클릭 이벤트
-    $("#profileUpdateBtn").click(function () {
-        const data = {
-            nickname: $("#nickname").val(),
-            email: $("#email").val()
-        };
+    // 프로필 이미지 선택 및 드래그앤드롭 이벤트
+    const profileImageContainer = document.getElementById('profileImageContainer');
+    const profileImageInput = document.getElementById('profileImageInput');
+    const profileImage = document.getElementById('profileImage');
+
+    // 클릭 시 파일 선택창 열기
+    profileImageContainer.addEventListener('click', function () {
+        profileImageInput.click();
+    });
+
+    // 파일 선택 시 미리보기 업데이트
+    profileImageInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const imageURL = URL.createObjectURL(file);
+            profileImage.src = imageURL;
+        }
+    });
+
+    // 드래그앤드롭 이벤트 처리
+    profileImageContainer.addEventListener('dragover', function (event) {
+        event.preventDefault();
+        profileImageContainer.classList.add('dragover');
+    });
+
+    profileImageContainer.addEventListener('dragleave', function (event) {
+        event.preventDefault();
+        profileImageContainer.classList.remove('dragover');
+    });
+
+    profileImageContainer.addEventListener('drop', function (event) {
+        event.preventDefault();
+        profileImageContainer.classList.remove('dragover');
+        const file = event.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            profileImageInput.files = event.dataTransfer.files;
+            const imageURL = URL.createObjectURL(file);
+            profileImage.src = imageURL;
+        }
+    });
+
+    // 프로필 수정 폼 AJAX 전송 (파일 포함) //TODO 파일 크기 검사, 프로필 사진 반영되게
+    $("#profileUpdateForm").on('submit', function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
 
         $.ajax({
-            url: "/user/update",
+            url: $(this).attr('action'),
             type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(data),
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function (result) {
                 if (result) {
                     alert("프로필이 변경 되었습니다.");

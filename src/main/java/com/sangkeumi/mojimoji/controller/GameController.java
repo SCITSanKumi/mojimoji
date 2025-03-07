@@ -37,7 +37,7 @@ public class GameController {
     public ResponseEntity<GameStartResponse> gameStart(
             @PathVariable("bookId") Long bookId,
             @AuthenticationPrincipal MyPrincipal principal) {
-        return ResponseEntity.ok(gameService.gameStart(bookId, principal));
+        return ResponseEntity.ok(gameService.gameStart(bookId, principal.getUserId()));
     }
 
     @ResponseBody

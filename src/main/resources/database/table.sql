@@ -101,7 +101,7 @@ CREATE TABLE Book_Lines (
     hp INT,                                                  -- 사용자의 현재 채력
     mp INT,                                                  -- 사용자의 현재 정신력
     current_location VARCHAR(100),                           -- 사용자의 현재 위치
-    turn_count  INT NOT NULL,                                -- 턴 수
+    sequence  INT NOT NULL,                                -- 턴 수
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 줄 생성 일시
     PRIMARY KEY (line_id),
     FOREIGN KEY (book_id) REFERENCES Books(book_id) ON DELETE CASCADE
