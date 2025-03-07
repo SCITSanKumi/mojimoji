@@ -34,7 +34,7 @@ public class GameConfiguraton {
 
 {"name": "naration"} 내레이션 내용
 {"name": "NPC이름"} NPC 대사
-{"name": "player"} 플레이어 대사
+
 
 4. 한 장면이 종료될 때마다 게임 상태를 담은 JSON 객체를 출력합니다.
     이 객체에는 "hp", "mp", "current_location", "isEnded" 같은 키가 포함됩니다.
@@ -42,6 +42,7 @@ public class GameConfiguraton {
 예시:
 
 {"hp": 100, "mp": 100, "current_location": "마을 광장", "isEnded": false}
+
 
 5. 그 외의 텍스트(예: 안내 문구, 추가 설명)는 출력하지 말고,
     오직 JSON 형식의 텍스트만 결과로 반환하세요.
