@@ -3,7 +3,7 @@
     src: url('/fonts/PretendardJPVariable.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
-    font-display: swap;
+    font-display: block;
     /* variable font인 경우, weight를 600으로 지정 */
     font-variation-settings: 'wght' 600;
 }
