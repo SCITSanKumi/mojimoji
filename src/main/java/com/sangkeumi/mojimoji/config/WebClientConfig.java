@@ -19,9 +19,9 @@ public class WebClientConfig {
     public WebClient webClient (WebClient.Builder builder) {
         return builder
             .clientConnector(new ReactorClientHttpConnector(HttpClient.create()))
-            .baseUrl("https://api.openai.com/v1/chat/completions")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .defaultHeader("Authorization", "Bearer " + openAiApiKey)
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(4 * 1024 * 1024))
             .build();
     }
 }
