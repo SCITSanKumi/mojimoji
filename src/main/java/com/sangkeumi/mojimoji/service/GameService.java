@@ -46,6 +46,7 @@ public class GameService {
             .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
 
         Book book = bookRepository.findById(bookId)
+            .filter(b -> b.getUser().getUserId() == userId) // 사용자 검증(다른 사용자의 bookId를 URL에서 조작하여 요청한 경우)
             .orElseGet(() -> {
                 Book newBook = bookRepository.saveAndFlush(Book.builder()
                     .user(user)
@@ -66,7 +67,11 @@ public class GameService {
                 return newBook;
             });
 
-        return new GameStartResponse(book.getBookId(), gameConfiguraton.getIntroMessage()); //TODO 이어하기 만들려면 수정해야함
+        return new GameStartResponse(
+            book.getBookId(),
+            bookLineRepository.findTopByBookOrderBySequenceDesc(book)
+                .orElseThrow(() -> new RuntimeException("해당 스토리가 존재하지 않습니다."))
+                .getGptContent());
     }
 
     @Transactional
@@ -123,10 +128,9 @@ public class GameService {
         StringBuilder contentResponse = new StringBuilder();
 
         return getChatResponseFromApi(messages)
-                .doOnNext(chunk -> {contentResponse.append(chunk);})
-                .doOnComplete(() -> {handleChatResponse(contentResponse.toString(), bookLine);});
+            .doOnNext(chunk -> {contentResponse.append(chunk);})
+            .doOnComplete(() -> {handleChatResponse(contentResponse.toString(), bookLine);});
     }
-
 
     @Transactional
     public GameEndResponse gameEnd(Long bookId) {
@@ -145,7 +149,6 @@ public class GameService {
         bookLine.setGptContent(content);
         bookLineRepository.save(bookLine);
     }
-
 
     // @Transactional
     // private void handleChatResponse(String content, BookLine bookLine) {

@@ -117,17 +117,18 @@
     </style>
     <script defer>
     $(() => {
-        let bookId = -1;
+        let bookId = Number("[[${bookId}]]");
         let isGameEnded = false;
 
         // 현재 화자/이전 화자
-        let currentSpeaker = "";
+        let currentSpeaker = "naration";
         let previousSpeaker = "";
 
         // JSON 파싱용 버퍼
         let readingJson = false;
         let jsonBuffer   = "";
 
+        // 퀴즈 관련 변수
         let questionList = [];
         let currentIndex = 0;
         let correctAnswerIndexes = [];
@@ -135,12 +136,12 @@
 
         const chatBox = $("#chatBox");
 
-        // ====== 이벤트 리스너 ======
+        // 이벤트 리스너
         $("#submit-btn").click(sendUserMessage);
         $("#userInput").on("keydown", (event) => {
             if (event.key === "Enter") {
-            event.preventDefault();
-            sendUserMessage();
+                event.preventDefault();
+                sendUserMessage();
             }
         });
 
@@ -154,8 +155,8 @@
                 $("#start-btn").addClass("d-none");
                 $(".show-at-game-start").removeClass("d-none");
 
-                // 첫 안내 문구
-                clientMessage("naration", response.message);
+                // 첫 안내 문구(json 포함)
+                handleChunkText(response.message);
             },
             error: (err) => {
                 console.error("[gameStart] error:", err);
@@ -173,7 +174,8 @@
                 return;
             }
             // 플레이어 말풍선
-            clientMessage("player", inputText);
+            currentSpeaker = "player";
+            appendMessage(inputText);
             inputField.val("");
 
             fetch(`/game/send/${bookId}`, {
@@ -279,11 +281,6 @@
         /**
          * 말풍선 생성
          */
-        function clientMessage(speaker, text) {
-            currentSpeaker = speaker;
-            appendMessage(text);
-        }
-
         function appendMessage(text) {
             if (currentSpeaker !== previousSpeaker) {
                 previousSpeaker = currentSpeaker;
