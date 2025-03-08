@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,10 @@
         th:href="@{/css/bootstrap.min.css}">
     <!-- Bootstrap JS -->
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- 공통 리소스 (CSS, 폰트 preload) -->
+    <link rel="stylesheet" href="../../../static/css/main.css" th:href="@{/css/main.css}">
+    <link rel="preload" href="/fonts/PretendardJPVariable.ttf" as="font" type="font/ttf" crossorigin>
+
     <!-- jQuery -->
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script defer>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -408,6 +408,10 @@
         .detailJlptRank {
             font-size: 15px;
         }
+
+        .kanji {
+            font-weight: bold;
+        }
     </style>
 
     <!-- ================== JS (Thymeleaf inline) ================== -->
@@ -794,7 +798,7 @@
                                 th:classappend="${row.isCollected} == 1 ? 'kanji-collected' : 'kanji-not-collected'"
                                 th:attr="data-kanji-id=${row.kanjiId}">
                                 <div class="kanji-box">
-                                    <h5 th:text="${row.kanji}">漢</h5>
+                                    <h5 class="kanji" th:text="${row.kanji}">漢</h5>
                                     <h5 th:text="${row.jlptRank}">N1</h5>
                                 </div>
                             </li>

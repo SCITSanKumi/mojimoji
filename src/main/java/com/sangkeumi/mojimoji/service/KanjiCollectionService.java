@@ -37,11 +37,11 @@ public class KanjiCollectionService {
 
         // 2) DB에 저장
         KanjiCollection kanjiCollection = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user)
-            .orElse(KanjiCollection.builder()
-                .kanji(kanji)
-                .user(user)
-                .collectedCount(0)
-                .build());
+                .orElse(KanjiCollection.builder()
+                        .kanji(kanji)
+                        .user(user)
+                        .collectedCount(0)
+                        .build());
 
         kanjiCollection.setCollectedCount(kanjiCollection.getCollectedCount() + 1);
         kanjiCollectionsRepository.save(kanjiCollection);
@@ -50,14 +50,13 @@ public class KanjiCollectionService {
     public Page<KanjiSearchResponse> getMyCollection(Long userId, KanjiSearchRequest searchRequest, int page) {
 
         Sort sort = Sort.by(
-            searchRequest.sortDirection().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
-            searchRequest.kanjiSort()
-        );
+                searchRequest.sortDirection().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
+                searchRequest.kanjiSort());
 
-        return kanjiRepository.findMyCollection(userId, searchRequest.category(), searchRequest.jlptRank(), searchRequest.kanjiSearch(),
-            PageRequest.of(page - 1, 10, sort));
+        return kanjiRepository.findMyCollection(userId, searchRequest.category(), searchRequest.jlptRank(),
+                searchRequest.kanjiSearch(),
+                PageRequest.of(page - 1, 10, sort));
     }
-
 
     /**
      * 카테고리별 한자 목록 + 수집 여부를 Map 형태로 반환.
@@ -70,9 +69,17 @@ public class KanjiCollectionService {
 
         // 2) Java Stream으로 category별 grouping
         Map<String, List<CategoryKanjiRow>> grouped = rows.stream()
-        .collect(Collectors.groupingBy(CategoryKanjiRow::getCategory));
+                .collect(Collectors.groupingBy(CategoryKanjiRow::getCategory));
 
         return grouped;
+    }
+
+    public KanjiCount findTotalAndCollected(KanjiSearchRequest req, Long userId) {
+        return kanjiCollectionsRepository.findTotalAndCollected(
+                userId,
+                req.category(),
+                req.jlptRank(),
+                req.kanjiSearch());
     }
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {

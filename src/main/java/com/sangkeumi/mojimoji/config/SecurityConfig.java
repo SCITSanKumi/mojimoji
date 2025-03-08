@@ -49,10 +49,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-                // 1) HTTP 요청에 대한 보안 설정
-                http.authorizeHttpRequests(auth -> auth
-                    // requestMatchers(...)로 지정한 경로들은 인증 없이 접근 허용
-                    .requestMatchers(
+        // 1) HTTP 요청에 대한 보안 설정
+        http.authorizeHttpRequests(auth -> auth
+                // requestMatchers(...)로 지정한 경로들은 인증 없이 접근 허용
+                .requestMatchers(
                         "/",
                         "/board/story/list",
                         "/board/story/ajaxList",
@@ -67,47 +67,48 @@ public class SecurityConfig {
                         "/user/sign-up",
                         "/user/sign-in",
                         "/js/**",
+                        "/fonts/**",
                         "/css/**",
                         "/image/**")
-                    .permitAll()
-                    // 그 외 모든 요청은 인증(로그인) 필요
-                    .anyRequest().authenticated())
+                .permitAll()
+                // 그 외 모든 요청은 인증(로그인) 필요
+                .anyRequest().authenticated())
 
-            // 2) Form 로그인 설정
-            .formLogin(form -> form
-                // 로그인 페이지 경로 (GET /user/login) → 로그인 폼 표시
-                .loginPage("/user/login")
-                // 로그인 처리 경로 (POST /user/sign-in) → 실제 인증 로직
-                .loginProcessingUrl("/user/sign-in")
-                // 로그인 성공 시 커스텀 핸들러
-                .successHandler(loginSuccessHandler)
-                // 로그인 실패 시 커스텀 핸들러
-                .failureHandler(loginFailureHandler)
-                // 로그인 폼에서 아이디/비번 input name 지정
-                .usernameParameter("username")
-                .passwordParameter("password")
-                // 로그인 관련 요청은 모두 접근 허용
-                .permitAll())
-            // 3) 소셜 로그인(OAuth2) 설정
-            .oauth2Login(oauth -> oauth
-                // userInfoEndpoint(): 소셜 인증 후 사용자 정보(UserInfo)를 가져오는 설정
-                .userInfoEndpoint(userInfo -> userInfo
-                    // userService(...)에 커스텀 OAuth2UserService를 등록
-                    // → 소셜 프로필(DB 저장 등) 커스텀 로직
-                    .userService(customOAuth2UserService))
-                // 로그인 성공 시 이동할 URL, true면 항상 해당 URL로 이동
-                .defaultSuccessUrl("/", true))
+                // 2) Form 로그인 설정
+                .formLogin(form -> form
+                        // 로그인 페이지 경로 (GET /user/login) → 로그인 폼 표시
+                        .loginPage("/user/login")
+                        // 로그인 처리 경로 (POST /user/sign-in) → 실제 인증 로직
+                        .loginProcessingUrl("/user/sign-in")
+                        // 로그인 성공 시 커스텀 핸들러
+                        .successHandler(loginSuccessHandler)
+                        // 로그인 실패 시 커스텀 핸들러
+                        .failureHandler(loginFailureHandler)
+                        // 로그인 폼에서 아이디/비번 input name 지정
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        // 로그인 관련 요청은 모두 접근 허용
+                        .permitAll())
+                // 3) 소셜 로그인(OAuth2) 설정
+                .oauth2Login(oauth -> oauth
+                        // userInfoEndpoint(): 소셜 인증 후 사용자 정보(UserInfo)를 가져오는 설정
+                        .userInfoEndpoint(userInfo -> userInfo
+                                // userService(...)에 커스텀 OAuth2UserService를 등록
+                                // → 소셜 프로필(DB 저장 등) 커스텀 로직
+                                .userService(customOAuth2UserService))
+                        // 로그인 성공 시 이동할 URL, true면 항상 해당 URL로 이동
+                        .defaultSuccessUrl("/", true))
 
-            // 4) 로그아웃 설정
-            .logout(logout -> logout
-                // 로그아웃 요청 경로
-                .logoutUrl("/user/logout")
-                // 로그아웃 성공 시 이동할 경로
-                .logoutSuccessUrl("/")
-                // 로그아웃 시 세션 무효화
-                .invalidateHttpSession(true)
-                // 인증 정보 제거
-                .clearAuthentication(true));
+                // 4) 로그아웃 설정
+                .logout(logout -> logout
+                        // 로그아웃 요청 경로
+                        .logoutUrl("/user/logout")
+                        // 로그아웃 성공 시 이동할 경로
+                        .logoutSuccessUrl("/")
+                        // 로그아웃 시 세션 무효화
+                        .invalidateHttpSession(true)
+                        // 인증 정보 제거
+                        .clearAuthentication(true));
 
         // 5) CSRF 설정 (개발 편의를 위해 disable)
         http.csrf(csrf -> csrf.disable());
