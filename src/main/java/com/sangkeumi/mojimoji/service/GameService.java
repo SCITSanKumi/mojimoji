@@ -57,9 +57,9 @@ public class GameService {
                 bookLineRepository.save(BookLine.builder()
                     .book(newBook)
                     .gptContent(gameConfiguraton.getIntroMessage())
-                    .hp(gameConfiguraton.getDefaultHP())
-                    .mp(gameConfiguraton.getDefaultMP())
-                    .currentLocation(gameConfiguraton.getDefaultLocation())
+                    // .hp(gameConfiguraton.getDefaultHP())
+                    // .mp(gameConfiguraton.getDefaultMP())
+                    // .currentLocation(gameConfiguraton.getDefaultLocation())
                     .sequence(0)
                     .build());
 

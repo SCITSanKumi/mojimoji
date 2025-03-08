@@ -40,21 +40,21 @@ public class BookLine {
     @Column(name = "gpt_content", columnDefinition = "TEXT")
     private String gptContent;
 
-    /**
-     * 플레이어의 hp를 나타내는 컬럼
-     */
-    private int hp;
+    // /**
+    //  * 플레이어의 hp를 나타내는 컬럼
+    //  */
+    // private int hp;
 
-    /**
-     * 플레이어의 mp를 나타내는 컬럼
-     */
-    private int mp;
+    // /**
+    //  * 플레이어의 mp를 나타내는 컬럼
+    //  */
+    // private int mp;
 
-    /**
-     * 플레이어의 mp를 나타내는 컬럼
-     */
-    @Column(name = "current_location")
-    private String currentLocation;
+    // /**
+    //  * 플레이어의 mp를 나타내는 컬럼
+    //  */
+    // @Column(name = "current_location")
+    // private String currentLocation;
 
     /**
      * 책 내에서의 순서를 나타내는 필드

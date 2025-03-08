@@ -98,9 +98,9 @@ CREATE TABLE Book_Lines (
     book_id INT NOT NULL,                                    -- 이 줄이 속한 책을 참조 (Books 테이블)
     user_content TEXT,                                       -- 줄의 내용 (사용자)
     gpt_content TEXT,                                        -- 줄의 내용 (GPT)
-    hp INT,                                                  -- 사용자의 현재 채력
-    mp INT,                                                  -- 사용자의 현재 정신력
-    current_location VARCHAR(100),                           -- 사용자의 현재 위치
+    -- hp INT,                                                  -- 사용자의 현재 채력
+    -- mp INT,                                                  -- 사용자의 현재 정신력
+    -- current_location VARCHAR(100),                           -- 사용자의 현재 위치
     sequence  INT NOT NULL,                                -- 턴 수
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 줄 생성 일시
     PRIMARY KEY (line_id),
