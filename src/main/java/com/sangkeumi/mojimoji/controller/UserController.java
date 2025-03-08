@@ -86,11 +86,10 @@ public class UserController {
     @ResponseBody
     @Operation(summary = "회원 정보 수정", description = "닉네임과 이메일을 수정한다.")
     public boolean updateProfile(@AuthenticationPrincipal MyPrincipal principal,
-            @RequestBody UserUpdateRequest updateRequest) {
-        Long userId = principal.getUserId();
-        return userService.updateProfile(userId, updateRequest.nickname(), updateRequest.email());
+            @ModelAttribute UserUpdateRequest updateRequest) {
+        return userService.updateProfile(principal.getUserId(), updateRequest);
     }
-    
+
     /**
      * 비밀번호 수정 (AJAX 요청)
      * @param principal
@@ -101,14 +100,14 @@ public class UserController {
     @ResponseBody
     @Operation(summary = "비밀번호 변경", description = "기존 비밀번호 확인 후 새 비밀번호로 변경한다.")
     public ResponseEntity<Boolean> updatePassword(
-            @AuthenticationPrincipal com.sangkeumi.mojimoji.dto.user.MyPrincipal principal,
+            @AuthenticationPrincipal MyPrincipal principal,
             @RequestBody PasswordUpdateRequest passwordRequest) {
         Long userId = principal.getUserId();
         boolean result = userService.updatePassword(userId, passwordRequest.currentPassword(),
                 passwordRequest.newPassword());
         return ResponseEntity.ok(result);
     }
-    
+
     @PostMapping("/delete")
     @ResponseBody
     @Operation(summary = "계정 삭제", description = "계정을 삭제한다.")

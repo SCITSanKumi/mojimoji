@@ -29,7 +29,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     * 
+     *
      * @param searchWord
      * @param searchItem
      * @param sortOption
@@ -54,7 +54,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 AJAX용 엔드포인트 (페이지네이션)
-     * 
+     *
      * @param searchWord
      * @param searchItem
      * @param sortOption
@@ -75,7 +75,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리의 상세 페이지를 반환하는 메서드
-     * 
+     *
      * @param bookId
      * @param model
      * @return
@@ -111,7 +111,7 @@ public class BoardController {
 
     /**
      * 공유된 스토리 추천 수 토글 메서드
-     * 
+     *
      * @param sharedBookId
      * @param principal
      * @return
@@ -134,7 +134,7 @@ public class BoardController {
 
     /**
      * 댓글 목록 조회
-     * 
+     *
      * @param sharedBookId
      * @return
      */
@@ -149,7 +149,7 @@ public class BoardController {
 
     /**
      * 댓글 추가
-     * 
+     *
      * @param principal
      * @param request
      * @return
@@ -164,7 +164,7 @@ public class BoardController {
 
     /**
      * 댓글 삭제
-     * 
+     *
      * @param sharedBookReplyId
      */
     @DeleteMapping("/story/comment")
@@ -175,7 +175,7 @@ public class BoardController {
 
     /**
      * 내 스토리 목록을 보여주는 페이지를 반환하는 메서드
-     * 
+     *
      * @param model
      * @param principal
      * @return
@@ -192,7 +192,7 @@ public class BoardController {
 
     /**
      * 내 스토리 AJAX용 엔드포인트 (페이지네이션)
-     * 
+     *
      * @param page
      * @param size
      * @param principal
@@ -235,7 +235,7 @@ public class BoardController {
 
     /**
      * 내 스토리의 상세 페이지를 반환하는 메서드
-     * 
+     *
      * @param bookId
      * @param model
      * @param principal
@@ -244,10 +244,8 @@ public class BoardController {
     @GetMapping("/myStory/detail")
     public String myStoryDetail(@RequestParam("bookId") Long bookId, Model model,
             @AuthenticationPrincipal MyPrincipal principal) {
-        Long userId = principal.getUserId();
-
         // 내 스토리 정보 조회
-        MyStoryInfoResponse myStoryInfo = boardService.getMyStoryInfo(bookId, userId);
+        MyStoryInfoResponse myStoryInfo = boardService.getMyStoryInfo(bookId, principal.getUserId());
 
         // 공유된 스토리인 경우, 공유 상세 페이지로 리다이렉트
         if (myStoryInfo.sharedBookId() != null) {

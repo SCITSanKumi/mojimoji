@@ -88,7 +88,8 @@ public class BoardService {
         // BookLine(Entity) -> SharedStroyContentResponse(DTO)로 변환
         return bookLines.stream()
                         .map(bookLine -> new SharedStoryContentResponse(
-                                bookLine.getContent()))
+                                bookLine.getUserContent(),
+                                bookLine.getGptContent()))
                         .collect(Collectors.toList());
     }
 
@@ -373,7 +374,9 @@ public class BoardService {
     public List<MyStoryContentResponse> getMyStoryContent(Long bookId) {
         List<BookLine> bookLines = bookLineRepository.findByBook_BookIdOrderBySequenceAsc(bookId);
         return bookLines.stream()
-                .map(bookLine -> new MyStoryContentResponse(bookLine.getContent()))
+                .map(bookLine -> new MyStoryContentResponse(
+                    bookLine.getUserContent(),
+                    bookLine.getGptContent()))
                 .collect(Collectors.toList());
     }
 

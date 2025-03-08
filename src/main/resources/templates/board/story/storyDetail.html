@@ -110,7 +110,8 @@
         <!-- 공유 스토리 내용 -->
         <div class="shared-story-box">
             <div th:each="sharedStory : ${sharedStoryContent}">
-                <p th:text="${sharedStory.content}"></p>
+                <p th:text="${sharedStory.userContent}"></p>
+                <p th:text="${sharedStory.gptContent}"></p>
             </div>
         </div>
 

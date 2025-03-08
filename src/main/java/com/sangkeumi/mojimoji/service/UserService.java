@@ -1,17 +1,23 @@
 package com.sangkeumi.mojimoji.service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.sangkeumi.mojimoji.dto.user.CustomUser;
-import com.sangkeumi.mojimoji.dto.user.UserSignup;
-import com.sangkeumi.mojimoji.dto.user.UserUpdateView;
+import com.sangkeumi.mojimoji.dto.user.*;
 import com.sangkeumi.mojimoji.entity.User;
 import com.sangkeumi.mojimoji.repository.UserRepository;
 
@@ -27,6 +33,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final LoginUserDetailsService loginUserDetailsService;
+
+    @Value("${upload.path.image}")
+    private String imagePath;
 
     // UserSignup DTO로부터 User 엔티티 생성
     public boolean signUp(UserSignup userSignup) {
@@ -48,7 +57,6 @@ public class UserService {
             // log.error("회원가입 중 오류 발생", e);
             return false;
         }
-
     }
 
     public boolean existByUsername(String username) {
@@ -71,7 +79,7 @@ public class UserService {
     @Transactional
     public CustomUser getUserDto(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         // 여기서 user.getNickname() 등 Lazy 필드 접근 가능 (트랜잭션 내)
         return new CustomUser(user.getUserId(), user.getNickname(), user.getEmail());
     }
@@ -89,7 +97,7 @@ public class UserService {
 
     public UserUpdateView findById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found for id: " + userId));
         return new UserUpdateView(
                 user.getUserId(),
                 user.getUsername(),
@@ -100,13 +108,45 @@ public class UserService {
     }
 
     @Transactional
-    public boolean updateProfile(Long userId, String nickname, String email) {
+    public boolean updateProfile(Long userId, UserUpdateRequest userUpdateRequest) {
         try {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            user.setNickname(nickname);
-            user.setEmail(email);
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            // 사용자 정보 업데이트
+            user.setNickname(userUpdateRequest.nickname());
+            user.setEmail(userUpdateRequest.email());
+
+            // 프로필 이미지 파일 처리
+            MultipartFile profileImageFile = userUpdateRequest.profileImageFile();
+            if (profileImageFile != null && !profileImageFile.isEmpty()) {
+                long maxFileSize = 100 * 1024 * 1024; // 100MB 제한
+
+                if (profileImageFile.getSize() > maxFileSize) {
+                    throw new IllegalArgumentException("파일 크기가 100MB를 초과할 수 없습니다.");
+                }
+
+                // 저장될 디렉토리 확인 및 생성 (imagesPath는 @Value로 주입받음)
+                Path dirPath = Paths.get(imagePath, "profile_images");
+                if (!Files.exists(dirPath)) {
+                    Files.createDirectories(dirPath);
+                }
+
+                // 고유 파일명 생성 후 파일 저장
+                String fileName = UUID.randomUUID().toString() + "_" + profileImageFile.getOriginalFilename();
+                Path filePath = dirPath.resolve(fileName);
+                Files.copy(profileImageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // 웹 접근 가능한 상대 URL로 설정 (예: /images/profile_images/파일명)
+                user.setProfileUrl("/image/profile_images/" + fileName);
+            }
+
+            // 변경된 사용자 정보를 DB에 저장
+            userRepository.save(user);
+
+            // 재인증 (필요한 경우)
             reAuthenticateUser(user.getUsername());
+
             return true;
         } catch (Exception e) {
             log.error("프로필 업데이트 실패", e);
@@ -135,7 +175,7 @@ public class UserService {
     public boolean updatePassword(Long userId, String currentPassword, String newPassword) {
         try {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             // 현재 비밀번호 확인
             if (!bCryptPasswordEncoder.matches(currentPassword, user.getPassword())) {
                 return false;
@@ -157,5 +197,12 @@ public class UserService {
             log.error("계정 삭제 실패", e);
             return false;
         }
+    }
+
+    public String getUserProfileImageUrl(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return user.getProfileUrl();
     }
 }
