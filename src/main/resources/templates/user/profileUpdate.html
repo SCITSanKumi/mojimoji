@@ -11,6 +11,7 @@
             text-align: center;
             margin-bottom: 2rem;
         }
+
         /* 프로필 사진 원형 드롭존 */
         .profile-image-container {
             position: relative;
@@ -22,19 +23,23 @@
             border: 2px solid #ddd;
             cursor: pointer;
         }
+
         .profile-image-container.dragover {
             border-color: #007bff;
         }
+
         .profile-image-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
+
         .narrow-container {
             max-width: 400px;
             margin: 0 auto;
         }
+
         .action-buttons {
             display: flex;
             justify-content: space-between;
@@ -42,6 +47,7 @@
         }
     </style>
 </head>
+
 <body>
     <header th:insert="~{fragments/header :: header}"></header>
     <!-- 프로필 헤더 영역 -->
@@ -141,4 +147,5 @@
     <!-- Custom JS -->
     <script src="../../static/js/profileUpdate.js" th:src="@{/js/profileUpdate.js}"></script>
 </body>
+
 </html>
