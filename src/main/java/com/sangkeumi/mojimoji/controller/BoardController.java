@@ -182,9 +182,8 @@ public class BoardController {
      */
     @GetMapping("/myStory/list")
     public String myStoryList(Model model, @AuthenticationPrincipal MyPrincipal principal) {
-        Long userId = principal.getUserId();
         // 첫 페이지(0번 페이지)에서 8개만 가져오기
-        List<MyStoryListResponse> myStoryList = boardService.getMyBooksPaginated(userId, 0, 8);
+        List<MyStoryListResponse> myStoryList = boardService.getMyBooksPaginated(principal.getUserId(), 0, 8);
         model.addAttribute("myStoryList", myStoryList);
         // 초기 렌더링 시 전체 목록이 아니라 첫 페이지 데이터만 보여줌
         return "board/myStory/myStoryList";
@@ -242,8 +241,10 @@ public class BoardController {
      * @return
      */
     @GetMapping("/myStory/detail")
-    public String myStoryDetail(@RequestParam("bookId") Long bookId, Model model,
-            @AuthenticationPrincipal MyPrincipal principal) {
+    public String myStoryDetail(
+            @RequestParam("bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal,
+            Model model) {
         // 내 스토리 정보 조회
         MyStoryInfoResponse myStoryInfo = boardService.getMyStoryInfo(bookId, principal.getUserId());
 

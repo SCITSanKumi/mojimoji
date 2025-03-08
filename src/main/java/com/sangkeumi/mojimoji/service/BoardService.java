@@ -278,6 +278,7 @@ public class BoardService {
                                 book.getBookId(),
                                 book.getTitle(),
                                 book.getThumbnailUrl(),
+                                book.isEnded(),
                                 book.getSharedBook() != null,
                                 book.getUser().getNickname(),
                                 book.getUser().getProfileUrl(),
@@ -358,6 +359,7 @@ public class BoardService {
                         .userId(book.getUser().getUserId())
                         .title(book.getTitle())
                         .thumbnailUrl(book.getThumbnailUrl())
+                        .isEnded(book.isEnded())
                         .nickname(book.getUser().getNickname())
                         .profileUrl(book.getUser().getProfileUrl())
                         .hitCount(book.getSharedBook() != null ? book.getSharedBook().getHitCount() : 0)
@@ -374,10 +376,10 @@ public class BoardService {
     public List<MyStoryContentResponse> getMyStoryContent(Long bookId) {
         List<BookLine> bookLines = bookLineRepository.findByBook_BookIdOrderBySequenceAsc(bookId);
         return bookLines.stream()
-                .map(bookLine -> new MyStoryContentResponse(
-                    bookLine.getUserContent(),
-                    bookLine.getGptContent()))
-                .collect(Collectors.toList());
+            .map(bookLine -> new MyStoryContentResponse(
+                bookLine.getUserContent(),
+                bookLine.getGptContent()))
+            .collect(Collectors.toList());
     }
 
     public Long getBooksCount(Long userId) {

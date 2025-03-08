@@ -27,7 +27,7 @@
                         <div class="position-absolute top-0 end-0 p-2">
                             <div class="d-flex">
                                 <!-- 공유 버튼: 공유되지 않은 경우에만 표시 -->
-                                <button type="button" class="btn btn-primary btn-sm me-2" th:if="${!myStory.shared}" th:attr="onclick=|shareStory(${myStory.bookId})|">
+                                <button type="button" class="btn btn-primary btn-sm me-2" th:if="${!myStory.shared and myStory.isEnded}" th:attr="onclick=|shareStory(${myStory.bookId})|">
                                     공유
                                 </button>
                                 <!-- 삭제 버튼 -->
