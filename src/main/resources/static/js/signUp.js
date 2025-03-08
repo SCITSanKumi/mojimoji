@@ -1,10 +1,9 @@
-
 let nickCheck = false;
 let IdCheck = false;
 let EmailCheck = false;
 let PwCheck = false;
 
-$(function () {
+$(function() {
     $('#nickname').change(nicknameCheck);
     $('#username').change(usernameCheck);
     $('#email').change(emailCheck);
@@ -34,9 +33,11 @@ function nicknameCheck() {
     $.ajax({
         type: 'GET',
         url: '/user/nickname-check',
-        data: { nickname: nickname },
+        data: {
+            nickname: nickname
+        },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
             if (response === true) {
                 $('#nickname').css('border-color', 'green');
                 nameCheck.text('');
@@ -47,7 +48,7 @@ function nicknameCheck() {
                 nickCheck = false;
             }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
             console.error('에러 발생:', error);
         }
     });
@@ -75,9 +76,11 @@ function usernameCheck() {
     $.ajax({
         type: 'GET',
         url: '/user/id-check',
-        data: { username: username },
+        data: {
+            username: username
+        },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
             if (response === true) {
                 $('#username').css('border-color', 'green');
                 idCheck.text('');
@@ -88,7 +91,7 @@ function usernameCheck() {
                 IdCheck = false;
             }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
             console.error('에러 발생:', error);
         }
     });
@@ -113,9 +116,11 @@ function emailCheck() {
     $.ajax({
         type: 'GET',
         url: '/user/email-check',
-        data: { email: email },
+        data: {
+            email: email
+        },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
             if (response === true) {
                 $('#email').css('border-color', 'green');
                 emailMsg.text('');
@@ -126,7 +131,7 @@ function emailCheck() {
                 EmailCheck = false;
             }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
             console.error('에러 발생:', error);
         }
     });
@@ -191,16 +196,15 @@ function signUp() {
         url: '/user/sign-up',
         contentType: 'application/json',
         data: JSON.stringify(data),
-        success: function (response) {
+        success: function(response) {
             if (response === true) {
                 window.location.replace('/user/login?success=true&message=' + encodeURIComponent('회원가입 성공'));
             } else {
                 showToast('회원가입에 실패했습니다.');
             }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
             console.error('에러 발생:', error);
         }
     });
 }
-

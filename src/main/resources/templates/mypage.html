@@ -456,7 +456,15 @@
                 const total = opts.total || 1;
                 const label = opts.label || 'ALL';
                 const percentage = Math.floor((partial / total) * 100);
-                const { ctx, chartArea: { top, left, width, height } } = chart;
+                const {
+                    ctx,
+                    chartArea: {
+                        top,
+                        left,
+                        width,
+                        height
+                    }
+                } = chart;
                 const centerX = left + width / 2;
                 const centerY = top + height / 2;
                 ctx.save();
@@ -491,23 +499,37 @@
                     rotation: -150,
                     circumference: 300,
                     plugins: {
-                        centerTextPlugin: { partial, total, label },
-                        legend: { display: false },
-                        tooltip: { enabled: false }
+                        centerTextPlugin: {
+                            partial,
+                            total,
+                            label
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
                     },
                     animation: {
                         duration: 2500,
                         animateRotate: true,
                         animateScale: false,
-                        onComplete: (anim) => { anim.chart.config.options.animation = false; }
+                        onComplete: (anim) => {
+                            anim.chart.config.options.animation = false;
+                        }
                     }
                 },
                 plugins: [centerTextPlugin]
             });
         }
 
-
-
+        /* -------------------------------
+            (2) 날짜별 Bar 차트
+           ------------------------------- */
+        const dailyStatsData = /*[[${dailyStats}]]*/[];
+        const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
+        const chartValues = dailyStatsData.map(ds => ds.dailyCount);
 
         document.addEventListener('DOMContentLoaded', () => {
             // JLPT 게이지 차트 생성
@@ -550,8 +572,7 @@
                         backgroundColor: '#EE697D',
                         borderColor: '#EE697D',
                         borderWidth: 1,
-                        borderRadius: 10,
-                        maxBarThickness: 50,  // 바의 최대 너비 제한
+                        maxBarThickness: 50, // 바의 최대 너비 제한
                     }]
                 },
                 options: {
@@ -565,15 +586,21 @@
                             beginAtZero: true
                         }
                     },
-                    animation: { duration: 2500 },
-                    plugins: { title: { display: false } }
+                    animation: {
+                        duration: 2500
+                    },
+                    plugins: {
+                        title: {
+                            display: false
+                        }
+                    }
                 },
             });
 
         });
 
         /* -------------------------------
-            (3) 카테고리 목록 페이지네이션 
+            (3) 카테고리 목록 페이지네이션
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             const ITEMS_PER_PAGE = 5;
@@ -584,6 +611,7 @@
                 const nextBtn = container.querySelector('.next-btn');
                 let currentPage = 0;
                 const totalPages = Math.ceil(liArray.length / ITEMS_PER_PAGE);
+
                 function renderPage(page) {
                     if (page < 0) page = 0;
                     if (page >= totalPages) page = totalPages - 1;
@@ -591,16 +619,24 @@
                     liArray.forEach(li => li.style.display = 'none');
                     const start = currentPage * ITEMS_PER_PAGE;
                     const end = start + ITEMS_PER_PAGE;
-                    liArray.slice(start, end).forEach(li => { li.style.display = 'flex'; });
+                    liArray.slice(start, end).forEach(li => {
+                        li.style.display = 'flex';
+                    });
                 }
                 renderPage(0);
-                prevBtn.addEventListener('click', e => { e.stopPropagation(); if (currentPage > 0) renderPage(currentPage - 1); });
-                nextBtn.addEventListener('click', e => { e.stopPropagation(); if (currentPage < totalPages - 1) renderPage(currentPage + 1); });
+                prevBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    if (currentPage > 0) renderPage(currentPage - 1);
+                });
+                nextBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    if (currentPage < totalPages - 1) renderPage(currentPage + 1);
+                });
             });
         });
 
         /* -------------------------------
-            (4) 카테고리 달성도 ProgressBar 
+            (4) 카테고리 달성도 ProgressBar
            ------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             const progressData = [];
@@ -621,6 +657,7 @@
                 });
             });
             const duration = 1500;
+
             function updateAllProgressBars() {
                 const currentTime = performance.now();
                 let allCompleted = true;
@@ -643,7 +680,9 @@
                     } else {
                         item.progressBar.style.setProperty('--progress-color', '#F0C9D8');
                     }
-                    if (progress < 1) { allCompleted = false; }
+                    if (progress < 1) {
+                        allCompleted = false;
+                    }
                 });
                 if (!allCompleted) {
                     requestAnimationFrame(updateAllProgressBars);
@@ -685,7 +724,9 @@
             document.querySelectorAll('.category-block').forEach(block => {
                 block.addEventListener('click', e => {
                     const targetUrl = block.dataset.url;
-                    if (targetUrl) { window.location.href = targetUrl; }
+                    if (targetUrl) {
+                        window.location.href = targetUrl;
+                    }
                 });
             });
         });
@@ -701,7 +742,9 @@
                         const kanjiId = kanjiEl.getAttribute('data-kanji-id');
                         fetch(`/kanji/details?kanjiId=${kanjiId}`)
                             .then(response => {
-                                if (!response.ok) { throw new Error("Network response was not ok"); }
+                                if (!response.ok) {
+                                    throw new Error("Network response was not ok");
+                                }
                                 return response.json();
                             })
                             .then(detail => {
@@ -717,8 +760,8 @@
                                     obtainedDisplay = `${yyyy}-${mm}-${dd}`;
                                 }
                                 const formattedMeaning = detail.meaning
-                                    .replace(/;/g, ',')   // 모든 세미콜론을 콤마로 치환
-                                    .replace(/\\n/g, '<br/>');  // newline 문자 치환
+                                    .replace(/;/g, ',') // 모든 세미콜론을 콤마로 치환
+                                    .replace(/\\n/g, '<br/>'); // newline 문자 치환
 
                                 modalBody.innerHTML = `
                             <div class="toKanjiList">
@@ -751,7 +794,6 @@
                     });
                 });
         });
-
     </script>
 </head>
 

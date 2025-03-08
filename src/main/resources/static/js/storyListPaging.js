@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function() {
     var page = 1; // 초기 렌더링은 서버에서 처리됨 (0페이지). 이후 AJAX는 1페이지부터 로드
     var size = 8;
     var loading = false;
@@ -7,8 +7,9 @@ $(document).ready(function () {
     // 디바운스 함수: 스크롤 이벤트 호출 빈도를 줄임
     function debounce(func, delay) {
         let timer;
-        return function () {
-            const context = this, args = arguments;
+        return function() {
+            const context = this,
+                args = arguments;
             clearTimeout(timer);
             timer = setTimeout(() => func.apply(context, args), delay);
         };
@@ -30,7 +31,7 @@ $(document).ready(function () {
                 searchItem: $("#searchItem").val(),
                 sortOption: $("#sortOption").val(),
             },
-            success: function (data) {
+            success: function(data) {
                 // 만약 응답이 HTML이라면 로그인 페이지로 리다이렉트
                 if (typeof data === "string" && data.trim().startsWith("<!DOCTYPE")) {
                     window.location.href = "/user/login";
@@ -42,15 +43,15 @@ $(document).ready(function () {
                     $("#loading").text("마지막 페이지 입니다.");
                 }
                 // 각 스토리에 대해 카드 HTML 생성 및 추가
-                $.each(data, function (index, story) {
+                $.each(data, function(index, story) {
                     // story.thumbnailUrl이 falsy하거나 "null" 문자열이면 fallback URL 사용
-                    var thumbnailUrl = (story.thumbnailUrl && story.thumbnailUrl !== "null")
-                        ? story.thumbnailUrl
-                        : '/image/mountains.png';
+                    var thumbnailUrl = (story.thumbnailUrl && story.thumbnailUrl !== "null") ?
+                        story.thumbnailUrl :
+                        '/image/mountains.png';
 
-                    var profileUrl = (story.profileUrl && story.profileUrl !== "null")
-                        ? story.profileUrl
-                        : '/image/logo.png';
+                    var profileUrl = (story.profileUrl && story.profileUrl !== "null") ?
+                        story.profileUrl :
+                        '/image/logo.png';
 
 
                     var storyHtml = '<div class="col">' +
@@ -80,7 +81,7 @@ $(document).ready(function () {
                     $("#loading").hide();
                 }
             },
-            error: function (err) {
+            error: function(err) {
                 console.error("AJAX 요청 에러:", err);
                 loading = false;
                 $("#loading").hide();
@@ -89,14 +90,14 @@ $(document).ready(function () {
     }
 
     // 스크롤 이벤트에 디바운스 적용 (200ms 딜레이)
-    $(window).scroll(debounce(function () {
+    $(window).scroll(debounce(function() {
         if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
             loadStories();
         }
     }, 200));
 
     // 내 스토리로 이동
-    $("#myStoryBtn").click(function () {
+    $("#myStoryBtn").click(function() {
         window.location.href = "/board/myStory/list";
     });
 });

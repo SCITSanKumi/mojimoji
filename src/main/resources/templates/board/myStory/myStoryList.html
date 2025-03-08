@@ -20,35 +20,29 @@
         <h2 class="text-center mb-4">내스토리</h2>
 
         <!-- myStoryList가 비어있지 않은 경우에만 카드 목록 표시 -->
-        <div th:if="${not #lists.isEmpty(myStoryList)}" class="row row-cols-1 row-cols-lg-4 g-4 py-5"
-            id="myStory-container">
+        <div th:if="${not #lists.isEmpty(myStoryList)}" class="row row-cols-1 row-cols-lg-4 g-4 py-5" id="myStory-container">
             <div class="col" th:each="myStory : ${myStoryList}">
-                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                    th:style="|background-image: url(${myStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">
+                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" th:style="|background-image: url(${myStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">
                     <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1 position-relative">
                         <div class="position-absolute top-0 end-0 p-2">
                             <div class="d-flex">
                                 <!-- 공유 버튼: 공유되지 않은 경우에만 표시 -->
-                                <button type="button" class="btn btn-primary btn-sm me-2" th:if="${!myStory.shared}"
-                                    th:attr="onclick=|shareStory(${myStory.bookId})|">
+                                <button type="button" class="btn btn-primary btn-sm me-2" th:if="${!myStory.shared and myStory.isEnded}" th:attr="onclick=|shareStory(${myStory.bookId})|">
                                     공유
                                 </button>
                                 <!-- 삭제 버튼 -->
-                                <button type="button" class="btn btn-danger btn-sm me-2"
-                                    th:attr="onclick=|deleteStory(${myStory.bookId})|">
+                                <button type="button" class="btn btn-danger btn-sm me-2" th:attr="onclick=|deleteStory(${myStory.bookId})|">
                                     삭제
                                 </button>
                             </div>
                         </div>
                         <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
-                            <a th:href="@{/board/myStory/detail(bookId=${myStory.bookId})}"
-                                class="text-white text-decoration-none" th:text="${myStory.title}">스토리 제목</a>
+                            <a th:href="@{/board/myStory/detail(bookId=${myStory.bookId})}" class="text-white text-decoration-none" th:text="${myStory.title}">스토리 제목</a>
                         </h3>
                         <h5 th:text="${myStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${myStory.profileUrl != null ? myStory.profileUrl : '/image/logo.png'}"
-                                    alt="Profile" width="32" height="32" class="rounded-circle border border-white">
+                                <img th:src="${myStory.profileUrl != null ? myStory.profileUrl : '/image/logo.png'}" alt="Profile" width="32" height="32" class="rounded-circle border border-white">
                             </li>
                             <li class="d-flex align-items-center me-3">
                                 <small>조회수</small>

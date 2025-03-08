@@ -3,6 +3,7 @@ package com.sangkeumi.mojimoji.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.sangkeumi.mojimoji.dto.game.*;
@@ -26,7 +27,8 @@ public class GameController {
     private final GameService gameService;
 
     @GetMapping("/screen")
-    public String game() {
+    public String game(@RequestParam(name = "bookId", defaultValue = "-1") String bookId, Model model) {
+        model.addAttribute("bookId", bookId);
 
         return "game/screen";
     }
@@ -37,19 +39,19 @@ public class GameController {
     public ResponseEntity<GameStartResponse> gameStart(
             @PathVariable("bookId") Long bookId,
             @AuthenticationPrincipal MyPrincipal principal) {
-        return ResponseEntity.ok(gameService.gameStart(bookId, principal));
+        return ResponseEntity.ok(gameService.gameStart(bookId, principal.getUserId()));
     }
 
-    @ResponseBody
     @PostMapping(value = "/send/{bookId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @ResponseBody
     public Flux<String> sendMessage(
             @PathVariable("bookId") Long bookId,
             @RequestParam("message") String message) {
         return gameService.getChatResponseStream(bookId, message);
     }
 
-    @ResponseBody
     @GetMapping("/end/{bookId}")
+    @ResponseBody
     public ResponseEntity<GameEndResponse> gameEnd(@PathVariable("bookId") Long bookId) {
         return ResponseEntity.ok(gameService.gameEnd(bookId));
     }
