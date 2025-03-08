@@ -38,3 +38,4 @@ out/
 application.properties
 application.yml
 src/main/resources/static/image/profile_images/
+src/main/resources/static/image/thumbnail_images/
