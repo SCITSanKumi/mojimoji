@@ -100,6 +100,13 @@
         color: #fff;
         border-radius: 0 10px 10px 10px;
     }
+    .npc-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 이미지를 원형으로 만듦 */
+    object-fit: cover; /* 이미지 비율 유지하며 꽉 채움 */
+    border: 2px solid #ddd; /* 테두리 추가 */
+    }
 
     /* 체력/정신력 표시 */
     .status-label {
@@ -112,9 +119,9 @@
         let bookId = -1;
         let isGameEnded = false;
 
-        // 현재 화자/이전 화자 (기본은 나레이션)
-        let currentSpeaker = "naration";
-        let previousSpeaker;
+        // 현재 화자/이전 화자
+        let currentSpeaker = "";
+        let previousSpeaker = "";
 
         // JSON 파싱용 버퍼
         let readingJson = false;
@@ -138,12 +145,10 @@
 
         // 게임 시작
         $("#start-btn").click(() => {
-            console.log("[start-btn] clicked");
             $.ajax({
             type: "GET",
             url: `/game/start/${bookId}`,
             success: (response) => {
-                console.log("[gameStart] success:", response);
                 bookId = response.bookId;
                 $("#start-btn").addClass("d-none");
                 $(".show-at-game-start").removeClass("d-none");
@@ -229,7 +234,7 @@
                         jsonBuffer = "{";
                     } else {
                         // 일반 텍스트
-                        appendMessage(currentSpeaker, ch);
+                        appendMessage(ch);
                     }
                 } else {
                     // JSON 읽는 중
@@ -273,27 +278,35 @@
         /**
          * 말풍선 생성
          */
-        function clientMessage(role, text) {
-            currentSpeaker = role;
-            appendMessage(role, text);
+        function clientMessage(speaker, text) {
+            currentSpeaker = speaker;
+            appendMessage(text);
         }
 
-        function appendMessage(role, text) {
+        function appendMessage(text) {
             if (currentSpeaker !== previousSpeaker) {
                 previousSpeaker = currentSpeaker;
 
                 messageDiv = $("<div>").addClass("message");
                 contentDiv = $("<div>").addClass("message-content");
 
-                if (role === "naration") {
-                messageDiv.addClass("naration-message");
-                contentDiv.addClass("naration-content");
-                } else if (role === "player") {
-                messageDiv.addClass("player-message");
-                contentDiv.addClass("player-content");
+                if (currentSpeaker === "naration") {
+                    messageDiv.addClass("naration-message");
+                    contentDiv.addClass("naration-content");
+                } else if (currentSpeaker === "player") {
+                    messageDiv.addClass("player-message");
+                    contentDiv.addClass("player-content");
                 } else {
-                messageDiv.addClass("npc-message");
-                contentDiv.addClass("npc-content");
+                    let headerDiv = $("<div>").addClass("npc-header");
+                    let profileImg = $("<img>")
+                        .attr("src", "https://i.namu.wiki/i/8ya30FvrlxJ3M5ymG057r_Xrp7tg_QC65K8mmwLjjKwIo8GbiAFNWNpTH1iwPGhOwRf9Fdpbr0ixrVPK6JoDBRD5_b5aWA0Ex88s8DARnrIKIWX_pXErLW9j71xW5CZW_M4za1O75ZVX4Rv4kfnyhw.webp")
+                        .addClass("npc-profile");
+                    let nameSpan = $("<span>").text(currentSpeaker).addClass("npc-name");
+                    headerDiv.append(profileImg).append(nameSpan);
+                    messageDiv.append(headerDiv);
+
+                    messageDiv.addClass("npc-message");
+                    contentDiv.addClass("npc-content");
                 }
 
                 messageDiv.append(contentDiv);
@@ -308,7 +321,6 @@
          * 게임 정보 반영
          */
         function updateGameStats(gameState) {
-            console.log("[updateGameStats] gameState:", gameState);
             if (typeof gameState.hp === "number") {
                 $("#healthBar").css("width", gameState.hp + "%").text(gameState.hp);
             }
@@ -336,11 +348,9 @@
 
         // 마치기 버튼 -> 퀴즈
         $("#end-btn").click(() => {
-            console.log("[end-btn] clicked, isGameEnded=", isGameEnded);
             if (!isGameEnded) return;
 
             $.get(`/game/end/${bookId}`, (response) => {
-            console.log("[end-btn] /game/end response:", response);
             if (!response || !response.kanjis?.length) {
                 alert("퀴즈 데이터를 불러올 수 없습니다.");
                 return;
@@ -374,15 +384,12 @@
             let kunyomiAnswer = $(".kunyomi-input").val().trim();
             let onyomiAnswer  = $(".onyomi-input").val().trim();
 
-            console.log("[checkAnswer] user answers:", kunyomiAnswer, onyomiAnswer);
-
             if (kunyomiAnswer.toLowerCase() === question.korKunyomi.toLowerCase() &&
                 onyomiAnswer.toLowerCase() === question.korOnyomi.toLowerCase()) {
             correctAnswerIndexes.push(currentIndex);
             score++;
             $.post("/kanji/addCollection", { kanjiId: question.kanjiId })
             .done(() => {
-                console.log("[checkAnswer] 정답, 컬렉션 추가 완료");
                 alert("정답! 한자 컬렉션에 추가되었습니다.");
             })
             .fail(() => alert("컬렉션 추가 중 오류 발생"));
@@ -400,8 +407,6 @@
         }
 
         function endQuiz() {
-            console.log("[endQuiz] total questions:", questionList.length, "score=", score);
-
             let resultHtml = questionList.map((q, i) => {
             let color = correctAnswerIndexes.includes(i) ? "blue" : "red";
             return `<span style="color:${color}">${q.kanji}</span>`;
@@ -440,7 +445,6 @@
 
         // 모달 강제 종료 방지
         $('#quiz-modal').on('hide.bs.modal', e => {
-            console.log("[quiz-modal] prevent hide");
             e.preventDefault();
             e.stopPropagation();
             return false;
