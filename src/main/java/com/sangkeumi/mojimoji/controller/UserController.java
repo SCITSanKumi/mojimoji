@@ -77,7 +77,7 @@ public class UserController {
     }
 
     /**
-     * 닉네임 및 이메일 수정
+     * 회원 정보 수정 페이지를 반환하는 메서드
      * @param principal
      * @param updateRequest
      * @return
@@ -85,7 +85,7 @@ public class UserController {
     @PostMapping("/update")
     @ResponseBody
     @Operation(summary = "회원 정보 수정", description = "닉네임과 이메일을 수정한다.")
-    public boolean updateProfile(@AuthenticationPrincipal MyPrincipal principal,
+    public UserUpdateResponse updateProfile(@AuthenticationPrincipal MyPrincipal principal,
             @ModelAttribute UserUpdateRequest updateRequest) {
         return userService.updateProfile(principal.getUserId(), updateRequest);
     }
