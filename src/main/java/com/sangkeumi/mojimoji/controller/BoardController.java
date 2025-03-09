@@ -181,7 +181,7 @@ public class BoardController {
      * @return
      */
     @GetMapping("/myStory/list")
-    public String myStoryList(Model model, @AuthenticationPrincipal MyPrincipal principal) {
+    public String myStoryList(@AuthenticationPrincipal MyPrincipal principal, Model model) {
         // 첫 페이지(0번 페이지)에서 8개만 가져오기
         List<MyStoryListResponse> myStoryList = boardService.getMyBooksPaginated(principal.getUserId(), 0, 8);
         model.addAttribute("myStoryList", myStoryList);

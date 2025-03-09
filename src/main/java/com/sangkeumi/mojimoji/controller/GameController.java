@@ -26,12 +26,21 @@ public class GameController {
 
     private final GameService gameService;
 
-    @GetMapping("/screen")
+    @GetMapping("/play")
     public String game(@RequestParam(name = "bookId", defaultValue = "-1") String bookId, Model model) {
-        model.addAttribute("bookId", bookId);
+        Long numericBookId;
 
-        return "game/screen";
+        try {
+            numericBookId = Long.parseLong(bookId);
+        } catch (NumberFormatException e) {
+            numericBookId = -1L; // 변환 실패 시 기본값 설정
+        }
+
+        model.addAttribute("bookId", numericBookId); // 숫자로 변환하여 모델에 추가
+
+        return "game/gameplay";
     }
+
 
     @GetMapping("/start/{bookId}")
     @ResponseBody

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>mojimoji - Streaming Debug</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <!-- Bootstrap JS -->
+    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- jQuery -->
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+
+    <style>
+        /* 헤더와 본문 겹침 방지 */
+        body {
+            margin: 0;
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
+
+        nav.navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+        }
+
+        .game-container {
+            width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 채팅 영역 */
+        .chat-container {
+            height: 500px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #0d6efd;
+            border-radius: 4px;
+        }
+
+        /* 말풍선 공통 */
+        .message {
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .message-content {
+            display: inline-block;
+            max-width: 80%;
+            padding: 10px;
+            margin-top: 5px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            border-radius: 10px;
+        }
+
+        /* 나레이션 */
+        .narration-message {
+            align-items: center;
+            text-align: center;
+        }
+
+        .narration-content {
+            background-color: #adb5bd;
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        /* 플레이어(우측) */
+        .player-message {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .player-content {
+            background-color: #0d6efd;
+            color: #fff;
+            border-radius: 10px 0 10px 10px;
+        }
+
+        /* NPC/기타(좌측) */
+        .npc-message {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .npc-content {
+            background-color: #198754;
+            color: #fff;
+            border-radius: 0 10px 10px 10px;
+        }
+
+        .npc-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            /* 이미지를 원형으로 만듦 */
+            object-fit: cover;
+            /* 이미지 비율 유지하며 꽉 채움 */
+            border: 2px solid #ddd;
+            /* 테두리 추가 */
+        }
+
+        /* 체력/정신력 표시 */
+        .status-label {
+            width: 60px;
+            text-align: right;
+        }
+    </style>
+    <script src="../../static/js/gameplay.js" th:src="@{/js/gameplay.js}"></script>
+</head>
+
+<body>
+    <header th:insert="~{fragments/header :: header}"></header>
+
+    <div class="game-container">
+        <!-- 체력/정신력 등 표시 -->
+        <div class="mb-3 w-100 d-flex flex-column align-items-start d-none show-at-game-start">
+            <div class="d-flex align-items-center mb-2">
+                <span class="status-label me-2">체력</span>
+                <div class="progress" style="width: 150px; height: 15px;">
+                    <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%">100</div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="status-label me-2">정신력</span>
+                <div class="progress" style="width: 150px; height: 15px;">
+                    <div id="mentalBar" class="progress-bar bg-primary" role="progressbar" style="width: 100%">100</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-container" id="chatBox">
+            <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
+        </div>
+
+        <!-- 입력창, 종료 버튼 -->
+        <div class="input-group mt-3 w-100 d-none show-at-game-start">
+            <input type="text" id="userInput" class="form-control" placeholder="입력하세요...">
+            <button class="btn btn-primary" id="submit-btn">입력</button>
+        </div>
+        <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
+    </div>
+
+    <!-- 퀴즈 모달 (게임 종료 후) -->
+    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content p-4">
+                <h2 class="text-center">한자 퀴즈</h2>
+                <div id="quiz-container">
+                    <div class="quiz-item">
+                        <h5 class="kanji-question"></h5>
+                        <label>한글 훈독</label>
+                        <input type="text" class="form-control kunyomi-input">
+                        <label>한글 음독</label>
+                        <input type="text" class="form-control onyomi-input">
+                        <button class="answer-btn btn btn-primary mt-2">제출</button>
+                    </div>
+                </div>
+                <div id="game-result" class="mt-3 d-none"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
