@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>mojimoji - Streaming Debug</title>
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
     <!-- Bootstrap JS -->
@@ -13,21 +11,21 @@
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
     <style>
-        /* 헤더와 본문 겹침 방지 */
+        /* 본문 내용이 고정 헤더와 겹치지 않도록 여백 설정 */
         body {
             margin: 0;
-            padding-top: 70px;
+            padding-top: 100px; /* 헤더 높이에 맞게 조정 */
             background-color: #f8f9fa;
         }
-
+        /* 고정 헤더 스타일 */
         nav.navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 999;
+            z-index: 1030; /* 부트스트랩 기본 z-index 기준 */
         }
-
+        /* 게임 영역 스타일 */
         .game-container {
             width: 600px;
             margin: 0 auto;
@@ -38,7 +36,7 @@
 
         /* 채팅 영역 */
         .chat-container {
-            height: 500px;
+            height: 400px;
             width: 100%;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -130,40 +128,46 @@
             text-align: right;
         }
     </style>
+
+    <!-- 게임플레이 관련 JS -->
     <script src="../../static/js/gameplay.js" th:src="@{/js/gameplay.js}"></script>
 </head>
-
 <body>
+    <!-- 고정 헤더: fragments/header.html 의 header 프래그먼트를 삽입 -->
     <header th:insert="~{fragments/header :: header}"></header>
 
-    <div class="game-container">
-        <!-- 체력/정신력 등 표시 -->
-        <div class="mb-3 w-100 d-flex flex-column align-items-start d-none show-at-game-start">
-            <div class="d-flex align-items-center mb-2">
-                <span class="status-label me-2">체력</span>
-                <div class="progress" style="width: 150px; height: 15px;">
-                    <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%">100</div>
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="container">
+        <div class="game-container">
+            <!-- 체력/정신력 표시 영역 (게임 시작 전 숨김 처리) -->
+            <div class="mb-3 w-100 d-flex flex-column align-items-start d-none show-at-game-start">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="status-label me-2">체력</span>
+                    <div class="progress" style="width: 150px; height: 15px;">
+                        <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%">100</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="status-label me-2">정신력</span>
+                    <div class="progress" style="width: 150px; height: 15px;">
+                        <div id="mentalBar" class="progress-bar bg-primary" role="progressbar" style="width: 100%">100</div>
+                    </div>
                 </div>
             </div>
-            <div class="d-flex align-items-center">
-                <span class="status-label me-2">정신력</span>
-                <div class="progress" style="width: 150px; height: 15px;">
-                    <div id="mentalBar" class="progress-bar bg-primary" role="progressbar" style="width: 100%">100</div>
-                </div>
+
+            <!-- 채팅 영역 -->
+            <div class="chat-container" id="chatBox">
+                <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
             </div>
-        </div>
 
-        <div class="chat-container" id="chatBox">
-            <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
+            <!-- 입력창 및 종료 버튼 (게임 시작 후 표시) -->
+            <div class="input-group mt-3 w-100 d-none show-at-game-start">
+                <input type="text" id="userInput" class="form-control" placeholder="입력하세요...">
+                <button class="btn btn-primary" id="submit-btn">입력</button>
+            </div>
+            <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
         </div>
-
-        <!-- 입력창, 종료 버튼 -->
-        <div class="input-group mt-3 w-100 d-none show-at-game-start">
-            <input type="text" id="userInput" class="form-control" placeholder="입력하세요...">
-            <button class="btn btn-primary" id="submit-btn">입력</button>
-        </div>
-        <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
-    </div>
+    </main>
 
     <!-- 퀴즈 모달 (게임 종료 후) -->
     <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -185,5 +189,4 @@
         </div>
     </div>
 </body>
-
 </html>

@@ -110,7 +110,7 @@
         <div class="shared-story-box">
             <div th:each="sharedStory : ${sharedStoryContent}">
                 <p th:text="${sharedStory.userContent}"></p>
-                <p th:text="${sharedStory.gptContent}"></p>
+                <p th:text="${sharedStory.formattedGptContent()}"></p>
             </div>
         </div>
 
