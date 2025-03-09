@@ -108,37 +108,36 @@ public class UserService {
     }
 
     @Transactional
-    public boolean updateProfile(Long userId, UserUpdateRequest userUpdateRequest) {
+    public UserUpdateResponse updateProfile(Long userId, UserUpdateRequest userUpdateRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // 사용자 정보 업데이트
+        user.setNickname(userUpdateRequest.nickname());
+        user.setEmail(userUpdateRequest.email());
+
+        MultipartFile profileImageFile = userUpdateRequest.profileImageFile();
+        long maxFileSize = 100 * 1024 * 1024; // 100MB 제한
+
         try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-            // 사용자 정보 업데이트
-            user.setNickname(userUpdateRequest.nickname());
-            user.setEmail(userUpdateRequest.email());
-
-            // 프로필 이미지 파일 처리
-            MultipartFile profileImageFile = userUpdateRequest.profileImageFile();
             if (profileImageFile != null && !profileImageFile.isEmpty()) {
-                long maxFileSize = 100 * 1024 * 1024; // 100MB 제한
+            if (profileImageFile.getSize() > maxFileSize) {
+                throw new IllegalArgumentException("파일 크기가 100MB를 초과할 수 없습니다.");
+            }
 
-                if (profileImageFile.getSize() > maxFileSize) {
-                    throw new IllegalArgumentException("파일 크기가 100MB를 초과할 수 없습니다.");
-                }
+            // 저장될 디렉토리 확인 및 생성 (imagesPath는 @Value로 주입받음)
+            Path dirPath = Paths.get(imagePath, "profile_images");
+            if (!Files.exists(dirPath)) {
+                Files.createDirectories(dirPath);
+            }
 
-                // 저장될 디렉토리 확인 및 생성 (imagesPath는 @Value로 주입받음)
-                Path dirPath = Paths.get(imagePath, "profile_images");
-                if (!Files.exists(dirPath)) {
-                    Files.createDirectories(dirPath);
-                }
+            // 고유 파일명 생성 후 파일 저장
+            String fileName = UUID.randomUUID().toString() + "_" + profileImageFile.getOriginalFilename();
+            Path filePath = dirPath.resolve(fileName);
+            Files.copy(profileImageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                // 고유 파일명 생성 후 파일 저장
-                String fileName = UUID.randomUUID().toString() + "_" + profileImageFile.getOriginalFilename();
-                Path filePath = dirPath.resolve(fileName);
-                Files.copy(profileImageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                // 웹 접근 가능한 상대 URL로 설정 (예: /images/profile_images/파일명)
-                user.setProfileUrl("/image/profile_images/" + fileName);
+            // 웹 접근 가능한 상대 URL로 설정 (예: /images/profile_images/파일명)
+            user.setProfileUrl("/image/profile_images/" + fileName);
             }
 
             // 변경된 사용자 정보를 DB에 저장
@@ -147,10 +146,9 @@ public class UserService {
             // 재인증 (필요한 경우)
             reAuthenticateUser(user.getUsername());
 
-            return true;
+            return new UserUpdateResponse(user.getProfileUrl());
         } catch (Exception e) {
-            log.error("프로필 업데이트 실패", e);
-            return false;
+            throw new RuntimeException("프로필 업데이트 중 오류가 발생했습니다.", e);
         }
     }
 
