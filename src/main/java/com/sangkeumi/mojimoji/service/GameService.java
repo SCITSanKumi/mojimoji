@@ -37,10 +37,10 @@ public class GameService {
     private final UsedBookKanjiRepository usedBookKanjiRepository;
     private final UserRepository userRepository;
     private final KanjiRepository kanjiRepository;
+    private final GameAsyncService gameAsyncService;
 
     private final WebClient webClient;
     private final GameConfiguraton gameConfiguraton;
-    private final LocalImageStorageService imageStorageService;
     // private final ObjectMapper objectMapper = new ObjectMapper();
 
     /** 게임 시작 메서드 */
@@ -136,26 +136,18 @@ public class GameService {
             .doOnComplete(() -> {handleChatResponse(contentResponse.toString(), bookLine);});
     }
 
+    @Transactional
     public GameEndResponse gameEnd(Long bookId) {
-        // 줄거리(history) 가져오기
-        List<BookLine> history = bookLineRepository.findByBook_BookIdOrderBySequenceAsc(bookId);
-        String combinedText = history.stream()
-            .sorted(Comparator.comparing(BookLine::getSequence))
-            .map(BookLine::getGptContent)
-            .collect(Collectors.joining(" "));
-
-        // 제목 및 썸네일 생성 (블로킹 호출 예제)
-        String title = generateTitle(combinedText).block();
-        String thumbnailUrl = generateThumbnail(combinedText).block();
-
         // 한자 정보 처리
         List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(bookId);
         List<KanjiDTO> kanjiDTOs = kanjis.stream()
             .map(kanji -> new KanjiDTO(kanji.getKanjiId(), kanji.getKanji(), kanji.getKorOnyomi(), kanji.getKorKunyomi()))
             .collect(Collectors.toList());
 
-        // GameEndResponse 객체에 제목과 썸네일 추가 (클래스 수정 필요)
-        return new GameEndResponse(title, thumbnailUrl, kanjiDTOs);
+        // 제목 및 썸네일 생성 후 저장 (비동기 실행)
+        gameAsyncService.generateAndSaveBookDetails(bookId);
+
+        return new GameEndResponse(kanjiDTOs);
     }
 
 
@@ -244,53 +236,6 @@ public class GameService {
             .map(response -> response.getContent());
     }
 
-    private Mono<String> generateTitle(String combinedText) {
-        String prompt = "다음 줄거리를 기반으로 글에 어울리는 제목을 만들어주세요:\n" + combinedText;
-        List<Map<String, String>> messages = new ArrayList<>();
-        messages.add(Map.of("role", "system", "content", "당신은 창의적인 제목을 만드는 AI입니다."));
-        messages.add(Map.of("role", "user", "content", prompt));
 
-        return webClient.post()
-            .uri("https://api.openai.com/v1/chat/completions")
-            .bodyValue(Map.of(
-                "model", "gpt-4o-mini",
-                "messages", messages,
-                "temperature", 0.7,
-                "max_tokens", 50
-            ))
-            .retrieve()
-            .bodyToMono(ChatCompletionResponse.class)
-            .map(response -> {
-                String content = response.getContent();
-                return (content != null) ? content.trim() : "";
-            });
-    }
-
-    private Mono<String> generateThumbnail(String combinedText) {
-        String prompt = "다음 줄거리를 시각적으로 표현한 썸네일 이미지를 생성해주세요:\n" + combinedText;
-
-        return webClient.post()
-            .uri("https://api.openai.com/v1/images/generations")
-            .bodyValue(Map.of(
-                "prompt", prompt,
-                "n", 1,
-                "size", "512x512",
-                "response_format", "b64_json"
-            ))
-            .retrieve()
-            .bodyToMono(ImageGenerationResponse.class)
-            .flatMap(response -> {
-                // base64 인코딩된 이미지 데이터를 가져옴
-                String base64Image = response.getB64Json();
-                if (base64Image == null || base64Image.isEmpty()) {
-                    return Mono.error(new RuntimeException("이미지 생성 실패"));
-                }
-
-                String fileName = "thumbnail_" + System.currentTimeMillis();
-                // base64 데이터를 디코딩하여 로컬에 저장하는 메서드를 호출합니다.
-                return Mono.fromCallable(() -> imageStorageService.saveImageLocallyFromBase64(base64Image, fileName))
-                    .subscribeOn(Schedulers.boundedElastic());
-            });
-    }
 
 }

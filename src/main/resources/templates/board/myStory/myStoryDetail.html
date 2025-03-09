@@ -45,7 +45,7 @@
                 공유
             </button>
             <a th:unless="${myStoryInfo.isEnded}" class="btn btn-primary btn-sm me-2"
-                th:href="@{/game/screen(bookId=${myStoryInfo.bookId})}">
+                th:href="@{/game/play(bookId=${myStoryInfo.bookId})}">
                 이어하기
             </a>
             <button type="button" class="btn btn-danger btn-sm me-2"
