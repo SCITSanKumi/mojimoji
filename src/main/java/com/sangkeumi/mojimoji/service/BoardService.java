@@ -380,4 +380,34 @@ public class BoardService {
     public Long getBooksCount(Long userId) {
         return bookRepository.countByUserUserId(userId);
     }
+
+    @Transactional
+    public List<OtherStoryListResponse> getStoriesByUserId(Long userId, int page, int size) {
+        // 최신 등록 순(내림차순)으로 정렬
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Book> bookPage = bookRepository.findByUser_UserId(userId, pageable);
+        return bookPage.stream()
+                .map(book -> new OtherStoryListResponse(
+                        book.getBookId(),
+                        book.getTitle(),
+                        book.getThumbnailUrl(),
+                        book.getSharedBook() != null,
+                        book.getUser().getNickname(),
+                        book.getUser().getProfileUrl(),
+                        book.getSharedBook() != null ? book.getSharedBook().getHitCount() : 0,
+                        book.getSharedBook() != null ? book.getSharedBook().getGaechu() : 0,
+                        book.getCreatedAt()))
+                .collect(Collectors.toList());
+    }
+
+    public OtherProfileResponse getOtherProfile(Long userId) {
+
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
+            return new OtherProfileResponse(
+                    user.getUserId(),
+                    user.getNickname(),
+                    user.getEmail(),
+                    user.getProfileUrl());
+    }
 }

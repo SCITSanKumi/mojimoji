@@ -260,4 +260,20 @@ public class BoardController {
             return "board/myStory/myStoryDetail";
         }
     }
+
+    /**
+     * 다른 사람 스토리 AJAX용 엔드포인트 (페이지네이션)
+     * @param userId
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping("/otherStory/ajaxList")
+    @ResponseBody
+    public List<OtherStoryListResponse> ajaxOtherUserStoryList(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "8") int size) {
+        return boardService.getStoriesByUserId(userId, page, size);
+    }
 }

@@ -147,11 +147,7 @@ $(document).ready(function () {
                 // 추천 수 업데이트
                 $('#like-count').text(response.gaechu);
                 // 추천 상태에 따라 하트 아이콘 변경: liked가 true이면 채워진 하트(♥), 아니면 빈 하트(♡)
-                if (response.liked) {
-                    $('#like-button').text("♥");
-                } else {
-                    $('#like-button').text("♡");
-                }
+                $('#Give-It-An-Id').prop('checked', response.liked);
             },
             error: function (err) {
                 console.error("추천 토글 실패", err);
