@@ -85,6 +85,7 @@
             width: 100px;
             line-height: 60px;
             /* float: left; */
+            margin-left: 60px;
         }
 
         #kanjiSort,
@@ -441,6 +442,88 @@
             opacity: 1;
             transform: scale(1.1);
         }
+
+        /* 한자카드 모달  */
+        .wrongModal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.5);
+
+        }
+
+
+
+        .wrongModal .modal_popup {
+            position: fixed;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            /* background: #ffffff;
+            border-radius: 20px; */
+
+        }
+
+        /* 한자카드 모달 내용 */
+
+        .wrongNote {
+            display: inline-block;
+            background-color: white;
+            overflow-y: scroll;
+
+            width: 400px;
+            height: 537px;
+            border-radius: 10px;
+            border: 1px solid gray;
+            /* -ms-overflow-style: none; */
+        }
+
+        .wrongNote::-webkit-scrollbar {
+            width: 15px;
+        }
+
+        .wrongNote::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 20px;
+        }
+
+        .wrongNote::-webkit-scrollbar-track {
+            background: #ddd;
+            border-radius: 20px;
+        }
+
+        /* .wrongNote::-webkit-scrollbar {
+            display: none;
+        } */
+
+        hr {
+            margin: 0;
+        }
+
+        .toWrongNote:hover {
+            cursor: pointer;
+        }
+
+        .wrongMeaning {
+            display: none;
+        }
+
+        .wrongMoreView:hover {
+            cursor: pointer;
+        }
+
+        .wrongDelete:hover {
+            cursor: pointer;
+        }
+
+        .bookMark:hover {
+            cursor: pointer;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
@@ -453,6 +536,7 @@
             <div id="top">
                 <h2>한자 수집북</h2>
                 <span id="kanjiCurrent" th:text="${collected} + '/' + ${totalCount}">0/0</span>
+                <span style="float: right;" class="toWrongNote">오답노트</span>
             </div>
 
             <!-- 검색 폼 -->
@@ -913,7 +997,141 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
+
+
+        // 오답노트
+
+        $('.toWrongNote').on('click', function () {
+            $(".wrongModal").css("display", "block");
+            $('#scrollArrow').css('display', 'none');
+        });
+
+
+        $(document).on('click', '.wrongModal', function (e) {
+            if (!$(e.target).parents('.modal_popup').length && !$(e.target).is('.modal_popup')) {
+                if ($(".wrongModal").css("display") == 'block') {
+
+                    $(".wrongModal").css("display", "none");
+                }
+            }
+        });
+
+        $(document).on('click', '.wrongMoreView', function () {
+
+
+
+            if ($(this).text() == '△') {
+
+                $(this).parent().parent().find(".wrongMeaning").css('display', 'none');
+                $(this).text('▽');
+            } else {
+                $(this).text('△');
+                $(this).parent().parent().find(".wrongMeaning").css('display', 'block');
+            }
+        })
+
+        $(document).on('click', '.wrongDelete', function (e) {
+
+            let kanjiId = $(this).parents('tr').find('input[type = "hidden"]').val();
+
+            $.ajax({
+                url: "/kanji/wrongDelete",
+                method: "POST",
+                data: { "kanjiId": kanjiId },
+                success: function () {
+                }
+            })
+
+            e.stopPropagation();
+            $(this).parents('tr').remove();
+
+            $('.wrongSize').text($('.wrongSize').text() - 1);
+
+        });
+
+        $(document).on('click', '.bookMark', function (e) {
+
+            let kanjiId = $(this).parents('tr').find('input[type = "hidden"]').val();
+
+            if ($(this).text() == '☆') {
+
+                $.ajax({
+                    url: "/kanji/addBookMark",
+                    method: "POST",
+                    data: { "kanjiId": kanjiId },
+                    success: function () {
+                    }
+                })
+                $(this).text('★');
+
+            } else {
+                $.ajax({
+                    url: "/kanji/deleteBookMark",
+                    method: "POST",
+                    data: { "kanjiId": kanjiId },
+                    success: function () {
+                    }
+                })
+                $(this).text('☆')
+                e.stopPropagation();
+            }
+        });
+
+
     </script>
+    <div class="wrongModal">
+        <div class="modal_popup">
+            <div class="wrongNote">
+                <h3 style="text-align: center; margin-top: 10px;">오답노트</h3>
+                <div style="float: left; margin-left: 10px;">등록된 한자 : <span class="wrongSize"
+                        th:text="${wrongKanji.size()}"></span>개</div>
+                <br>
+                <hr>
+                <table style="width: 100%;">
+                    <tr th:each="wrong : ${wrongKanji}">
+                        <td>
+                            <div class="wrongItem">
+                                <input type="hidden" th:value="${wrong.kanjiId}">
+                                <span style="font-size: 50px; margin:  0px 25px 0px;">[[${wrong.kanji}]] </span>
+                                <span style="float: right; margin: 20px 20px 0px 0px;">오답횟수 :
+                                    [[${wrong.wrongCount}]]</span>
+                                <div style="background-color: #F8F8F8; padding: 12px 14px; margin:  0px 18px 0px;">
+                                    <div style="font-size: 25px; ">
+                                        <span>[[${wrong.korKunyomi}]]
+                                            [[${wrong.korOnyomi}]]</span>
+                                        <span style="float: right;" class="wrongMoreView">▽</span>
+                                    </div>
+
+                                    <span class="wrongMeaning"><br>
+                                        <span>훈독 [[${wrong.jpnKunyomi}]] </span>
+                                        <br>
+                                        <span>음독 [[${wrong.jpnOnyomi}]] </span>
+                                        <br>
+                                        <span
+                                            th:utext=" ${#strings.replace(#strings.replace(wrong.meaning, '\n','<br>'), ';', ',')}"></span>
+                                    </span>
+                                </div><br>
+                                <div style="background-color: #F8F8F8;">
+                                    <span style="font-size: 15px; padding-left: 20px;">
+                                        [[${#temporals.format(wrong.updatedAt,'yyyy-MM-dd')}]] 사용</span>
+                                    <span style="float: right; padding-right: 20px;" class="wrongDelete">초기화</span>
+
+                                    <span th:if="${wrong.bookmarked} == 0" style="float: right; padding-right: 30px;"
+                                        class="bookMark">☆</span>
+                                    <span th:unless="${wrong.bookmarked} == 0"
+                                        style="float: right; padding-right: 30px;" class="bookMark">★</span>
+                                    <hr>
+                                </div>
+                            </div>
+
+
+                        </td>
+                    </tr>
+
+
+                </table>
+            </div>
+        </div>
 </body>
 
 </html>

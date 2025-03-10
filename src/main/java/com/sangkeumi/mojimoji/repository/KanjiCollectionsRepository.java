@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
+import com.sangkeumi.mojimoji.dto.kanji.WrongKanji;
 import com.sangkeumi.mojimoji.dto.mypage.*;
 import com.sangkeumi.mojimoji.entity.*;
 
@@ -142,4 +143,10 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
             @Param("category") String category,
             @Param("jlptRank") String jlptRank,
             @Param("searchTerm") String searchTerm);
+
+    @Query(value = """
+            SELECT kc.kanji_collection_id,kc.user_id,kc.bookmarked,kc.collected_count,kc.wrong_count,kc.created_at,kc.updated_at,k.* FROM Kanji_Collections kc inner join kanjis k on kc.kanji_id = k.kanji_id  where kc.user_id = :userId and kc.wrong_count >=1 order by kc.wrong_count desc;
+            """, nativeQuery = true)
+    List<WrongKanji> findAllByUserId(@Param("userId") Long userId);
+
 }

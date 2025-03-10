@@ -1,6 +1,9 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,7 +43,7 @@ public class KanjiCollection {
      */
     @Column(name = "bookmarked", nullable = false)
     @Builder.Default
-    private boolean bookmarked = false;
+    private int bookmarked = 0;
 
     /**
      * 수집된 횟수
@@ -50,9 +53,16 @@ public class KanjiCollection {
     private int collectedCount = 0;
 
     /**
+     * 오답 횟수
+     */
+    @Column(name = "wrong_count", nullable = false)
+    @Builder.Default
+    private int wrongCount = 0;
+
+    /**
      * 생성일시
      */
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -61,5 +71,6 @@ public class KanjiCollection {
      */
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
+    @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 }
