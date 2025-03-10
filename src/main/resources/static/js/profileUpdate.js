@@ -60,16 +60,11 @@ $(document).ready(function () {
             data: formData,
             processData: false,
             contentType: false,
-            success: function (response) {
-                if (response) {
-                    alert("프로필이 변경되었습니다.");
-                    $('#profileImage').attr('src', response.profileUrl); // 새 프로필 이미지 즉시 반영
-                } else {
-                    alert("프로필 업데이트 실패");
-                }
+            success: function() {
+                alert("프로필이 변경되었습니다.");
             },
-            error: function () {
-                alert("서버 통신 오류");
+            error: function() {
+                alert("프로필 업데이트 실패");
             }
         });
     });

@@ -16,7 +16,6 @@ import com.sangkeumi.mojimoji.repository.*;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,10 +39,7 @@ public class GameAsyncService {
      */
     @Async
     @Transactional
-    public void generateAndSaveBookDetails(Long bookId) {
-        Book book = bookRepository.findById(bookId)
-            .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
-
+    public void generateAndSaveBookDetails(Book book) {
         List<BookLine> history = bookLineRepository.findByBookOrderBySequenceAsc(book);
         String combinedText = history.stream()
             .map(BookLine::getGptContent)

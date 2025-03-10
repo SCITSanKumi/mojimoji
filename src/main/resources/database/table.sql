@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS Shared_Book_Likes;         -- Shared_Book_Likes는 Shared_B
 DROP TABLE IF EXISTS Used_Book_Kanjis;          -- Used_Book_Kanjis는 Book_Lines와 Kanjis를 참조
 DROP TABLE IF EXISTS Community_Replies;         -- Community_Replies는 Community_Posts와 Users를 참조
 DROP TABLE IF EXISTS Kanji_Collections;         -- Kanji_Collections는 Kanjis와 Users를 참조
-DROP TABLE IF EXISTS Kanji_Collection_Summary;  -- Kanji_Collection_Summary는 Users와 Kanjis 참조
 DROP TABLE IF EXISTS Community_Posts;           -- Community_Posts는 Users를 참조
 DROP TABLE IF EXISTS Book_Lines;                -- Book_Lines는 Books를 참조
 DROP TABLE IF EXISTS Shared_Books;              -- Shared_Books는 Books를 참조

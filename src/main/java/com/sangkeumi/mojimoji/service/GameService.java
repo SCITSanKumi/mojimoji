@@ -18,15 +18,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.*;
 // import java.util.regex.Matcher;
 // import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 @Service
 @Slf4j
@@ -38,7 +35,6 @@ public class GameService {
     private final UserRepository userRepository;
     private final KanjiRepository kanjiRepository;
     private final GameAsyncService gameAsyncService;
-
     private final WebClient webClient;
     private final GameConfiguraton gameConfiguraton;
     // private final ObjectMapper objectMapper = new ObjectMapper();
@@ -78,7 +74,6 @@ public class GameService {
                 .getGptContent());
     }
 
-    @Transactional
     public Flux<String> getChatResponseStream(Long bookId, String message) {
         Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
@@ -94,9 +89,6 @@ public class GameService {
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", gameConfiguraton.getSystemMessage()));
         history.forEach(msg -> messages.add(Map.of("role", "assistant", "content", msg.getGptContent())));
-        // messages.add(Map.of("role", "assistant", "content",
-        //     String.format("[현재 플레이어 상태: 채력: %d 정신력: %d 위치: %s]", currentHP, currentMP, currentLocation)
-        // ));
         messages.add(Map.of("role", "user", "content", message));
 
         log.info("gpt Request : {}", messages);
@@ -108,44 +100,71 @@ public class GameService {
             .sequence(currentSequence)
             .build());
 
-        // 사용자 입력 중 한자 파싱
+
+        saveUsedBookKanjis(bookLine, message);
+
+        StringBuilder contentResponse = new StringBuilder();
+
+        return getChatResponseFromApi(messages)
+            .doOnNext(chunk -> contentResponse.append(chunk))
+            .doOnComplete(() -> handleChatResponse(contentResponse.toString(), bookLine));
+    }
+
+    @Transactional
+    public void saveUsedBookKanjis(BookLine bookLine, String message) {
+        Set<String> kanjiSet = new HashSet<>();
+
         for (int i = 0; i < message.length(); i++) {
-            // Kanji 엔티티를 찾기 전 한자인지 우선 검사
-            if (!Character.UnicodeBlock.of(message.charAt(i))
-                    .equals(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)) {
-                break;
-            }
+            char c = message.charAt(i);
+            if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS) continue;
+            kanjiSet.add(String.valueOf(c));
+        }
 
-            // Kanji 엔티티를 DB에서 찾기
-            Kanji kanji = kanjiRepository.findByKanji(String.valueOf(message.charAt(i)))
-                    .orElseThrow(() -> new RuntimeException("해당 한자가 존재하지 않습니다."));
+        if (kanjiSet.isEmpty()) {
+            return;
+        }
 
-            // 중복이 아닐 경우만 저장
-            if (!usedBookKanjiRepository.existsByBookLineAndKanji(bookLine, kanji)) {
-                usedBookKanjiRepository.save(UsedBookKanji.builder()
+        List<Kanji> kanjiList = kanjiRepository.findByKanjiIn(kanjiSet);
+
+        if (kanjiList.isEmpty()) {
+            throw new RuntimeException("해당 한자가 존재하지 않습니다.");
+        }
+        List<UsedBookKanji> existingKanjiList = usedBookKanjiRepository.findByBookLineAndKanjiIn(bookLine, kanjiList);
+
+        Set<String> existingKanjiSet = existingKanjiList.stream()
+            .map(uk -> uk.getKanji().getKanji())
+            .collect(Collectors.toSet());
+
+        List<UsedBookKanji> newKanjiToSave = new ArrayList<>();
+
+        for (Kanji kanji : kanjiList) {
+            if (!existingKanjiSet.contains(kanji.getKanji())) {
+                newKanjiToSave.add(UsedBookKanji.builder()
                     .bookLine(bookLine)
                     .kanji(kanji)
                     .build());
             }
         }
 
-        StringBuilder contentResponse = new StringBuilder();
-
-        return getChatResponseFromApi(messages)
-            .doOnNext(chunk -> {contentResponse.append(chunk);})
-            .doOnComplete(() -> {handleChatResponse(contentResponse.toString(), bookLine);});
+        if (!newKanjiToSave.isEmpty()) {
+            usedBookKanjiRepository.saveAll(newKanjiToSave);
+        }
     }
+
 
     @Transactional
     public GameEndResponse gameEnd(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+            .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
+
         // 한자 정보 처리
-        List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(bookId);
+        List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(book);
         List<KanjiDTO> kanjiDTOs = kanjis.stream()
             .map(kanji -> new KanjiDTO(kanji.getKanjiId(), kanji.getKanji(), kanji.getKorOnyomi(), kanji.getKorKunyomi()))
             .collect(Collectors.toList());
 
         // 제목 및 썸네일 생성 후 저장 (비동기 실행)
-        gameAsyncService.generateAndSaveBookDetails(bookId);
+        gameAsyncService.generateAndSaveBookDetails(book);
 
         return new GameEndResponse(kanjiDTOs);
     }

@@ -70,9 +70,9 @@ public class UserController {
      */
     @GetMapping("/update")
     public String profileUpdate(@AuthenticationPrincipal MyPrincipal principal, Model model) {
-        Long userId = principal.getUserId();
-        UserUpdateView user = userService.findById(userId);
+        UserUpdateView user = userService.findById(principal.getUserId());
         model.addAttribute("user", user);
+
         return "user/profileUpdate";
     }
 
@@ -85,9 +85,10 @@ public class UserController {
     @PostMapping("/update")
     @ResponseBody
     @Operation(summary = "회원 정보 수정", description = "닉네임과 이메일을 수정한다.")
-    public UserUpdateResponse updateProfile(@AuthenticationPrincipal MyPrincipal principal,
+    public void updateProfile(
+            @AuthenticationPrincipal MyPrincipal principal,
             @ModelAttribute UserUpdateRequest updateRequest) {
-        return userService.updateProfile(principal.getUserId(), updateRequest);
+        userService.updateProfile(principal.getUserId(), updateRequest);
     }
 
     /**
