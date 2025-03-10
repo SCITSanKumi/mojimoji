@@ -181,7 +181,7 @@ public class BoardController {
      * @return
      */
     @GetMapping("/myStory/list")
-    public String myStoryList(Model model, @AuthenticationPrincipal MyPrincipal principal) {
+    public String myStoryList(@AuthenticationPrincipal MyPrincipal principal, Model model) {
         // 첫 페이지(0번 페이지)에서 8개만 가져오기
         List<MyStoryListResponse> myStoryList = boardService.getMyBooksPaginated(principal.getUserId(), 0, 8);
         model.addAttribute("myStoryList", myStoryList);
@@ -258,5 +258,21 @@ public class BoardController {
             model.addAttribute("myStoryContent", myStoryContent);
             return "board/myStory/myStoryDetail";
         }
+    }
+
+    /**
+     * 다른 사람 스토리 AJAX용 엔드포인트 (페이지네이션)
+     * @param userId
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping("/otherStory/ajaxList")
+    @ResponseBody
+    public List<OtherStoryListResponse> ajaxOtherUserStoryList(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "8") int size) {
+        return boardService.getStoriesByUserId(userId, page, size);
     }
 }

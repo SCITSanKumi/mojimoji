@@ -45,7 +45,7 @@
                 공유
             </button>
             <a th:unless="${myStoryInfo.isEnded}" class="btn btn-primary btn-sm me-2"
-                th:href="@{/game/screen(bookId=${myStoryInfo.bookId})}">
+                th:href="@{/game/play(bookId=${myStoryInfo.bookId})}">
                 이어하기
             </a>
             <button type="button" class="btn btn-danger btn-sm me-2"
@@ -59,7 +59,7 @@
         <div class="story-box">
             <div th:each="myStory : ${myStoryContent}">
                 <p th:text="${myStory.userContent}"></p>
-                <p th:text="${myStory.gptContent}"></p>
+                <p th:text="${myStory.formattedGptContent()}"></p>
             </div>
         </div>
     </div>

@@ -3,8 +3,8 @@ package com.sangkeumi.mojimoji.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.fasterxml.jackson.core.JsonProcessingException;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sangkeumi.mojimoji.config.GameConfiguraton;
 import com.sangkeumi.mojimoji.dto.game.*;
 import com.sangkeumi.mojimoji.dto.kanji.KanjiDTO;
@@ -18,12 +18,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+// import java.util.regex.Matcher;
+// import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 @Slf4j
@@ -34,10 +37,11 @@ public class GameService {
     private final UsedBookKanjiRepository usedBookKanjiRepository;
     private final UserRepository userRepository;
     private final KanjiRepository kanjiRepository;
+    private final GameAsyncService gameAsyncService;
 
     private final WebClient webClient;
     private final GameConfiguraton gameConfiguraton;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    // private final ObjectMapper objectMapper = new ObjectMapper();
 
     /** 게임 시작 메서드 */
     @Transactional
@@ -134,13 +138,18 @@ public class GameService {
 
     @Transactional
     public GameEndResponse gameEnd(Long bookId) {
+        // 한자 정보 처리
         List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(bookId);
         List<KanjiDTO> kanjiDTOs = kanjis.stream()
             .map(kanji -> new KanjiDTO(kanji.getKanjiId(), kanji.getKanji(), kanji.getKorOnyomi(), kanji.getKorKunyomi()))
             .collect(Collectors.toList());
 
+        // 제목 및 썸네일 생성 후 저장 (비동기 실행)
+        gameAsyncService.generateAndSaveBookDetails(bookId);
+
         return new GameEndResponse(kanjiDTOs);
     }
+
 
     @Transactional
     private void handleChatResponse(String content, BookLine bookLine) {
@@ -157,7 +166,7 @@ public class GameService {
     //     StringBuilder dialogue = new StringBuilder();
 
     //     // 정규식 패턴: {"name": "xxx"} 를 찾아서 "xxx :"로 변환
-    //     Matcher matcher = Pattern.compile("\\{\"name\":\\s*\"([^\"]+)\"\\}").matcher(content); //TODO 간단한 방법으로
+    //     Matcher matcher = Pattern.compile("\\{\"name\":\\s*\"([^\"]+)\"\\}").matcher(content);
 
     //     int lastEnd = 0;
     //     while (matcher.find()) {
@@ -204,10 +213,11 @@ public class GameService {
     /** OpenAI API 스트리밍 요청 처리 */
     private Flux<String> getChatResponseFromApi(List<Map<String, String>> messages) {
         return webClient.post()
+            .uri("https://api.openai.com/v1/chat/completions")
             .bodyValue(Map.of(
                 "model", "gpt-4o-mini",
-                "temperature", 0.6,
                 "messages", messages,
+                "temperature", 0.6,
                 "max_tokens", 500,
                 "stream", true))
             .accept(MediaType.TEXT_EVENT_STREAM)
@@ -225,4 +235,7 @@ public class GameService {
                 .isPresent())
             .map(response -> response.getContent());
     }
+
+
+
 }
