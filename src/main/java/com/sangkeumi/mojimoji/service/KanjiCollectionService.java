@@ -1,7 +1,9 @@
 package com.sangkeumi.mojimoji.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -17,9 +19,11 @@ import com.sangkeumi.mojimoji.repository.*;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KanjiCollectionService {
 
     private final KanjiCollectionsRepository kanjiCollectionsRepository;
@@ -43,7 +47,35 @@ public class KanjiCollectionService {
                         .collectedCount(0)
                         .build());
 
+        if (kanjiCollection.getCollectedCount() == 0 && kanjiCollection.getWrongCount() >= 1) {
+            kanjiCollection.setCreatedAt(LocalDateTime.now());
+        }
+
         kanjiCollection.setCollectedCount(kanjiCollection.getCollectedCount() + 1);
+
+        kanjiCollectionsRepository.save(kanjiCollection);
+    }
+
+    @Transactional
+    public void wrongCountUp(Long kanjiId, Long userId) {
+        // 1) kanjiId, userId로 DB에서 엔티티 조회
+        Kanji kanji = kanjiRepository.findById(kanjiId)
+                .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
+
+        // 2) DB에 저장
+        KanjiCollection kanjiCollection = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user)
+                .orElse(KanjiCollection.builder()
+                        .kanji(kanji)
+                        .user(user)
+                        .collectedCount(0)
+                        .wrongCount(0)
+                        .build());
+
+        kanjiCollection.setWrongCount(kanjiCollection.getWrongCount() + 1);
+
         kanjiCollectionsRepository.save(kanjiCollection);
     }
 
@@ -96,5 +128,57 @@ public class KanjiCollectionService {
 
     public CategoryCollectionSummary getCategoryCollectionSummary(Long userId) {
         return kanjiCollectionsRepository.findCategoryCollectionSummary(userId);
+    }
+
+    public List<WrongKanji> getWrongKanji(Long userId) {
+
+        return kanjiCollectionsRepository.findAllByUserId(userId);
+
+    }
+
+    @Transactional
+    public void wrongDelete(Long kanjiId, Long userId) {
+
+        Kanji kanji = kanjiRepository.findById(kanjiId)
+                .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
+
+        Optional<KanjiCollection> temp = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user);
+
+        if (temp.isPresent()) {
+            temp.get().setWrongCount(0);
+        }
+    }
+
+    @Transactional
+    public void addBookMark(Long kanjiId, Long userId) {
+        Kanji kanji = kanjiRepository.findById(kanjiId)
+                .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
+
+        Optional<KanjiCollection> temp = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user);
+
+        if (temp.isPresent()) {
+            temp.get().setBookmarked(1);
+        }
+    }
+
+    @Transactional
+    public void deleteBookMark(Long kanjiId, Long userId) {
+        Kanji kanji = kanjiRepository.findById(kanjiId)
+                .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
+
+        Optional<KanjiCollection> temp = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user);
+
+        if (temp.isPresent()) {
+            temp.get().setBookmarked(0);
+        }
     }
 }

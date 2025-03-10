@@ -152,6 +152,7 @@ CREATE TABLE Kanji_Collections (
     user_id INT NOT NULL,                                              -- 컬렉션 항목의 소유자, Users 테이블과 연결
     bookmarked TINYINT NOT NULL DEFAULT 0,                             -- 해당 한자를 즐겨찾기 했는지 여부
     collected_count INT NOT NULL DEFAULT 0,                            -- 해당 한자를 모은 횟수
+    wrong_count INT NOT NULL DEFAULT 0,                                -- 해당 한자의 오답 횟수
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,           -- 컬렉션 항목 생성 일시
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,           -- 컬렉션 항목 수정 일시
     PRIMARY KEY (kanji_collection_id),
