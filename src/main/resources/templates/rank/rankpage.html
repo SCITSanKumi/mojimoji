@@ -22,15 +22,7 @@
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-    <div class="banner-container">
-        <div id="particles-js"></div>
-        <div class="hero-banner">
-            <div class="container">
-                <h1 class="animate__animated animate__fadeInDown">Explore the Leaderboards</h1>
-                <p class="animate__animated animate__fadeInUp">Aim for the Top and Showcase Your Japanese Skills!</p>
-            </div>
-        </div>
-    </div>
+
 
     <div class="container main-content">
 
@@ -104,8 +96,8 @@
                     aria-labelledby="kanji-tab" tabindex="0">
                     <div class="kanji-top-players"></div>
                     <div class="leaderboard-title">
-                        <h3 class="text-center mb-4 animate__animated animate__zoomIn"><i class="fas fa-book"></i> Kanji
-                            한자 수집</h3>
+                        <h3 class="text-center mb-4 animate__animated animate__zoomIn"><i class="fas fa-book"></i>
+                            한자 수집 순위</h3>
                     </div>
                     <div class="leaderboard animate__animated animate__fadeIn">
                         <div class="card">
@@ -118,6 +110,7 @@
                                                 <th class="player-header">유저</th>
                                                 <th class="kanji-header">수집한 한자</th>
                                                 <th class="score-header">수집률 %</th>
+                                                <th class="score-header">보너스 한자 점수</th>
                                                 <th class="score-header">점수</th>
                                             </tr>
                                         </thead>
@@ -137,7 +130,7 @@
                     <div class="story-top-players"></div>
                     <div class="leaderboard-title">
                         <h3 class="text-center mb-4 animate__animated animate__zoomIn"><i class="fas fa-book-open"></i>
-                            스토리</h3>
+                            스토리 작성 순위</h3>
                     </div>
                     <div class="leaderboard animate__animated animate__fadeIn">
                         <div class="card">
@@ -199,120 +192,7 @@
             </div>
         </main>
 
-        <!-- User Profile Modal -->
-        <div class="modal fade" id="userProfileModal" tabindex="-1" aria-labelledby="userProfileModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="userProfileModalLabel">유저 정보</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="text-center mb-4">
-                            <div class="modal-avatar">
-                                <img src="" alt="User Avatar" id="modalUserAvatar">
-                            </div>
-                            <h3 id="modalUserName" class="mt-3"></h3>
-                            <div class="user-badges mt-2">
-                                <span class="badge bg-primary"><i class="fas fa-trophy"></i> Top Performer</span>
-                                <span class="badge bg-success"><i class="fas fa-fire"></i> <span
-                                        id="modalUserStreak">0</span>
-                                    Day Streak</span>
-                                <span class="badge bg-warning"><i class="fas fa-star"></i> <span
-                                        id="modalUserRating">0</span>
-                                    Rating</span>
-                            </div>
-                        </div>
 
-                        <div class="user-stats mb-4">
-                            <div class="row">
-                                <div class="col-4 text-center">
-                                    <div class="stat-circle">
-                                        <span id="modalUserKanji">0</span>
-                                    </div>
-                                    <p>한자</p>
-                                </div>
-                                <div class="col-4 text-center">
-                                    <div class="stat-circle">
-                                        <span id="modalUserQuiz">0%</span>
-                                    </div>
-                                    <p>스토리</p>
-                                </div>
-                                <div class="col-4 text-center">
-                                    <div class="stat-circle">
-                                        <span id="modalUserScore">0</span>
-                                    </div>
-                                    <p>종합</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h6 class="section-heading"><i class="fas fa-award"></i> Recent Achievements</h6>
-                        <div class="achievements mb-4">
-                            <div class="achievement animate__animated animate__fadeIn">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-book"></i>
-                                </div>
-                                <div class="achievement-info">
-                                    <h6>Kanji Master</h6>
-                                    <p>Collected over 100 kanji</p>
-                                    <small>3 days ago</small>
-                                </div>
-                            </div>
-                            <div class="achievement animate__animated animate__fadeIn" style="animation-delay: 0.2s">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </div>
-                                <div class="achievement-info">
-                                    <h6>Quiz Wizard</h6>
-                                    <p>Achieved 90%+ accuracy on 5 consecutive quizzes</p>
-                                    <small>1 week ago</small>
-                                </div>
-                            </div>
-                            <div class="achievement animate__animated animate__fadeIn" style="animation-delay: 0.4s">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-gem"></i>
-                                </div>
-                                <div class="achievement-info">
-                                    <h6>Rare Find</h6>
-                                    <p>Discovered a Level 5 rare kanji</p>
-                                    <small>2 weeks ago</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h6 class="section-heading"><i class="fas fa-chart-line"></i> Progress</h6>
-                        <div class="progress-section">
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span>Story Completion</span>
-                                    <span><span id="modalUserStories">0</span>/50</span>
-                                </div>
-                                <div class="progress">
-                                    <div class="progress-bar bg-success" id="modalStoryProgress" role="progressbar"
-                                        style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span>Kanji Collection</span>
-                                    <span><span id="modalUserKanjiCounts">0</span>/2136</span>
-                                </div>
-                                <div class="progress">
-                                    <div class="progress-bar bg-primary" id="modalKanjiProgress" role="progressbar"
-                                        style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">View Full Profile</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <footer th:insert="~{fragments/footer :: footer}"></footer>
         <script>
             // Initialize Bootstrap tooltips

@@ -373,7 +373,7 @@ header {
     height: 380px;
     width: 260px;
     z-index: 3;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ff9d6b 50%, #ffcd6b 100%);
+    background: linear-gradient(135deg, #FFD700 0%, #FFB800 50%, #FFD700 100%);
     background-size: 200% 200%;
     animation: gradientShift 10s ease infinite;
     color: white;
@@ -403,7 +403,7 @@ header {
 }
 
 .player.second {
-    background: linear-gradient(135deg, #4ecdc4 0%, #2cbfc7 50%, #1ab6e4 100%);
+    background: linear-gradient(135deg, #C0C0C0 0%, #D4D4D4 50%, #C0C0C0 100%);
     background-size: 200% 200%;
     animation: gradientShift 10s ease infinite;
     animation-delay: 1s;
@@ -411,7 +411,7 @@ header {
 }
 
 .player.third {
-    background: linear-gradient(135deg, #ffe66d 0%, #ffb84d 50%, #ff9e2d 100%);
+    background: linear-gradient(135deg, #B87333 0%, #A97142 50%, #B87333 100%);
     background-size: 200% 200%;
     animation: gradientShift 10s ease infinite;
     animation-delay: 2s;
@@ -444,7 +444,7 @@ header {
 
 .crown {
     position: absolute;
-    top: -25px;
+    top: -5px;
     color: var(--accent);
     font-size: 2rem;
 }
