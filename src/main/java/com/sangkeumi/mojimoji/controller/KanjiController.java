@@ -97,4 +97,40 @@ public class KanjiController {
                         @AuthenticationPrincipal MyPrincipal principal) {
                 kanjiCollectionService.addCollection(kanjiId, principal.getUserId());
         }
+
+        @GetMapping("/otherCollection")
+        public String otherKanjiCollection(
+                        @RequestParam(name = "userId") Long userId,
+                        @ModelAttribute KanjiSearchRequest searchRequest,
+                        Model model) {
+                int page = 1;
+
+                Page<KanjiSearchResponse> searchResponse = kanjiCollectionService.getMyCollection(userId,
+                                searchRequest, page);
+
+                model.addAttribute("searchResponse", searchResponse.getContent());;
+
+                return "kanji/otherKanjiCollection";
+        }
+
+        /**
+         * 무한 스크롤로 page=2,3... 요청 시 AJAX로 partial HTML 반환
+         */
+        @GetMapping("/otherCollectionAjax")
+        @Operation(summary = "프로필 한자 목록 AJAX", description = "추가 10개 로딩")
+        public String kanjiCollectionAjax(
+                        @RequestParam(name = "userId") Long userId,
+                        @ModelAttribute KanjiSearchRequest searchRequest,
+                        @RequestParam(name = "page", defaultValue = "1") int page,
+                        Model model) {
+
+                // 다음 페이지 로드
+                Page<KanjiSearchResponse> searchResponse = kanjiCollectionService.getMyCollection(userId,
+                                searchRequest, page);
+
+                model.addAttribute("searchResponse", searchResponse.getContent());
+
+                // Thymeleaf fragment만 반환
+                return "kanji/kanjiCollectionFragment :: cardList";
+        }
 }

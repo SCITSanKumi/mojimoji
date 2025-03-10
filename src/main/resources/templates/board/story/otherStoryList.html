@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -14,7 +14,7 @@
     <!-- Bootstrap JS -->
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
-    <script defer th:src="@{/js/storyListPaging.js}"></script>
+    <script defer th:src="@{/js/otherProfile.js}"></script>
     <style>
         /* 마우스 오버 시 배경색과 텍스트 색상 변경 */
         .sort-btn:hover {
@@ -96,53 +96,11 @@
 </head>
 
 <body>
-    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-
     <div class="container px-4 py-5" id="custom-cards">
-        <h2 class="text-center mb-4">공유된 스토리</h2>
         <div class="row top-area">
-            <div class="col-12">
-
-
-                <!-- 정렬 버튼 영역 + 내스토리 버튼 -->
-                <div class="Sort d-flex justify-content-flex-start align-items-center mb-1">
-
-                    <input type="hidden" id="sortOption" th:value="${sortOption}">
-                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
-                        class="btn btn-sm me-1 sort-btn">추천순</a>
-                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='viewCount')}"
-                        class="btn btn-sm me-1 sort-btn">조회순</a>
-                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
-                        class="btn btn-sm sort-btn">날짜순</a>
-                    <button type="button" id="myStoryBtn" class="btn btn-dark d-flex ms-auto mb-2">
-                        내 스토리
-                    </button>
-                </div>
-
-                <!-- 검색 폼 영역 -->
-                <div class="top-actions">
-
-                    <form action="/board/story/list" method="get" class="search-wrapper">
-                        <select name="searchItem" id="searchItem" class="form-select">
-                            <option value="title" th:selected="${searchItem == 'title'}">제목</option>
-                            <option value="user" th:selected="${searchItem == 'user'}">작성자</option>
-                        </select>
-
-                        <div class="search-container">
-                            <input type="text" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요"
-                                th:value="${searchWord}" class="form-control">
-                            <button type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
         <!-- 스토리 카드 목록 -->
         <div class="row row-cols-1 row-cols-lg-4 g-4" id="story-container">
-            <div class="col" th:each="sharedStory : ${sharedStoryList}">
+            <div class="col" th:each="sharedStory : ${storyList}">
                 <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                     th:style="|background-image: url(${sharedStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">
                     <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
@@ -154,7 +112,7 @@
                         <h5 th:text="${sharedStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${sharedStory.profileUrl != null ? sharedStory.profileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}"
+                                <img th:src="${sharedStory.profileUrl != null ? sharedStory.profileUrl : '/image/logo.png'}"
                                     alt="Profile" width="32" height="32" class="rounded-circle border border-white">
 
                             </li>
@@ -174,7 +132,6 @@
         <!-- 로딩 인디케이터 -->
         <div id="loading" style="display:none; text-align:center; margin-top: 50px;">Loading...</div>
     </div>
-    <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
 
 </html>

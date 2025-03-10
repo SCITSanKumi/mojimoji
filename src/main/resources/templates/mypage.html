@@ -7,9 +7,14 @@
 
     <!-- (1) Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- (2) Bootstrap CSS/JS -->
     <link rel="stylesheet" th:href="@{css/bootstrap.min.css}" />
     <script defer th:src="@{js/bootstrap.bundle.min.js}"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+
     <!-- (3) jQuery -->
     <script th:src="@{js/jquery-3.7.1.min.js}"></script>
 
@@ -47,17 +52,28 @@
             padding: 10px;
         }
 
+        .chart-container canvas {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .chart-container canvas:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        /* large-chart 클래스는 추가 사이즈 조정 */
         .chart-container.large-chart {
             width: 250px;
             height: 250px;
         }
+
 
         /* 3) 날짜별 Bar 차트 */
         .bar-chart-row {
             display: flex;
             width: 900px;
             justify-content: space-between;
-            margin: 0 10px;
+            margin: 0 50px;
         }
 
         .bar-chart-wrapper {
@@ -70,6 +86,8 @@
             display: flex;
             gap: 10px;
             margin: 0 10px;
+            justify-content: space-around;
+            align-items: center;
         }
 
         .category-scroll-container {
@@ -220,7 +238,8 @@
             height: 20px;
             background-color: #e0e0e0;
             border-radius: 10px;
-            --progress-color: #4caf50;
+            overflow: hidden;
+            margin: 20px 0;
         }
 
         progress::-webkit-progress-bar {
@@ -237,7 +256,7 @@
             margin-top: 5px;
             font-size: 16px;
             font-weight: bold;
-            color: #4caf50;
+            color: black;
         }
 
         /* 수집 여부 */
@@ -419,7 +438,7 @@
         /* -------------------------------
             (1) JLPT 통계 (게이지 차트)
            ------------------------------- */
-        const statsData = /*[[${stats}]]*/ [];
+        const statsData = /*[[${stats}]]*/[];
         const rankTotals = {
             "전체": 2136,
             "N1": 1139,
@@ -508,7 +527,7 @@
         /* -------------------------------
             (2) 날짜별 Bar 차트
            ------------------------------- */
-        const dailyStatsData = /*[[${dailyStats}]]*/ [];
+        const dailyStatsData = /*[[${dailyStats}]]*/[];
         const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
         const chartValues = dailyStatsData.map(ds => ds.dailyCount);
 
@@ -520,8 +539,27 @@
                 const total = rankTotals[rank] || 0;
                 const canvasId = 'gaugeChart' + rank;
                 createGaugeChart(canvasId, collected, total, rank);
+
+                document.querySelectorAll('.chart-container[data-jlpt-rank]').forEach(container => {
+                    container.addEventListener('click', function () {
+                        const rank = this.getAttribute('data-jlpt-rank');
+                        let url = '';
+                        if (rank === '전체') {
+                            url = '/kanji/collection';
+                        } else {
+                            url = `/kanji/collection?kanjiSort=kanjiId&sortDirection=asc&category=&jlptRank=${encodeURIComponent(rank)}&kanjiSearch=`;
+                        }
+                        window.location.href = url;
+                    });
+                });
             });
 
+            /* -------------------------------
+                (2) 날짜별 Bar 차트
+               ------------------------------- */
+            const dailyStatsData = /*[[${dailyStats}]]*/[];
+            const chartLabels = dailyStatsData.map(ds => ds.acquisitionDate);
+            const chartValues = dailyStatsData.map(ds => ds.dailyCount);
             // Bar 차트 생성
             const ctxBar = document.getElementById('lineChart').getContext('2d');
             new Chart(ctxBar, {
@@ -778,7 +816,9 @@
     <!-- JLPT 게이지 차트들 -->
     <div class="Collection">
         <th:block th:each="stat : ${stats}">
-            <div class="chart-container" th:classappend="${stat.jlptRank} == '전체' ? ' large-chart' : ''">
+            <div class="chart-container animate__animated animate__fadeInUp hvr-shadow"
+                th:attr="data-jlpt-rank=${stat.jlptRank}"
+                th:classappend="${stat.jlptRank} == '전체' ? ' large-chart' : ''">
                 <canvas th:id="'gaugeChart' + ${stat.jlptRank}"></canvas>
             </div>
         </th:block>
@@ -805,16 +845,20 @@
             <!-- 카테고리 헤더 -->
             <div class="category-header-row">
                 <h5>카테고리</h5>
-                <img class="category-sort-icon" src="https://cdn0.iconfinder.com/data/icons/phosphor-regular-vol-4/256/sort-ascending-1024.png" alt="정렬아이콘">
+                <img class="category-sort-icon"
+                    src="https://cdn0.iconfinder.com/data/icons/phosphor-regular-vol-4/256/sort-ascending-1024.png"
+                    alt="정렬아이콘">
                 <h5>달성률순</h5>
-                <h5 class="category-achievement-text" th:text="'달성 ' + ${summary.fullyCollectedCategoryCount} + '/' + ${summary.totalCategoryCount}">
+                <h5 class="category-achievement-text"
+                    th:text="'달성 ' + ${summary.fullyCollectedCategoryCount} + '/' + ${summary.totalCategoryCount}">
                     달성 3/104
                 </h5>
             </div>
             <!-- 카테고리 블록들 (Map<String, List<CategoryKanjiRow>>) -->
             <th:block th:each="entry : ${catMap}" th:if="${entry.key} != '없음'">
-                <div class="category-block" th:attr="data-collected=${#lists.size(entry.value.?[isCollected == 1])},
-                            data-total=${#lists.size(entry.value)}, data-url=@{/kanji/collection}">
+                <div class="category-block"
+                    th:attr="data-collected=${#lists.size(entry.value.?[isCollected == 1])},
+                            data-url=@{/kanji/collection(kanjiSort='kanjiId', sortDirection='asc', category=${entry.key}, jlptRank='', kanjiSearch='')}">
                     <!-- (1) 카테고리 정보 -->
                     <div class="category-info">
                         <h5 th:text="${entry.key}">카테고리</h5>

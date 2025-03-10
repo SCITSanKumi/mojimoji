@@ -1,18 +1,24 @@
 package com.sangkeumi.mojimoji.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.sangkeumi.mojimoji.dto.board.OtherProfileResponse;
+import com.sangkeumi.mojimoji.dto.board.OtherStoryListResponse;
 import com.sangkeumi.mojimoji.dto.user.*;
+import com.sangkeumi.mojimoji.service.BoardService;
 import com.sangkeumi.mojimoji.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Controller
 @RequestMapping("/user")
@@ -22,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
     private final UserService userService;
+    private final BoardService boardService;
 
     // 로그인 페이지 이동
     @GetMapping("/login")
@@ -118,4 +125,15 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/otherProfile")
+    public String viewOtherProfile(@RequestParam(name = "userId") Long userId, Model model) {
+        List<OtherStoryListResponse> storyList = boardService.getStoriesByUserId(userId, 0, 8);
+        OtherProfileResponse otherProfile = boardService.getOtherProfile(userId);
+        Long BookCount = boardService.getBooksCount(userId);
+        model.addAttribute("storyList", storyList);
+        model.addAttribute("otherProfile", otherProfile);
+        model.addAttribute("BookCount", BookCount);
+        model.addAttribute("userId", userId);
+        return "/user/otherProfile";
+    }
 }

@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <title>회원 정보 수정</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}">
     <!-- jQuery, Bootstrap JS -->
     <script defer src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
@@ -66,10 +67,17 @@
             <!-- 프로필 사진 영역 (폼 안에 포함) -->
             <div class="mb-3 text-center">
                 <div id="profileImageContainer" class="profile-image-container">
-                    <img id="profileImage" th:src="${userProfileUrl} ?: 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'" alt="user" />
+                    <<<<<<< HEAD <img id="profileImage"
+                        src="https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png" alt="프로필 사진">
+                        =======
+                        <img id="profileImage"
+                            th:src="${userProfileUrl} ?: 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'"
+                            alt="user" />
+                        >>>>>>> 02566e5ba0e8459d4b5e375b9be7612c0da46d37
                 </div>
                 <!-- 파일 선택을 위한 숨김 input (name 속성 추가하여 파일이 폼에 포함되도록 함) -->
-                <input type="file" id="profileImageInput" name="profileImageFile" accept="image/*" style="display: none;">
+                <input type="file" id="profileImageInput" name="profileImageFile" accept="image/*"
+                    style="display: none;">
             </div>
             <div class="mb-3">
                 <label for="nickname" class="form-label">닉네임</label>
@@ -85,7 +93,8 @@
         </form>
         <div class="action-buttons">
             <!-- 비밀번호 변경하기 버튼 (socialUser가 false인 경우 표시) -->
-            <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#changePasswordModal" th:if="${!user.socialUser}">
+            <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#changePasswordModal"
+                th:if="${!user.socialUser}">
                 비밀번호 변경하기
             </a>
             <!-- 계정 삭제하기 버튼 (모달 트리거) -->
@@ -96,18 +105,19 @@
     </div>
 
     <!-- 비밀번호 변경 모달 -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal fade" id="changePasswordModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="changePasswordModalLabel">비밀번호 변경하기</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="mb-3">
                             <label for="currentPassword" class="form-label">현재 비밀번호</label>
-                            <input type="password" class="form-control" id="currentPassword" placeholder="현재 비밀번호를 입력하세요">
+                            <input type="password" class="form-control" id="currentPassword"
+                                placeholder="현재 비밀번호를 입력하세요">
                         </div>
                         <div class="mb-3">
                             <label for="newPassword" class="form-label">새 비밀번호</label>
@@ -115,7 +125,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="confirmNewPassword" class="form-label">새 비밀번호 확인</label>
-                            <input type="password" class="form-control" id="confirmNewPassword" placeholder="새 비밀번호를 다시 입력하세요">
+                            <input type="password" class="form-control" id="confirmNewPassword"
+                                placeholder="새 비밀번호를 다시 입력하세요">
                         </div>
                     </form>
                 </div>
@@ -128,23 +139,35 @@
     </div>
 
     <!-- 계정 삭제 모달 -->
-    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteAccountModalLabel">계정 삭제하기</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>계정 삭제 시 모든 활동 정보가 삭제됩니다.</p>
-                    <p>정말로 삭제하시겠습니까?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger delete-account-btn">계정 삭제하기</button>
+    <div class="modal fade" id="deleteAccountModal">
+        =======
+        <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+            aria-hidden="true">
+            >>>>>>> d959cb04dd25da54f7169a562ad22648b094420b
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteAccountModalLabel">계정 삭제하기</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>계정 삭제 시 모든 활동 정보가 삭제됩니다.</p>
+                        <p>정말로 삭제하시겠습니까?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger delete-account-btn">계정 삭제하기</button>
+                    </div>
                 </div>
             </div>
         </div>
+        <<<<<<< HEAD <!-- jQuery, Bootstrap JS -->
+            <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+            <script src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+            <!-- Custom JS -->
+            <script src="../../static/js/profileUpdate.js" th:src="@{/js/profileUpdate.js}"></script>
+            =======
     </div>
+    >>>>>>> 02566e5ba0e8459d4b5e375b9be7612c0da46d37
 </body>
 
 </html>
