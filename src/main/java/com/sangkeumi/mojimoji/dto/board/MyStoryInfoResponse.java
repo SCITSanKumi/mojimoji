@@ -9,6 +9,7 @@ public record MyStoryInfoResponse(
     Long userId,
     String title,
     String thumbnailUrl,
+    boolean isEnded,
     String nickname,
     String profileUrl,
     int hitCount,

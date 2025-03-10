@@ -88,7 +88,8 @@ public class BoardService {
         // BookLine(Entity) -> SharedStroyContentResponse(DTO)로 변환
         return bookLines.stream()
                         .map(bookLine -> new SharedStoryContentResponse(
-                                bookLine.getContent()))
+                                bookLine.getUserContent(),
+                                bookLine.getGptContent()))
                         .collect(Collectors.toList());
     }
 
@@ -277,6 +278,7 @@ public class BoardService {
                                 book.getBookId(),
                                 book.getTitle(),
                                 book.getThumbnailUrl(),
+                                book.isEnded(),
                                 book.getSharedBook() != null,
                                 book.getUser().getNickname(),
                                 book.getUser().getProfileUrl(),
@@ -357,6 +359,7 @@ public class BoardService {
                         .userId(book.getUser().getUserId())
                         .title(book.getTitle())
                         .thumbnailUrl(book.getThumbnailUrl())
+                        .isEnded(book.isEnded())
                         .nickname(book.getUser().getNickname())
                         .profileUrl(book.getUser().getProfileUrl())
                         .hitCount(book.getSharedBook() != null ? book.getSharedBook().getHitCount() : 0)
@@ -373,11 +376,43 @@ public class BoardService {
     public List<MyStoryContentResponse> getMyStoryContent(Long bookId) {
         List<BookLine> bookLines = bookLineRepository.findByBook_BookIdOrderBySequenceAsc(bookId);
         return bookLines.stream()
-                .map(bookLine -> new MyStoryContentResponse(bookLine.getContent()))
-                .collect(Collectors.toList());
+            .map(bookLine -> new MyStoryContentResponse(
+                bookLine.getUserContent(),
+                bookLine.getGptContent()))
+            .collect(Collectors.toList());
     }
 
     public Long getBooksCount(Long userId) {
         return bookRepository.countByUserUserId(userId);
+    }
+
+    @Transactional
+    public List<OtherStoryListResponse> getStoriesByUserId(Long userId, int page, int size) {
+        // 최신 등록 순(내림차순)으로 정렬
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Book> bookPage = bookRepository.findByUser_UserId(userId, pageable);
+        return bookPage.stream()
+                .map(book -> new OtherStoryListResponse(
+                        book.getBookId(),
+                        book.getTitle(),
+                        book.getThumbnailUrl(),
+                        book.getSharedBook() != null,
+                        book.getUser().getNickname(),
+                        book.getUser().getProfileUrl(),
+                        book.getSharedBook() != null ? book.getSharedBook().getHitCount() : 0,
+                        book.getSharedBook() != null ? book.getSharedBook().getGaechu() : 0,
+                        book.getCreatedAt()))
+                .collect(Collectors.toList());
+    }
+
+    public OtherProfileResponse getOtherProfile(Long userId) {
+
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
+            return new OtherProfileResponse(
+                    user.getUserId(),
+                    user.getNickname(),
+                    user.getEmail(),
+                    user.getProfileUrl());
     }
 }

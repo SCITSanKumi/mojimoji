@@ -52,6 +52,6 @@ public class MyPageContoller {
         model.addAttribute("summary", summary);
         model.addAttribute("catMap", catMap);
 
-        return "/mypage";
+        return "mypage";
     }
 }

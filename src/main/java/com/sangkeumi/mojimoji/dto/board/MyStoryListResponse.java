@@ -6,6 +6,7 @@ public record MyStoryListResponse(
         Long bookId,
         String title,
         String thumbnailUrl,
+        boolean isEnded,
         boolean isShared,
         String nickname,
         String profileUrl,

@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function() {
     var page = 1; // 초기 렌더링은 서버에서 처리됨 (0페이지). 이후 AJAX는 페이지 1부터 로드
     var size = 8; // 한 번에 불러올 데이터 수
     var loading = false; // AJAX 요청 중복 실행 방지
@@ -7,8 +7,9 @@ $(document).ready(function () {
     // 디바운스 함수: 연속되는 이벤트 호출을 제한하여 성능을 개선
     function debounce(func, delay) {
         let timer;
-        return function () {
-            const context = this, args = arguments;
+        return function() {
+            const context = this,
+                args = arguments;
             clearTimeout(timer);
             timer = setTimeout(() => func.apply(context, args), delay);
         };
@@ -28,7 +29,7 @@ $(document).ready(function () {
                 page: page,
                 size: size
             },
-            success: function (data) {
+            success: function(data) {
                 // 만약 응답 데이터가 HTML이라면 로그인 페이지로 리다이렉트 처리
                 if (typeof data === "string" && data.trim().startsWith("<!DOCTYPE")) {
                     window.location.href = "/user/login";
@@ -40,7 +41,7 @@ $(document).ready(function () {
                     $("#loading").text("마지막 페이지 입니다.");
                 }
                 // 각 내 스토리 항목에 대해 카드 HTML 생성 및 추가
-                $.each(data, function (index, myStory) {
+                $.each(data, function(index, myStory) {
                     // 공유되지 않은 경우에만 공유 버튼 생성
                     var shareBtn = "";
                     if (!myStory.isShared) {
@@ -49,13 +50,13 @@ $(document).ready(function () {
                     // 삭제 버튼은 항상 표시
                     var deleteBtn = '<button type="button" class="btn btn-danger btn-sm" onclick="deleteStory(' + myStory.bookId + ')">삭제</button>';
 
-                    var thumbnailUrl = (myStory.thumbnailUrl && myStory.thumbnailUrl !== "null")
-                        ? myStory.thumbnailUrl
-                        : '/image/mountains.png';
+                    var thumbnailUrl = (myStory.thumbnailUrl && myStory.thumbnailUrl !== "null") ?
+                        myStory.thumbnailUrl :
+                        '/image/mountains.png';
 
-                    var profileUrl = (myStory.profileUrl && myStory.profileUrl !== "null")
-                        ? myStory.profileUrl
-                        : '/image/logo.png';
+                    var profileUrl = (myStory.profileUrl && myStory.profileUrl !== "null") ?
+                        myStory.profileUrl :
+                        '/image/logo.png';
 
                     var myStoryHtml = '<div class="col">' +
                         '<div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" ' +
@@ -87,7 +88,7 @@ $(document).ready(function () {
                     $("#loading").hide();
                 }
             },
-            error: function (err) {
+            error: function(err) {
                 console.error("AJAX 요청 에러:", err);
                 loading = false;
                 $("#loading").hide();
@@ -96,7 +97,7 @@ $(document).ready(function () {
     }
 
     // 스크롤 이벤트에 디바운스 적용 (200ms 딜레이)
-    $(window).scroll(debounce(function () {
+    $(window).scroll(debounce(function() {
         if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
             loadMyStories();
         }
@@ -108,12 +109,14 @@ function shareStory(bookId) {
     $.ajax({
         url: '/board/myStory/share',
         type: 'POST',
-        data: { bookId: bookId },
-        success: function (response) {
+        data: {
+            bookId: bookId
+        },
+        success: function(response) {
             alert('공유되었습니다.');
             window.location.href = '/board/story/list';
         },
-        error: function (xhr) {
+        error: function(xhr) {
             alert('공유 실패: ' + xhr.responseText);
         }
     });
@@ -125,12 +128,14 @@ function deleteStory(bookId) {
     $.ajax({
         url: '/board/myStory/delete',
         type: 'DELETE',
-        data: { bookId: bookId },
-        success: function (response) {
+        data: {
+            bookId: bookId
+        },
+        success: function(response) {
             alert('삭제되었습니다.');
             window.location.href = '/board/myStory/list';
         },
-        error: function (xhr) {
+        error: function(xhr) {
             alert('삭제 실패: ' + xhr.responseText);
         }
     });

@@ -29,7 +29,8 @@
                         <div class="position-absolute top-0 end-0 p-2">
                             <div class="d-flex">
                                 <!-- 공유 버튼: 공유되지 않은 경우에만 표시 -->
-                                <button type="button" class="btn btn-primary btn-sm me-2" th:if="${!myStory.shared}"
+                                <button type="button" class="btn btn-primary btn-sm me-2"
+                                    th:if="${!myStory.shared and myStory.isEnded}"
                                     th:attr="onclick=|shareStory(${myStory.bookId})|">
                                     공유
                                 </button>
@@ -47,7 +48,7 @@
                         <h5 th:text="${myStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${myStory.profileUrl != null ? myStory.profileUrl : '/image/logo.png'}"
+                                <img th:src="${myStory.profileUrl != null ? myStory.profileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}"
                                     alt="Profile" width="32" height="32" class="rounded-circle border border-white">
                             </li>
                             <li class="d-flex align-items-center me-3">

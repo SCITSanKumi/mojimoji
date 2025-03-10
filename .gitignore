@@ -35,5 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
-src/main/resources/application.properties
-src/main/resources/application.yml
+application.properties
+application.yml
+src/main/resources/static/image/profile_images/
+src/main/resources/static/image/thumbnail_images/

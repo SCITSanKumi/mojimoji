@@ -115,7 +115,7 @@
                     <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
                         class="btn btn-sm sort-btn">날짜순</a>
                     <button type="button" id="myStoryBtn" class="btn btn-dark d-flex ms-auto mb-2">
-                        내스토리
+                        내 스토리
                     </button>
                 </div>
 
@@ -154,7 +154,7 @@
                         <h5 th:text="${sharedStory.nickname}">작성자</h5>
                         <ul class="d-flex list-unstyled mt-auto">
                             <li class="me-auto">
-                                <img th:src="${sharedStory.profileUrl != null ? sharedStory.profileUrl : '/image/logo.png'}"
+                                <img th:src="${sharedStory.profileUrl != null ? sharedStory.profileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}"
                                     alt="Profile" width="32" height="32" class="rounded-circle border border-white">
 
                             </li>

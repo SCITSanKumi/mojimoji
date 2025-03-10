@@ -14,5 +14,4 @@ public record KanjiDetailResponse(
         String meaning,
         LocalDateTime obtainedAt // KanjiCollections에서 획득한 날짜
 ) {
-
 }
