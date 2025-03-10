@@ -352,13 +352,6 @@
                 }
             });
 
-            // $('.kanjiModal').on('click', function () {
-
-            //     if ($(".kanjiModal").css("display") == 'block') {
-
-            //         $(".kanjiModal").css("display", "none");
-            //     }
-            // })
 
 
 
@@ -501,21 +494,6 @@
                             $('.quizNow').append(`○ `);
                         })
 
-                        // 지워야함
-
-                        //         let resultHtml = questionList.map((question, index) => {
-                        //             return `<div class="quizEnd" data-kanjiId="${question.kanjiId}"
-                        // data-kanji="${question.kanji}" data-category="${question.category}" data-jlptRank="${question.jlptRank}"
-                        // data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
-                        // data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
-                        // data-meaning="${question.meaning}" style="color: white; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:16px; border:1px solid #ccc; padding:5px; margin-right:7px; text-align: center; width:51.6px; height:75.6px; display: inline-block;">${question.kanji}<br>${question.jlptRank}</div>`;
-                        //         }).join(" ");
-
-
-                        //         $('.quizNow').html(`<p>${resultHtml}</p>`);
-
-
-                        // 지워야함
 
                         $("#quiz-modal").modal("show");
                         startQuiz();
@@ -538,7 +516,6 @@
                     }, 25);
 
 
-                    // $('.quizScroll').scrollTop($('.quizScroll').scrollHeight);
 
                     quizItem.find(".kanji-question").text(`${question.kanji}`);
                     quizItem.find(".kunyomi-input, .onyomi-input").val("");
