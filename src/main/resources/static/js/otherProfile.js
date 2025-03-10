@@ -2,10 +2,11 @@ $(document).ready(function () {
     // 무한 스크롤 변수 설정
     var page = 1;
     var loading = false;
+    var lastPage = false;
     var userId = $("#currentUserId").val();
 
     function loadMoreStories() {
-        if (loading) return;
+        if (loading || lastPage) return;
         loading = true;
         $("#loading").show();
         $.ajax({
@@ -48,9 +49,13 @@ $(document).ready(function () {
                         $("#story-container").append(storyHtml);
                     });
                     page++; // 다음 페이지로 증가
+                    $("#loading").hide();
+                } else {
+                    lastPage = true;
+                    // 마지막 페이지 메시지를 보여주고, hide() 호출하지 않음.
+                    $("#loading").text('마지막 페이지입니다.').show();
                 }
                 loading = false;
-                $("#loading").hide();
             },
             error: function () {
                 loading = false;

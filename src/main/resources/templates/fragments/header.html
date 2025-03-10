@@ -7,7 +7,8 @@
     <a href="/" class="navbar-brand">
         <img th:src="@{/image/logo.png}" style="height: 40px; "></a>
     <!-- 모바일 토글 버튼 -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <!-- 네비게이션 링크 -->
@@ -15,10 +16,12 @@
         <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a th:href="@{/game/play}" class="nav-link">스토리 시작</a></li>
             <li class="nav-item"><a th:href="@{/board/story/list}" class="nav-link">스토리 구경하기</a></li>
+            <li class="nav-item"><a th:href="@{/rank/rankpage}" class="nav-link">랭크</a></li>
             <li class="nav-item"><a href="#" class="nav-link">이용방법</a></li>
             <th:block sec:authorize="isAnonymous()">
                 <li class="nav-item d-none d-lg-block">
-                    <a th:href="@{/user/login}" class="nav-link btn text-white fw-bolder" style="background-color: #EE697D;">로그인</a>
+                    <a th:href="@{/user/login}" class="nav-link btn text-white fw-bolder"
+                        style="background-color: #EE697D;">로그인</a>
                 </li>
                 <li class="nav-item"><a th:href="@{/user/login}" class="nav-link d-lg-none">로그인</a></li>
             </th:block>
@@ -30,16 +33,23 @@
                 <li class="nav-item d-lg-none"><a th:href="@{/user/logout}" class="nav-link text-danger">로그아웃</a></li>
                 <!-- 데스크톱에서는 드롭다운 메뉴 유지 -->
                 <li class="nav-item dropdown d-none d-lg-block">
-                    <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img th:src="${userProfileUrl != null ? userProfileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="user" width="32" height="32" class="rounded-circle">
+                    <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <img th:src="${userProfileUrl != null ? userProfileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}"
+                            alt="user" width="32" height="32" class="rounded-circle">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item text-danger" th:href="@{/user/update}"><span sec:authentication="principal.nickname"></span></a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" th:href="@{/user/update}"><span
+                                    sec:authentication="principal.nickname"></span></a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item" th:href="@{/mypage}">마이 페이지</a></li>
                         <li><a class="dropdown-item" th:href="@{/board/myStory/list}">내 스토리</a></li>
                         <li><a class="dropdown-item" th:href="@{/kanji/collection}">한자 컬렉션</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item text-danger" th:href="@{/user/logout}">로그아웃</a></li>
                     </ul>
                 </li>
