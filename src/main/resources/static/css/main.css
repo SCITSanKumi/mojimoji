@@ -41,7 +41,6 @@ body {
 body {
   color: #333;
   line-height: 1.6;
-  padding-top: 80px;
   /* Space for fixed navbar */
 }
 
@@ -50,35 +49,12 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  padding: 0.75rem 0;
   transition: all 0.3s ease;
 }
 
 .navbar-brand {
   padding: 0;
   margin-right: 2rem;
-}
-
-.logo {
-  position: relative;
-  display: inline-block;
-}
-
-.logo h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin: 0;
-  line-height: 1;
-  animation: float 3s ease-in-out infinite;
-}
-
-.logo p {
-  font-size: 0.75rem;
-  color: var(--dark);
-  opacity: 0.7;
-  letter-spacing: 2px;
-  margin: 0;
 }
 
 @keyframes float {
