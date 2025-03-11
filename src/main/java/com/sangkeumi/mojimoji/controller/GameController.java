@@ -59,6 +59,14 @@ public class GameController {
         return gameService.getChatResponseStream(bookId, message);
     }
 
+    @GetMapping(value = "/hint/{bookId}")
+    @ResponseBody
+    public String gameHint(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam("kanji") String kanji) {
+        return gameService.getGameHint(bookId, kanji);
+    }
+
     @GetMapping("/end/{bookId}")
     @ResponseBody
     public ResponseEntity<GameEndResponse> gameEnd(@PathVariable("bookId") Long bookId) {

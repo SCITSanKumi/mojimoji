@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sangkeumi.mojimoji.dto.user.MyPrincipal;
-import com.sangkeumi.mojimoji.entity.KanjiCollection;
 import com.sangkeumi.mojimoji.dto.kanji.*;
 import com.sangkeumi.mojimoji.service.*;
 
@@ -48,20 +47,16 @@ public class KanjiController {
 
         KanjiCount countDto = kanjiCollectionService.findTotalAndCollected(searchRequest,
                 principal.getUserId());
+
         Long totalCount = (countDto.getTotalCount() != null) ? countDto.getTotalCount() : 0;
         Long collectedCount = (countDto.getCollectedCount() != null) ? countDto.getCollectedCount() : 0;
 
         model.addAttribute("searchRequest", searchRequest);
-        model.addAttribute("kanjiSort", searchRequest.kanjiSort());
-        model.addAttribute("sortDirection", searchRequest.sortDirection());
-        model.addAttribute("category", searchRequest.category());
-        model.addAttribute("jlptRank", searchRequest.jlptRank());
-        model.addAttribute("kanjiSearch", searchRequest.kanjiSearch());
         model.addAttribute("searchResponse", searchResponse.getContent());
         model.addAttribute("wrongKanji", wrongKanji);
         // 여기서 "전체 결과" 기준으로 collectedCount / totalCount
-        model.addAttribute("collected", collectedCount);
         model.addAttribute("totalCount", totalCount);
+        model.addAttribute("collected", collectedCount);
 
         return "kanji/kanjiCollection";
     }

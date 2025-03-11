@@ -328,6 +328,7 @@
 
                 let kanjiId = $(this).parents('.toKanjiList').find('.detailKanjiId').text().slice(3);
 
+
                 if ($(this).text() == '☆') {
 
                     $.ajax({
@@ -638,9 +639,9 @@
                 $("#game-result").removeClass("d-none").html(`
                     <span span style = "margin-right : 15px; font-size: 20px;" > 맞힌 한자 개수: <strong>${score}</strong>개</span >
                     <span style="margin-left : 15px; font-size: 20px;">틀린 한자 개수: <strong>${questionList.length - score}</strong>개</span>
-                    <div style="height:30px"></div>  
+                    <div style="height:30px"></div>
                 <div class="quizScroll">${resultHtml}</div><br>
-                    
+
                     <div class="text-center mt-3">
                         <button id="to-main" class="btn btn-secondary" disabled" style="margin-right : 15px">메인으로</button>
                         <button id="share-story" class="btn btn-secondary" disabled"style="margin-left : 15px">스토리 공유하기</button>
