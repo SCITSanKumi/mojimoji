@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const currentUserId = $("#currentUserId").val();
+
 
     let celebrating = false;
     // confetti 초기화 (we attach the event on dynamic elements later)
@@ -120,7 +122,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${record.nickname}</div>
+                                <div class="name">${(currentUserId == record.userId)
+                            ? `<a href="/mypage">${record.nickname}</a>`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
+                        }</div>
                             </div>
                         </td>
                         <td><i class="fas fa-scroll"></i> ${record.kanjiScore.toFixed(1)}</td>
@@ -234,7 +239,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${record.nickname}</div>
+                                <div class="name">${(currentUserId == record.userId)
+                            ? `<a href="/mypage">${record.nickname}</a>`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
+                        }</div>
                             </div>
                         </td>
                         <td><i class="fas fa-scroll"></i> ${record.kanjiCollections} / 2136</td>
@@ -344,7 +352,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${record.nickname}</div>
+                                <div class="name">${(currentUserId == record.userId)
+                            ? `<a href="/mypage">${record.nickname}</a>`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
+                        }</div>
                             </div>
                         </td>
                         <td><i class="fas fa-book"> ${record.books}</td>
@@ -456,7 +467,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${record.nickname}</div>
+                                <div class="name">${(currentUserId == record.userId)
+                            ? `<a href="/mypage">${record.nickname}</a>`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
+                        }</div>
                             </div>
                         </td>
                         <td> ${record.sharedBooks}</td>

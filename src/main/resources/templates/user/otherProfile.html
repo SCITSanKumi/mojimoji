@@ -158,6 +158,9 @@
                     </div>
                 </div>
                 <div id="loading" style="display:none; text-align:center; margin-top: 50px;">Loading...</div>
+                <div th:if="${#lists.isEmpty(storyList)}" class="text-center py-5">
+                    <p class="fs-4">스토리가 없습니다.</p>
+                </div>
             </div>
 
             <!-- AJAX로 로드될 검은 콘텐츠 영역 -->
@@ -166,9 +169,6 @@
             </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(storyList)}" class="text-center py-5">
-            <p class="fs-4">스토리가 없습니다.</p>
-        </div>
 
         <!-- footer -->
         <footer th:insert="~{fragments/footer :: footer}"></footer>

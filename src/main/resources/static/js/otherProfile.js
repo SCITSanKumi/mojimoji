@@ -67,6 +67,7 @@ $(document).ready(function () {
     $("#whiteButton").click(function () {
         $("#whiteContent").show();
         $("#blackContent").hide();
+        $("#loading").hide().text('');
     });
     $("#blackButton").click(function (e) {
         e.preventDefault(); // 기본 동작 방지
