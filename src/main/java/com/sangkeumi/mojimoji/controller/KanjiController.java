@@ -108,7 +108,8 @@ public class KanjiController {
                 Page<KanjiSearchResponse> searchResponse = kanjiCollectionService.getMyCollection(userId,
                                 searchRequest, page);
 
-                model.addAttribute("searchResponse", searchResponse.getContent());;
+                model.addAttribute("searchResponse", searchResponse.getContent());
+                model.addAttribute("userId", userId);
 
                 return "kanji/otherKanjiCollection";
         }
@@ -129,6 +130,7 @@ public class KanjiController {
                                 searchRequest, page);
 
                 model.addAttribute("searchResponse", searchResponse.getContent());
+                ;
 
                 // Thymeleaf fragment만 반환
                 return "kanji/kanjiCollectionFragment :: cardList";

@@ -1,0 +1,411 @@
+/* 1) 상단 헤더 */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 50px;
+}
+
+.header-row h5 {
+    margin: 0;
+}
+
+.user-info {
+    text-align: right;
+}
+
+/* 2) JLPT 게이지 차트 */
+.Collection {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    font-family: sans-serif;
+}
+
+.chart-container {
+    width: 180px;
+    margin: -40px 19px 0 8px;
+    position: relative;
+    padding: 10px;
+}
+
+.chart-container canvas {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-container canvas:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/* large-chart 클래스는 추가 사이즈 조정 */
+.chart-container.large-chart {
+    width: 250px;
+    height: 250px;
+}
+
+
+/* 3) 날짜별 Bar 차트 */
+.bar-chart-row {
+    display: flex;
+    width: 900px;
+    justify-content: space-between;
+    margin: 0 50px;
+}
+
+.bar-chart-wrapper {
+    width: 900px;
+    margin: 0 10px;
+}
+
+/* 4) Bar 차트 + 카테고리 목록 */
+.bar-and-category-wrapper {
+    display: flex;
+    gap: 10px;
+    margin: 0 10px;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.category-scroll-container {
+    width: 580px;
+    height: 500px;
+    overflow: auto;
+}
+
+/* WebKit 기반 브라우저 (Chrome, Safari, Edge) */
+.category-scroll-container::-webkit-scrollbar {
+    width: 15px !important;
+    height: 10px !important;
+}
+
+.category-scroll-container::-webkit-scrollbar-track {
+    background: #ffffff !important;
+    border-radius: 10px !important;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.category-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #cccccc !important;
+    border-radius: 10px !important;
+    border: 2px solid #ffffff !important;
+    background-clip: content-box;
+}
+
+.category-scroll-container::-webkit-scrollbar-thumb:hover {
+    background-color: #999999 !important;
+}
+
+.category-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.category-sort-icon {
+    height: 30px;
+    margin: -3px 10px 0 45px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.category-sort-icon:hover {
+    transform: rotate(15deg);
+}
+
+.category-achievement-text {
+    margin-left: 185px;
+}
+
+/* 5) 카테고리 블록 (한 줄) */
+.category-block {
+    width: 100%;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.category-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    text-align: center;
+    width: 70px;
+}
+
+.horizontal-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.pagination-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.prev-btn,
+.next-btn {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.prev-btn:hover,
+.next-btn:hover {
+    background-color: #f2f2f2;
+}
+
+.horizontal-list {
+    list-style: none;
+    display: flex;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    width: 286px;
+}
+
+.horizontal-list li {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+    min-width: 50px;
+    transition: transform 0.2s;
+}
+
+.horizontal-list li:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.kanji-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+}
+
+/* 6) 진행도 ProgressBar */
+.progress-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+}
+
+progress {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+progress::-webkit-progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+}
+
+progress::-webkit-progress-value {
+    background-color: var(--progress-color);
+    border-radius: 10px;
+}
+
+.progress-text {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+}
+
+/* 수집 여부 */
+.kanji-collected {
+    border-radius: 10px;
+    color: black;
+    font-weight: bold;
+    background-color: #ffe9e9;
+}
+
+.kanji-not-collected {
+    border-radius: 10px;
+    color: #999;
+    background-color: lightgray;
+}
+
+/* 7) 모달 내부 한자 카드 */
+.toKanjiList {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.detailKanjiCard {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid lightgray;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.detailKanji {
+    display: inline-block;
+    font-size: 130px;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid lightgray;
+    margin-top: 10px;
+}
+
+.detailKanjiExplain {
+    text-align: left;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.detailCategory,
+.detailCreatedAt {
+    font-size: 15px;
+}
+
+.detail-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+.detailJlptRank {
+    font-weight: bold;
+    text-align: right;
+    margin-right: 25px;
+}
+
+.detailYomi {
+    text-align: center;
+    font-size: 40px;
+    margin-top: 10px;
+}
+
+.detailKanjiId {
+    font-size: 15px;
+    color: #1063FE;
+    margin-left: 25px;
+}
+
+/* pre 태그 줄바꿈 및 자동 줄바꿈 */
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: visible;
+    margin-top: 0;
+    height: 168px;
+}
+
+/* 8) 반응형 미디어쿼리 */
+@media (max-width: 992px) {
+    .bar-and-category-wrapper {
+        flex-direction: column;
+    }
+
+    .bar-chart-wrapper {
+        width: 95%;
+        max-width: 600px;
+        margin: 0 auto 20px auto;
+    }
+
+    .category-scroll-container {
+        width: 95%;
+        margin: 0 auto;
+        height: 400px;
+    }
+
+    .bar-chart-row {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .chart-container {
+        width: 140px;
+        margin: -20px 10px 0 5px;
+    }
+
+    .chart-container.large-chart {
+        width: 180px;
+        height: 180px;
+    }
+
+    .bar-chart-wrapper {
+        max-width: 90%;
+    }
+
+    .category-scroll-container {
+        height: 300px;
+    }
+
+    .category-block {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .horizontal-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .progress-bar-container {
+        margin-top: 10px;
+    }
+}
+
+/* Bootstrap 기본 .modal-content의 flex-direction을 초기화하고, 고정 너비를 지정 */
+.modal-content {
+    flex-direction: initial !important;
+    /* 기본 flex-direction 제거 */
+    width: 320px;
+    /* .toKanjiList의 max-width와 동일하게 설정 */
+    margin: auto;
+}
+
+/* detailKanjiId와 detailJlptRank를 같은 줄에 배치할 컨테이너 */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* 필요시 개별 요소 스타일 */
+.detailKanjiId,
+.detailJlptRank {
+    font-size: 15px;
+}
+
+.kanji {
+    font-weight: bold;
+}

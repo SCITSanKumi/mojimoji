@@ -22,7 +22,7 @@
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
-
+    <input type="hidden" id="currentUserId" th:value="${#authentication.principal.userId}">
 
     <div class="container main-content">
 
