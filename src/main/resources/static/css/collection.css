@@ -67,6 +67,7 @@ select.form-select {
     font-weight: bold;
     width: 100px;
     line-height: 60px;
+    margin-left: 60px;
     /* float: left; */
 }
 

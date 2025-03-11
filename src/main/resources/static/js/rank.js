@@ -118,14 +118,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     html += `<tr class="animate__animated animate__fadeIn rank-${index + 1}">
                         <td><span class="${rankClass}">${index + 1}</span></td>
                         <td>
+                        ${currentUserId == record.userId
+                            ? `<a href="/mypage">`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">`}
                             <div class="player-info">
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${(currentUserId == record.userId)
-                            ? `<a href="/mypage">${record.nickname}</a>`
-                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
-                        }</div>
+                                <div class="name">${record.nickname}</div>
                             </div>
                         </td>
                         <td><i class="fas fa-scroll"></i> ${record.kanjiScore.toFixed(1)}</td>
@@ -235,14 +235,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     html += `<tr class="animate__animated animate__fadeIn rank-${index + 1}">
                         <td><span class="${rankClass}">${index + 1}</span></td>
                         <td>
+                            ${currentUserId == record.userId
+                            ? `<a href="/mypage">`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">`}
                             <div class="player-info">
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${(currentUserId == record.userId)
-                            ? `<a href="/mypage">${record.nickname}</a>`
-                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
-                        }</div>
+                                <div class="name">${record.nickname}</div>
                             </div>
                         </td>
                         <td><i class="fas fa-scroll"></i> ${record.kanjiCollections} / 2136</td>
@@ -348,14 +348,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     html += `<tr class="animate__animated animate__fadeIn rank-${index + 1}">
                         <td><span class="${rankClass}">${index + 1}</span></td>
                         <td>
+                            ${currentUserId == record.userId
+                            ? `<a href="/mypage">`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">`}
                             <div class="player-info">
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${(currentUserId == record.userId)
-                            ? `<a href="/mypage">${record.nickname}</a>`
-                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
-                        }</div>
+                                <div class="name">${record.nickname}</div>
                             </div>
                         </td>
                         <td><i class="fas fa-book"> ${record.books}</td>
@@ -463,14 +463,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     html += `<tr class="animate__animated animate__fadeIn rank-${index + 1}">
                         <td><span class="${rankClass}">${index + 1}</span></td>
                         <td>
+                            ${currentUserId == record.userId
+                            ? `<a href="/mypage">`
+                            : `<a href="/user/otherProfile?userId=${record.userId}">`}
                             <div class="player-info">
                                 <div class="user-avatar">
                                     <img src="${record.profileUrl || 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Avatar">
                                 </div>
-                                <div class="name">${(currentUserId == record.userId)
-                            ? `<a href="/mypage">${record.nickname}</a>`
-                            : `<a href="/user/otherProfile?userId=${record.userId}">${record.nickname}</a>`
-                        }</div>
+                                <div class="name">${record.nickname}</div>
                             </div>
                         </td>
                         <td> ${record.sharedBooks}</td>

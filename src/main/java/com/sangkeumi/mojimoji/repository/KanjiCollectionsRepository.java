@@ -45,6 +45,7 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
                 COUNT(*) AS daily_count
             FROM Kanji_Collections
             WHERE user_id = :userId
+                AND collected_count > 0
             GROUP BY CAST(created_at AS DATE)
             ORDER BY CAST(created_at AS DATE)
             """, nativeQuery = true)
