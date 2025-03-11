@@ -31,7 +31,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class KanjiController {
 
         private final KanjiCollectionService kanjiCollectionService;
-        private final KanjiService kanjiService;
 
         @GetMapping("/collection")
         public String kanjiCollection(
@@ -89,7 +88,7 @@ public class KanjiController {
         public KanjiDetailResponse getKanjiDetails(
                         @RequestParam(name = "kanjiId") Long kanjiId,
                         @AuthenticationPrincipal MyPrincipal principal) {
-                return kanjiService.getKanjiDetail(kanjiId, principal.getUserId());
+                return kanjiCollectionService.getKanjiDetail(kanjiId, principal.getUserId());
         }
 
         @ResponseBody
