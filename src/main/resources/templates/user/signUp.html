@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입</title>
     <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <!-- 공통 리소스 (CSS, 폰트 preload) -->
     <link rel="stylesheet" href="../../../static/css/main.css" th:href="@{/css/main.css}">
@@ -19,10 +20,10 @@
 
     <!-- Tooltip 초기화 스크립트 -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Bootstrap Tooltip 초기화
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                 new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
@@ -33,6 +34,10 @@
             background-color: #f8f9fa;
             text-align: center;
             padding: 20px;
+        }
+
+        .logo {
+            margin-left: 27px;
         }
 
         .d-flex {
@@ -74,9 +79,11 @@
 
 <body>
     <div class="d-flex align-items-center justify-content-center vh-100 bg-light">
-        <form method="post" th:action="@{/user/sign-up}" id="signupForm" class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle" style="max-width: 400px; width: 100%;">
+        <form method="post" th:action="@{/user/sign-up}" id="signupForm"
+            class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle"
+            style="max-width: 400px; width: 100%;">
             <a href="/" class="navbar-brand" th:href="@{/}">
-                <img th:src="@{/image/logo.png}" style="height: 50px;">
+                <img th:src="@{/image/logo.png}" style="height: 50px;" class="logo">
             </a>
             <h1 class="h5 fw-bold mb-4">회원가입</h1>
 
@@ -106,7 +113,8 @@
             </div>
             <small id="pwCheck" class="text-danger d-block mb-2"></small>
 
-            <button class="btn w-100 py-2 text-white mb-3" type="button" id="sign-up-btn" style="background-color: #EE697D;">회원가입</button>
+            <button class="btn w-100 py-2 text-white mb-3" type="button" id="sign-up-btn"
+                style="background-color: #EE697D;">회원가입</button>
 
             <p class="mb-3">
                 이미 계정이 있으신가요?
@@ -125,7 +133,8 @@
                     <img src="https://img.icons8.com/color/48/google-logo.png" width="28">
                 </a>
                 <!-- GitHub 로그인 버튼: Tooltip 추가 -->
-                <a href="/oauth2/authorization/github" class="btn btn-dark rounded-circle p-2 shadow" data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub 계정에 public email이 설정되어 있어야 합니다.">
+                <a href="/oauth2/authorization/github" class="btn btn-dark rounded-circle p-2 shadow"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub 계정에 public email이 설정되어 있어야 합니다.">
                     <img src="https://img.icons8.com/ios-filled/48/ffffff/github.png" width="28">
                 </a>
                 <!-- Discord 로그인 버튼 -->
