@@ -91,6 +91,40 @@ public class KanjiCollectionService {
     }
 
     /**
+     * 해당 한자의 상세 정보를 조회합니다.
+     * - 한자 정보는 무조건 반환 (kanjis 테이블)
+     * - 사용자가 해당 한자를 획득했으면 획득 날짜를, 아니면 "미수집" 표시
+     *
+     * @param kanjiId 한자 ID
+     * @param userId  사용자 ID
+     * @return KanjiDetailResponse record
+     */
+    @Transactional
+    public KanjiDetailResponse getKanjiDetail(Long kanjiId, Long userId) {
+            // 1. Kanji 테이블에서 한자 정보 조회
+            Kanji kanji = kanjiRepository.findById(kanjiId)
+                            .orElseThrow(() -> new RuntimeException("Kanji not found"));
+
+            // 2. Kanji_Collections에서 해당 한자를 사용자가 획득한 기록 조회 (최초 획득 날짜)
+            Optional<KanjiCollection> collectionOpt = kanjiCollectionsRepository
+                            .findByUserUserIdAndKanji_KanjiId(userId, kanjiId);
+
+            LocalDateTime obtainedAt = collectionOpt.map(kc -> kc.getCreatedAt()).orElse(null);
+
+            return new KanjiDetailResponse(
+                            kanji.getKanjiId(),
+                            kanji.getJlptRank(),
+                            kanji.getCategory(),
+                            kanji.getKanji(),
+                            kanji.getKorOnyomi(),
+                            kanji.getKorKunyomi(),
+                            kanji.getJpnOnyomi(),
+                            kanji.getJpnKunyomi(),
+                            kanji.getMeaning(),
+                            obtainedAt);
+    }
+
+    /**
      * 카테고리별 한자 목록 + 수집 여부를 Map 형태로 반환.
      * key : category (String)
      * value : 해당 category에 속한 한자들(List<CategoryKanjiRow>)
