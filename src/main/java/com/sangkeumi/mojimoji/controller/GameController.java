@@ -28,15 +28,7 @@ public class GameController {
 
     @GetMapping("/play")
     public String game(@RequestParam(name = "bookId", defaultValue = "-1") String bookId, Model model) {
-        Long numericBookId;
-
-        try {
-            numericBookId = Long.parseLong(bookId);
-        } catch (NumberFormatException e) {
-            numericBookId = -1L; // 변환 실패 시 기본값 설정
-        }
-
-        model.addAttribute("bookId", numericBookId); // 숫자로 변환하여 모델에 추가
+        // 쿼리파라미터는 js에서 Number(new URLSearchParams(window.location.search).get("bookId")) || -1; 로 찾음
 
         return "game/gameplay";
     }

@@ -288,41 +288,8 @@
     </style>
 
     <!-- 게임플레이 관련 JS -->
-    <script src="../../static/js/gameplay.js" th:src="@{/js/gameplay.js}"></script>
-    <script>
-
-
-        $(document).off('click', '.bookMark').on('click', '.bookMark', function (e) {
-
-    let kanjiId = $(this).parents('.toKanjiList').find('.detailKanjiId').text().slice(3);
-
-    if ($(this).text().trim() === '☆') {
-        $.ajax({
-            url: "/kanji/addBookMark",
-            method: "POST",
-            data: { "kanjiId": kanjiId },
-            success: function () {
-            },
-            error: () => {
-                alert("북마크 추가에 실패했습니다.");
-            }
-        });
-        $(this).text('★');
-    } else {
-        $.ajax({
-            url: "/kanji/deleteBookMark",
-            method: "POST",
-            data: { "kanjiId": kanjiId },
-            success: function () {
-            },
-            error: () => {
-                alert("북마크 삭제에 실패했습니다.");
-            }
-        });
-        $(this).text('☆');
-    }
-});
-    </script>
+    <script src="../../static/js/gameplay/gameProgress.js" th:src="@{/js/gameplay/gameProgress.js}"></script>
+    <script src="../../static/js/gameplay/gameQuiz.js" th:src="@{/js/gameplay/gameQuiz.js}"></script>
 </head>
 
 <body>
