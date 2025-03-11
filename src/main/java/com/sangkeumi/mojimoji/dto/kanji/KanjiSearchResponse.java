@@ -17,7 +17,7 @@ public class KanjiSearchResponse {
     private String jpnOnyomi;
     private String jpnKunyomi;
     private String meaning;
-    private boolean bookmarked;
+    private int bookmarked;
     private int collectedCount;
     private LocalDateTime firstCollectedAt;
 }

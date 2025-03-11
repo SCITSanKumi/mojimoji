@@ -2,6 +2,7 @@ package com.sangkeumi.mojimoji.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse;
+import com.sangkeumi.mojimoji.entity.Book;
 import com.sangkeumi.mojimoji.entity.Kanji;
 
 public interface KanjiRepository extends JpaRepository<Kanji, Long> {
@@ -23,9 +25,9 @@ public interface KanjiRepository extends JpaRepository<Kanji, Long> {
             SELECT k FROM Kanji k
                 JOIN UsedBookKanji ubk ON ubk.kanji.kanjiId = k.kanjiId
                 JOIN ubk.bookLine bl
-                WHERE bl.book.bookId = :bookId
+                WHERE bl.book = :book
             """)
-    List<Kanji> findKanjisUsedInBook(@Param("bookId") Long bookId);
+    List<Kanji> findKanjisUsedInBook(@Param("book") Book book);
 
     @Query("""
                 SELECT new com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse(
@@ -63,4 +65,6 @@ public interface KanjiRepository extends JpaRepository<Kanji, Long> {
             @Param("jlptRank") String jlptRank,
             @Param("kanjiSearch") String kanjiSearch,
             Pageable pageable);
+
+    List<Kanji> findByKanjiIn(Set<String> kanjiSet);
 }

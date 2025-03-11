@@ -98,6 +98,7 @@ public class UserService {
     public UserUpdateView findById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found for id: " + userId));
+
         return new UserUpdateView(
                 user.getUserId(),
                 user.getUsername(),
@@ -108,7 +109,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserUpdateResponse updateProfile(Long userId, UserUpdateRequest userUpdateRequest) {
+    public void updateProfile(Long userId, UserUpdateRequest userUpdateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -145,8 +146,6 @@ public class UserService {
 
             // 재인증 (필요한 경우)
             reAuthenticateUser(user.getUsername());
-
-            return new UserUpdateResponse(user.getProfileUrl());
         } catch (Exception e) {
             throw new RuntimeException("프로필 업데이트 중 오류가 발생했습니다.", e);
         }

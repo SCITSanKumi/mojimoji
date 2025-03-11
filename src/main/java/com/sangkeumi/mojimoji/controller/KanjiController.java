@@ -1,5 +1,7 @@
 package com.sangkeumi.mojimoji.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -41,21 +43,20 @@ public class KanjiController {
                 Page<KanjiSearchResponse> searchResponse = kanjiCollectionService.getMyCollection(principal.getUserId(),
                                 searchRequest, page);
 
+                List<WrongKanji> wrongKanji = kanjiCollectionService.getWrongKanji(principal.getUserId());
+
                 KanjiCount countDto = kanjiCollectionService.findTotalAndCollected(searchRequest,
                                 principal.getUserId());
+
                 Long totalCount = (countDto.getTotalCount() != null) ? countDto.getTotalCount() : 0;
                 Long collectedCount = (countDto.getCollectedCount() != null) ? countDto.getCollectedCount() : 0;
 
                 model.addAttribute("searchRequest", searchRequest);
-                model.addAttribute("kanjiSort", searchRequest.kanjiSort());
-                model.addAttribute("sortDirection", searchRequest.sortDirection());
-                model.addAttribute("category", searchRequest.category());
-                model.addAttribute("jlptRank", searchRequest.jlptRank());
-                model.addAttribute("kanjiSearch", searchRequest.kanjiSearch());
                 model.addAttribute("searchResponse", searchResponse.getContent());
+                model.addAttribute("wrongKanji", wrongKanji);
                 // 여기서 "전체 결과" 기준으로 collectedCount / totalCount
-                model.addAttribute("collected", collectedCount);
                 model.addAttribute("totalCount", totalCount);
+                model.addAttribute("collected", collectedCount);
 
                 return "kanji/kanjiCollection";
         }
@@ -65,6 +66,7 @@ public class KanjiController {
          */
         @GetMapping("/collectionAjax")
         @Operation(summary = "한자 목록 AJAX", description = "추가 10개 로딩")
+
         public String kanjiCollectionAjax(
                         @AuthenticationPrincipal MyPrincipal principal,
                         @ModelAttribute KanjiSearchRequest searchRequest,
@@ -109,7 +111,7 @@ public class KanjiController {
                                 searchRequest, page);
 
                 model.addAttribute("searchResponse", searchResponse.getContent());
-                model.addAttribute("userId", userId);
+                ;
 
                 return "kanji/otherKanjiCollection";
         }
@@ -133,5 +135,34 @@ public class KanjiController {
 
                 // Thymeleaf fragment만 반환
                 return "kanji/kanjiCollectionFragment :: cardList";
+        }
+
+        @ResponseBody
+        @PostMapping("/wrongCountUp")
+        public void wrongCountUp(
+                        @RequestParam("kanjiId") Long kanjiId,
+                        @AuthenticationPrincipal MyPrincipal principal) {
+                kanjiCollectionService.wrongCountUp(kanjiId, principal.getUserId());
+        }
+
+        @ResponseBody
+        @PostMapping("/wrongDelete")
+        public void wrongDelete(@RequestParam("kanjiId") Long kanjiId,
+                        @AuthenticationPrincipal MyPrincipal principal) {
+                kanjiCollectionService.wrongDelete(kanjiId, principal.getUserId());
+        }
+
+        @ResponseBody
+        @PostMapping("/addBookMark")
+        public void addBookMark(@RequestParam("kanjiId") Long kanjiId,
+                        @AuthenticationPrincipal MyPrincipal principal) {
+                kanjiCollectionService.addBookMark(kanjiId, principal.getUserId());
+        }
+
+        @ResponseBody
+        @PostMapping("/deleteBookMark")
+        public void deleteBookMark(@RequestParam("kanjiId") Long kanjiId,
+                        @AuthenticationPrincipal MyPrincipal principal) {
+                kanjiCollectionService.deleteBookMark(kanjiId, principal.getUserId());
         }
 }
