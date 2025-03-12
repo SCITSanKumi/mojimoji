@@ -2,179 +2,180 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>스토리 목록</title>
-    <!-- jQuery -->
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    <!-- Bootstrap JS -->
-    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>스토리 목록</title>
+  <!-- jQuery -->
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+  <!-- Bootstrap JS -->
+  <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
-    <script defer th:src="@{/js/storyListPaging.js}"></script>
-    <style>
-        /* 마우스 오버 시 배경색과 텍스트 색상 변경 */
-        .sort-btn:hover {
-            background-color: #EE697D;
-            color: #fff;
-        }
+  <script defer th:src="@{/js/storyListPaging.js}"></script>
+  <style>
+    /* 마우스 오버 시 배경색과 텍스트 색상 변경 */
+    .sort-btn:hover {
+      background-color: #EE697D;
+      color: #fff;
+    }
 
-        /* 정렬 버튼 영역 - 둥근 버튼 */
-        .sort-btn {
-            border-radius: 9999px !important;
-            color: #EE697D;
-            border-color: #EE697D;
-        }
+    /* 정렬 버튼 영역 - 둥근 버튼 */
+    .sort-btn {
+      border-radius: 9999px !important;
+      color: #EE697D;
+      border-color: #EE697D;
+    }
 
-        /* 내 스토리 버튼+검색 영역을 한 줄로 유지 */
-        .top-actions {
-            display: flex;
-            flex-wrap: nowrap;
-            align-items: center;
-            gap: 0.5rem;
+    /* 내 스토리 버튼+검색 영역을 한 줄로 유지 */
+    .top-actions {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 0.5rem;
 
-        }
+    }
 
-        /* 내 스토리 버튼은 축소 가능하도록 기본 flex 속성 사용 */
-        #myStoryBtn {
-            border-radius: 9999px;
-        }
+    /* 내 스토리 버튼은 축소 가능하도록 기본 flex 속성 사용 */
+    #myStoryBtn {
+      border-radius: 9999px;
+    }
 
-        /* 검색 영역 (내부 돋보기 포함) */
-        .search-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex: 1;
-        }
+    /* 검색 영역 (내부 돋보기 포함) */
+    .search-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+    }
 
-        /* 검색 조건 select 둥글게 */
-        .search-wrapper select.form-select {
-            border-radius: 9999px;
-            width: 100px;
-            min-width: 100px;
-        }
+    /* 검색 조건 select 둥글게 */
+    .search-wrapper select.form-select {
+      border-radius: 9999px;
+      width: 100px;
+      min-width: 100px;
+    }
 
-        /* 검색어 입력 필드 둥글게 및 아이콘 자리 확보 */
-        .search-container {
-            position: relative;
-            flex: 1;
-            /* 최소 폭을 낮춰 축소 허용 */
-            min-width: 200px;
-        }
+    /* 검색어 입력 필드 둥글게 및 아이콘 자리 확보 */
+    .search-container {
+      position: relative;
+      flex: 1;
+      /* 최소 폭을 낮춰 축소 허용 */
+      min-width: 200px;
+    }
 
-        .search-container input[type="text"] {
-            width: 100%;
-            border-radius: 9999px;
-            padding-right: 3rem;
-        }
+    .search-container input[type="text"] {
+      width: 100%;
+      border-radius: 9999px;
+      padding-right: 3rem;
+    }
 
-        /* 돋보기 아이콘 버튼 */
-        .search-container button {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            color: #6c757d;
-            cursor: pointer;
-        }
+    /* 돋보기 아이콘 버튼 */
+    .search-container button {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: #6c757d;
+      cursor: pointer;
+    }
 
-        .search-container .bi-search {
-            font-size: 1.2rem;
-        }
+    .search-container .bi-search {
+      font-size: 1.2rem;
+    }
 
-        /* 상단 영역과 게시글 영역 간 간격 조정 */
-        .top-area {
-            margin-bottom: 1rem;
-        }
-    </style>
+    /* 상단 영역과 게시글 영역 간 간격 조정 */
+    .top-area {
+      margin-bottom: 1rem;
+    }
+  </style>
 </head>
 
 <body>
-    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
+  <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
 
-    <div class="container px-4 py-5" id="custom-cards">
-        <h2 class="text-center mb-4">공유된 스토리</h2>
-        <div class="row top-area">
-            <div class="col-12">
+  <div class="container px-4 py-5" id="custom-cards">
+    <h2 class="text-center mb-4">공유된 스토리</h2>
+    <div class="row top-area">
+      <div class="col-12">
 
 
-                <!-- 정렬 버튼 영역 + 내스토리 버튼 -->
-                <div class="Sort d-flex justify-content-flex-start align-items-center mb-1">
+        <!-- 정렬 버튼 영역 + 내스토리 버튼 -->
+        <div class="Sort d-flex justify-content-flex-start align-items-center mb-1">
 
-                    <input type="hidden" id="sortOption" th:value="${sortOption}">
-                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
-                        class="btn btn-sm me-1 sort-btn">추천순</a>
-                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='viewCount')}"
-                        class="btn btn-sm me-1 sort-btn">조회순</a>
-                    <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
-                        class="btn btn-sm sort-btn">날짜순</a>
-                    <button type="button" id="myStoryBtn" class="btn btn-dark d-flex ms-auto mb-2">
-                        내 스토리
-                    </button>
-                </div>
-
-                <!-- 검색 폼 영역 -->
-                <div class="top-actions">
-
-                    <form action="/board/story/list" method="get" class="search-wrapper">
-                        <select name="searchItem" id="searchItem" class="form-select">
-                            <option value="title" th:selected="${searchItem == 'title'}">제목</option>
-                            <option value="user" th:selected="${searchItem == 'user'}">작성자</option>
-                        </select>
-
-                        <div class="search-container">
-                            <input type="text" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요"
-                                th:value="${searchWord}" class="form-control">
-                            <button type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+          <input type="hidden" id="sortOption" th:value="${sortOption}">
+          <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='recommendation')}"
+            class="btn btn-sm me-1 sort-btn">추천순</a>
+          <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='viewCount')}"
+            class="btn btn-sm me-1 sort-btn">조회순</a>
+          <a th:href="@{/board/story/list(searchWord=${searchWord}, searchItem=${searchItem}, sortOption='date')}"
+            class="btn btn-sm sort-btn">날짜순</a>
+          <button type="button" id="myStoryBtn" class="btn btn-dark d-flex ms-auto mb-2">
+            내 스토리
+          </button>
         </div>
 
-        <!-- 스토리 카드 목록 -->
-        <div class="row row-cols-1 row-cols-lg-4 g-4" id="story-container">
-            <div class="col" th:each="sharedStory : ${sharedStoryList}">
-                <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                    th:style="|background-image: url(${sharedStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">
-                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
-                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
-                            <a th:href="@{/board/story/detail(bookId=${sharedStory.bookId})}"
-                                class="text-white text-decoration-none" th:text="${sharedStory.title}">스토리
-                                제목</a>
-                        </h3>
-                        <h5 th:text="${sharedStory.nickname}">작성자</h5>
-                        <ul class="d-flex list-unstyled mt-auto">
-                            <li class="me-auto">
-                                <img th:src="${sharedStory.profileUrl != null ? sharedStory.profileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}"
-                                    alt="Profile" width="32" height="32" class="rounded-circle border border-white">
+        <!-- 검색 폼 영역 -->
+        <div class="top-actions">
 
-                            </li>
-                            <li class="d-flex align-items-center me-3">
-                                <small>조회수</small>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <small th:text="${sharedStory.hitCount}">조회수</small>
-                            </li>
-                        </ul>
-                        <h5 th:text="${sharedStory.createdAt}"></h5>
-                        <h5 th:text="${sharedStory.gaechu}"></h5>
-                    </div>
-                </div>
+          <form action="/board/story/list" method="get" class="search-wrapper">
+            <select name="searchItem" id="searchItem" class="form-select">
+              <option value="title" th:selected="${searchItem == 'title'}">제목</option>
+              <option value="user" th:selected="${searchItem == 'user'}">작성자</option>
+            </select>
+
+            <div class="search-container">
+              <input type="text" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요" th:value="${searchWord}"
+                class="form-control">
+              <button type="submit">
+                <i class="bi bi-search"></i>
+              </button>
             </div>
+          </form>
         </div>
-        <!-- 로딩 인디케이터 -->
-        <div id="loading" style="display:none; text-align:center; margin-top: 50px;">Loading...</div>
+      </div>
     </div>
-    <footer th:insert="~{fragments/footer :: footer}"></footer>
+
+    <!-- 스토리 카드 목록 -->
+    <div class="row row-cols-1 row-cols-lg-4 g-4" id="story-container">
+      <div class="col" th:each="sharedStory : ${sharedStoryList}">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+          th:style="|background-image: url(${sharedStory.thumbnailUrl ?: '/image/mountains.png'}); background-repeat: no-repeat; background-size: contain; background-position: center;|">
+          <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">
+              <a th:href="@{/board/story/detail(bookId=${sharedStory.bookId})}" class="text-white text-decoration-none"
+                th:text="${sharedStory.title}">스토리
+                제목</a>
+            </h3>
+            <h5 th:text="${sharedStory.nickname}">작성자</h5>
+            <ul class="d-flex list-unstyled mt-auto">
+              <li class="me-auto">
+                <img
+                  th:src="${sharedStory.profileUrl != null ? sharedStory.profileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}"
+                  alt="Profile" width="32" height="32" class="rounded-circle border border-white">
+
+              </li>
+              <li class="d-flex align-items-center me-3">
+                <small>조회수</small>
+              </li>
+              <li class="d-flex align-items-center">
+                <small th:text="${sharedStory.hitCount}">조회수</small>
+              </li>
+            </ul>
+            <h5 th:text="${#temporals.format(sharedStory.createdAt,'yyyy-MM-dd')}"></h5>
+            <h5 th:text="${sharedStory.gaechu}"></h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 로딩 인디케이터 -->
+    <div id="loading" style="display:none; text-align:center; margin-top: 50px;">Loading...</div>
+  </div>
+  <footer th:insert="~{fragments/footer :: footer}"></footer>
 </body>
 
 </html>

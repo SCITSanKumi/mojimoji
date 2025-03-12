@@ -4364,18 +4364,18 @@ INSERT INTO Kanji_Collections VALUES
 (DEFAULT, 846, 1, 0, 1,0, '2025-05-01 09:00:00', '2025-05-09 09:00:00');
 
 INSERT INTO Books (user_id, title, thumbnail_url, is_ended, created_at, updated_at) VALUES
-(1, 'Samurai Story', '/image/b1.png', false, '2025-03-01 10:00:00', '2025-03-01 10:00:00'),
-(1, 'Way of the Sword', '/image/b2.png', true, '2025-03-05 11:00:00', '2025-03-05 11:00:00'),
-(2, 'Hana''s Journey', null, false, '2025-03-02 09:30:00', '2025-03-02 09:30:00'),
-(3, 'Wind Whisper', '/image/cloud1.png', true, '2025-03-03 14:00:00', '2025-03-03 14:00:00'),
-(4, 'Shadowed Past', '/image/road.png', false, '2025-03-04 16:00:00', '2025-03-04 16:00:00'),
-(5, 'Blue Horizon', '/image/shadow.png', true, '2025-03-05 12:00:00', '2025-03-05 12:00:00'),
-(6, 'Roaring Battle', '/image/c1.png', false, '2025-03-06 13:00:00', '2025-03-06 13:00:00'),
+(1, 'Samurai Story', '/image/thumbnail_images/ecffc11f-0706-484a-9759-e4c415436a76_thumbnail.png', true, '2025-03-01 10:00:00', '2025-03-01 10:00:00'),
+(1, 'Way of the Sword', '/image/b2.png', false, '2025-03-05 11:00:00', '2025-03-05 11:00:00'),
+(2, 'Hana''s Journey', null, true, '2025-03-02 09:30:00', '2025-03-02 09:30:00'),
+(3, 'Wind Whisper', '/image/cloud1.png', false, '2025-03-03 14:00:00', '2025-03-03 14:00:00'),
+(4, 'Shadowed Past', '/image/thumbnail_images/258f9b33-c89f-4f3a-a7aa-17346f13b646_thumbnail.png', true, '2025-03-04 16:00:00', '2025-03-04 16:00:00'),
+(5, 'Blue Horizon', '/image/shadow.png', false, '2025-03-05 12:00:00', '2025-03-05 12:00:00'),
+(6, 'Roaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-06 13:00:00', '2025-03-06 13:00:00'),
 (7, 'Imperial Dreams', '/image/c6.png', true, '2025-03-07 15:00:00', '2025-03-07 15:00:00'),
-(8, 'Chill of Winter', '/image/d3.png', false, '2025-03-08 17:00:00', '2025-03-08 17:00:00'),
+(8, 'Chill of Winter', '/image/d3.png', true, '2025-03-08 17:00:00', '2025-03-08 17:00:00'),
 (9, 'True Faith', '/image/fg2.png', true, '2025-03-09 18:00:00', '2025-03-09 18:00:00'),
 (10, 'Pure Heart', '/image/bg.png', false, '2025-03-10 19:00:00', '2025-03-10 19:00:00'),
-(11, 'Gentle Breeze', '/image/c4/png', true, '2025-03-11 20:00:00', '2025-03-11 20:00:00');
+(11, 'Gentle Breeze', '/image/c4/png', false, '2025-03-11 20:00:00', '2025-03-11 20:00:00');
 
 
 -- Book 1 (user 1)
