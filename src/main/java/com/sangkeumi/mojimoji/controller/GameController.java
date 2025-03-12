@@ -25,18 +25,11 @@ import org.springframework.http.MediaType;
 public class GameController {
 
     private final GameService gameService;
+    private final KanjiCollectionService kanjiCollectionService;
 
     @GetMapping("/play")
     public String game(@RequestParam(name = "bookId", defaultValue = "-1") String bookId, Model model) {
-        Long numericBookId;
-
-        try {
-            numericBookId = Long.parseLong(bookId);
-        } catch (NumberFormatException e) {
-            numericBookId = -1L; // 변환 실패 시 기본값 설정
-        }
-
-        model.addAttribute("bookId", numericBookId); // 숫자로 변환하여 모델에 추가
+        // 쿼리파라미터는 js에서 Number(new URLSearchParams(window.location.search).get("bookId")) || -1; 로 찾음
 
         return "game/gameplay";
     }
@@ -69,7 +62,13 @@ public class GameController {
 
     @GetMapping("/end/{bookId}")
     @ResponseBody
-    public ResponseEntity<GameEndResponse> gameEnd(@PathVariable("bookId") Long bookId) {
-        return ResponseEntity.ok(gameService.gameEnd(bookId));
+    public ResponseEntity<GameEndResponse> gameEnd(
+            @PathVariable("bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        gameService.gameEnd(bookId);
+        GameEndResponse gameEndResponse
+            = new GameEndResponse(kanjiCollectionService.getKanjiQuiz(bookId, principal.getUserId()));
+
+        return ResponseEntity.ok(gameEndResponse);
     }
 }

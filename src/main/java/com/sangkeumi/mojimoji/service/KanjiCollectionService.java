@@ -148,26 +148,9 @@ public class KanjiCollectionService {
                 req.kanjiSearch());
     }
 
-    public List<JlptCollectionStats> getJlptStats(Long userId) {
-        return kanjiCollectionsRepository.findJlptStatsByUserId(userId);
-    }
+    public List<QuizKanjiDTO> getKanjiQuiz(Long bookId, Long userId) {
 
-    public List<DailyAcquisitionStats> getDailyStats(Long userId) {
-        return kanjiCollectionsRepository.findDailyStatsByUserId(userId);
-    }
-
-    public Double getDailyAverage(Long userId) {
-        return kanjiCollectionsRepository.findDailyAverageByUserId(userId);
-    }
-
-    public CategoryCollectionSummary getCategoryCollectionSummary(Long userId) {
-        return kanjiCollectionsRepository.findCategoryCollectionSummary(userId);
-    }
-
-    public List<WrongKanji> getWrongKanji(Long userId) {
-
-        return kanjiCollectionsRepository.findAllByUserId(userId);
-
+        return kanjiCollectionsRepository.findKanjisToQuiz(bookId, userId);
     }
 
     @Transactional
@@ -214,5 +197,25 @@ public class KanjiCollectionService {
         if (temp.isPresent()) {
             temp.get().setBookmarked(0);
         }
+    }
+
+    public List<JlptCollectionStats> getJlptStats(Long userId) {
+        return kanjiCollectionsRepository.findJlptStatsByUserId(userId);
+    }
+
+    public List<DailyAcquisitionStats> getDailyStats(Long userId) {
+        return kanjiCollectionsRepository.findDailyStatsByUserId(userId);
+    }
+
+    public Double getDailyAverage(Long userId) {
+        return kanjiCollectionsRepository.findDailyAverageByUserId(userId);
+    }
+
+    public CategoryCollectionSummary getCategoryCollectionSummary(Long userId) {
+        return kanjiCollectionsRepository.findCategoryCollectionSummary(userId);
+    }
+
+    public List<WrongKanji> getWrongKanji(Long userId) {
+        return kanjiCollectionsRepository.findAllByUserId(userId);
     }
 }

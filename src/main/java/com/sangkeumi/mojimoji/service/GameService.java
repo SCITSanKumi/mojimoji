@@ -5,7 +5,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sangkeumi.mojimoji.config.GameConfiguraton;
 import com.sangkeumi.mojimoji.dto.game.*;
-import com.sangkeumi.mojimoji.dto.kanji.KanjiDTO;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
@@ -148,27 +147,14 @@ public class GameService {
     }
 
     @Transactional
-    public GameEndResponse gameEnd(Long bookId) {
+    public void gameEnd(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
-        // 한자 정보 처리
-        List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(book);
-        List<KanjiDTO> kanjiDTOs = kanjis.stream()
-                .map(kanji -> new KanjiDTO(
-                        kanji.getKanjiId(),
-                        kanji.getKanji(),
-                        kanji.getJlptRank(),
-                        kanji.getCategory(),
-                        kanji.getKorOnyomi(), kanji.getKorKunyomi(),
-                        kanji.getJpnOnyomi(), kanji.getJpnKunyomi(),
-                        kanji.getMeaning()))
-                .collect(Collectors.toList());
+        book.setEnded(true);
 
         // 제목 및 썸네일 생성 후 저장 (비동기 실행)
-        gameAsyncService.generateAndSaveBookDetails(book);
-
-        return new GameEndResponse(kanjiDTOs);
+        // gameAsyncService.generateAndSaveBookDetails(book);
     }
 
     @Transactional
