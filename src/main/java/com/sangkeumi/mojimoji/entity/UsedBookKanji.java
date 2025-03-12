@@ -31,7 +31,7 @@ public class UsedBookKanji {
     /**
      * 사용된 한자 (Kanjis 테이블과 다대일 관계)
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kanji_id", nullable = false)
     private Kanji kanji;
 
