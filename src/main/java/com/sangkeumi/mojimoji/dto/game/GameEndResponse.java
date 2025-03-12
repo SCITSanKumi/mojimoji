@@ -2,9 +2,9 @@ package com.sangkeumi.mojimoji.dto.game;
 
 import java.util.List;
 
-import com.sangkeumi.mojimoji.dto.kanji.KanjiDTO;
+import com.sangkeumi.mojimoji.dto.kanji.QuizKanjiDTO;
 
 public record GameEndResponse(
-    List<KanjiDTO> kanjis
+    List<QuizKanjiDTO> kanjis
 ) {
 }

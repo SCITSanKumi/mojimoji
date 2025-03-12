@@ -5,7 +5,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sangkeumi.mojimoji.config.GameConfiguraton;
 import com.sangkeumi.mojimoji.dto.game.*;
-import com.sangkeumi.mojimoji.dto.kanji.KanjiDTO;
 import com.sangkeumi.mojimoji.entity.*;
 import com.sangkeumi.mojimoji.repository.*;
 
@@ -102,31 +101,38 @@ public class GameService {
     public void saveUsedBookKanjis(BookLine bookLine, String message) {
         Set<String> kanjiSet = new HashSet<>();
 
+        // 메시지에서 한자 추출
         for (int i = 0; i < message.length(); i++) {
             char c = message.charAt(i);
-            if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)
-                continue;
-            kanjiSet.add(String.valueOf(c));
+            if (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS) {
+                kanjiSet.add(String.valueOf(c));
+            }
         }
 
         if (kanjiSet.isEmpty()) {
             return;
         }
 
+        // DB에서 한자 객체 조회
         List<Kanji> kanjiList = kanjiRepository.findByKanjiIn(kanjiSet);
 
         if (kanjiList.isEmpty()) {
             throw new RuntimeException("해당 한자가 존재하지 않습니다.");
         }
-        List<UsedBookKanji> existingKanjiList = usedBookKanjiRepository.findByBookLineAndKanjiIn(bookLine, kanjiList);
 
+        // 기존에 저장된 UsedBookKanji를 book 기준으로 모두 조회
+        List<UsedBookKanji> existingKanjiList = usedBookKanjiRepository.findByBook(bookLine.getBook());
+
+        // 기존 저장된 한자들을 Set으로 만듦
         Set<String> existingKanjiSet = existingKanjiList.stream()
                 .map(uk -> uk.getKanji().getKanji())
                 .collect(Collectors.toSet());
 
         List<UsedBookKanji> newKanjiToSave = new ArrayList<>();
 
+        // message에서 추출한 한자 중 아직 저장되지 않은 한자만 추가
         for (Kanji kanji : kanjiList) {
+            log.info("kanji : {}", kanji.getKanji());
             if (!existingKanjiSet.contains(kanji.getKanji())) {
                 newKanjiToSave.add(UsedBookKanji.builder()
                         .bookLine(bookLine)
@@ -141,27 +147,14 @@ public class GameService {
     }
 
     @Transactional
-    public GameEndResponse gameEnd(Long bookId) {
+    public void gameEnd(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("해당 bookId의 게임이 존재하지 않습니다."));
 
-        // 한자 정보 처리
-        List<Kanji> kanjis = kanjiRepository.findKanjisUsedInBook(book);
-        List<KanjiDTO> kanjiDTOs = kanjis.stream()
-                .map(kanji -> new KanjiDTO(
-                        kanji.getKanjiId(),
-                        kanji.getKanji(),
-                        kanji.getJlptRank(),
-                        kanji.getCategory(),
-                        kanji.getKorOnyomi(), kanji.getKorKunyomi(),
-                        kanji.getJpnOnyomi(), kanji.getJpnKunyomi(),
-                        kanji.getMeaning()))
-                .collect(Collectors.toList());
+        book.setEnded(true);
 
         // 제목 및 썸네일 생성 후 저장 (비동기 실행)
-        gameAsyncService.generateAndSaveBookDetails(book);
-
-        return new GameEndResponse(kanjiDTOs);
+        // gameAsyncService.generateAndSaveBookDetails(book);
     }
 
     @Transactional
