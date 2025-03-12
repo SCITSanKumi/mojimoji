@@ -63,8 +63,15 @@ $(document).ready(function () {
             success: function() {
                 alert("프로필이 변경되었습니다.");
             },
-            error: function() {
-                alert("프로필 업데이트 실패");
+            error: function (xhr) {
+                let errMsg = "";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errMsg = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    errMsg = xhr.responseText;
+                }
+                errMsg = errMsg.replace("Invalid argument: ", "");
+                alert(errMsg);
             }
         });
     });

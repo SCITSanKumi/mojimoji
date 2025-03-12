@@ -81,7 +81,7 @@
         <label for="nickname" class="form-label">닉네임</label>
         <input type="text" id="nickname" name="nickname" class="form-control" th:value="${user.nickname}">
       </div>
-      <div class="mb-3">
+      <div class="mb-3" th:if="${!user.socialUser}">
         <label for="email" class="form-label">이메일 주소</label>
         <input type="email" id="email" name="email" class="form-control" th:value="${user.email}">
       </div>

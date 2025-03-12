@@ -113,6 +113,17 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        // 중복 닉네임 체크 (자신의 닉네임은 제외)
+        if (!user.getNickname().equals(userUpdateRequest.nickname()) &&
+                !existByNickname(userUpdateRequest.nickname())) {
+            throw new IllegalArgumentException("다른 유저가 사용중인 닉네임입니다.");
+        }
+
+        // 중복 이메일 체크 (자신의 이메일은 제외)
+        if (!user.getEmail().equals(userUpdateRequest.email()) &&
+                !existByEmail(userUpdateRequest.email())) {
+            throw new IllegalArgumentException("다른 유저가 사용중인 이메일입니다.");
+        }
         // 사용자 정보 업데이트
         user.setNickname(userUpdateRequest.nickname());
         user.setEmail(userUpdateRequest.email());
