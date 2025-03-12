@@ -30,7 +30,7 @@ CREATE TABLE Users (
     username VARCHAR(50) NOT NULL UNIQUE,                   -- 로그인에 사용되는 사용자 아이디 (중복 불가)
     password CHAR(60) NOT NULL,                             -- 암호화된 비밀번호 (고정 길이)
     nickname VARCHAR(50) NOT NULL UNIQUE,                   -- 사용자 표시 이름 (중복 불가)
-    email VARCHAR(100) NOT NULL,                            -- 사용자 이메일 주소
+    email VARCHAR(100) NOT NULL UNIQUE,                            -- 사용자 이메일 주소
     role VARCHAR(20) NOT NULL DEFAULT 'ROLE_USER',          -- 사용자 권한 (기본값 'ROLE_USER')
         CHECK (role IN ('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')),
     status VARCHAR(20) NOT NULL                             -- 사용자 상태: ACTIVE, INACTIVE, BANNED, PENDING, DELETED 중 하나
