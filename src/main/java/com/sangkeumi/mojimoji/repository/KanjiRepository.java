@@ -11,23 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse;
-import com.sangkeumi.mojimoji.entity.Book;
 import com.sangkeumi.mojimoji.entity.Kanji;
 
 public interface KanjiRepository extends JpaRepository<Kanji, Long> {
 
     Optional<Kanji> findByKanji(String kanji);
-
-    /**
-     * 특정 책(Book)의 bookId를 사용하여 해당 책에서 사용된 한자 목록 조회
-     */
-    @Query("""
-            SELECT k FROM Kanji k
-                JOIN UsedBookKanji ubk ON ubk.kanji.kanjiId = k.kanjiId
-                JOIN ubk.bookLine bl
-                WHERE bl.book = :book
-            """)
-    List<Kanji> findKanjisUsedInBook(@Param("book") Book book);
 
     @Query("""
                 SELECT new com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse(
