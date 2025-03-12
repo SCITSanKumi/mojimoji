@@ -102,31 +102,38 @@ public class GameService {
     public void saveUsedBookKanjis(BookLine bookLine, String message) {
         Set<String> kanjiSet = new HashSet<>();
 
+        // 메시지에서 한자 추출
         for (int i = 0; i < message.length(); i++) {
             char c = message.charAt(i);
-            if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)
-                continue;
-            kanjiSet.add(String.valueOf(c));
+            if (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS) {
+                kanjiSet.add(String.valueOf(c));
+            }
         }
 
         if (kanjiSet.isEmpty()) {
             return;
         }
 
+        // DB에서 한자 객체 조회
         List<Kanji> kanjiList = kanjiRepository.findByKanjiIn(kanjiSet);
 
         if (kanjiList.isEmpty()) {
             throw new RuntimeException("해당 한자가 존재하지 않습니다.");
         }
-        List<UsedBookKanji> existingKanjiList = usedBookKanjiRepository.findByBookLineAndKanjiIn(bookLine, kanjiList);
 
+        // 기존에 저장된 UsedBookKanji를 book 기준으로 모두 조회
+        List<UsedBookKanji> existingKanjiList = usedBookKanjiRepository.findByBook(bookLine.getBook());
+
+        // 기존 저장된 한자들을 Set으로 만듦
         Set<String> existingKanjiSet = existingKanjiList.stream()
                 .map(uk -> uk.getKanji().getKanji())
                 .collect(Collectors.toSet());
 
         List<UsedBookKanji> newKanjiToSave = new ArrayList<>();
 
+        // message에서 추출한 한자 중 아직 저장되지 않은 한자만 추가
         for (Kanji kanji : kanjiList) {
+            log.info("kanji : {}", kanji.getKanji());
             if (!existingKanjiSet.contains(kanji.getKanji())) {
                 newKanjiToSave.add(UsedBookKanji.builder()
                         .bookLine(bookLine)
