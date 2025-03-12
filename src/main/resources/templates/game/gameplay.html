@@ -289,25 +289,50 @@
         <main class="container">
             <div class="game-container">
                 <!-- 체력/정신력 표시 영역 (게임 시작 전 숨김) -->
-                <div class="mb-3 w-100 d-flex flex-column align-items-start d-none show-at-game-start">
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="status-label me-2">체력</span>
-                        <div class="progress" style="width: 150px; height: 15px;">
-                            <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%">100</div>
-                        </div>
-                    </div>
+                <div class="mb-3 w-100 d-none show-at-game-start">
                     <div class="d-flex align-items-center">
-                        <span class="status-label me-2">정신력</span>
-                        <div class="progress" style="width: 150px; height: 15px;">
-                            <div id="mentalBar" class="progress-bar bg-primary" role="progressbar" style="width: 100%">100</div>
+                        <!-- 체력: 좌측 정렬 -->
+                        <div class="flex-grow-1 d-flex align-items-center text-start">
+                            <i class="bi bi-heart-fill me-2" style="font-size: 1.2rem; color: #e74c3c;"></i>
+                            <div class="progress" style="width: 120px; height: 15px;">
+                                <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%;">100</div>
+                            </div>
+                        </div>
+                        <!-- 골드: 중앙 정렬 -->
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center text-center">
+                            <i class="bi bi-currency-dollar me-2" style="font-size: 1.2rem; color: #f1c40f;"></i>
+                            <span class="fs-5" style="color: #f39c12;">1000</span>
+                        </div>
+                        <!-- 현재 위치: 우측 정렬 -->
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-end text-end">
+                            <i class="bi bi-geo-alt-fill me-2" style="font-size: 1.2rem; color: #3498db;"></i>
+                            <span class="fs-5" style="color: #2980b9;">태초마을</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 채팅 영역 (드롭 가능한 영역) -->
-                <div class="chat-container" id="chatBox">
-                    <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">게임 시작</button>
+                <div class="chat-container position-relative" id="chatBox">
+                    <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">
+                        게임 시작
+                    </button>
+                    <!-- 채팅 영역 내부에 인벤토리 버튼 (오른쪽 아래) -->
+                    <button id="inventory-button" class="btn btn-secondary"
+                            style="position: absolute; bottom: 10px; right: 10px; z-index: 1100;">
+                        인벤토리
+                    </button>
+                    <!-- 인벤토리 패널: 부모(chat-container)를 기준으로 절대 위치 -->
+                    <div id="inventory-panel"
+                         style="position: absolute; bottom: 50px; right: 10px; width: 300px; min-height: 150px;
+                                background: #fff; border: 1px solid #ddd; border-radius: 5px;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: none; z-index: 1100; padding: 10px;">
+                        <h5>인벤토리</h5>
+                        <ul id="inventory-list" class="list-group">
+                            <!-- 인벤토리 아이템들이 이곳에 추가됩니다 -->
+                        </ul>
+                    </div>
                 </div>
+
 
                 <!-- 입력창 및 종료 버튼 (게임 시작 후 표시) -->
                 <div class="input-group mt-3 w-100 d-none show-at-game-start">
@@ -526,6 +551,10 @@
         <!-- 드래그 앤 드롭 스크립트 -->
         <script>
             $(document).ready(function () {
+                $("#inventory-button").click(function(){
+                    $("#inventory-panel").toggle();
+                });
+
                 // 힌트 버튼 클릭 시 힌트 박스 토글
                 $("#hint-btn").click(function () {
                     $("#hint-box").toggle();
@@ -549,7 +578,7 @@
                     },
                     stop: function (event, ui) {
                         var $this = $(this);
-                        // 드롭된 경우 1초 후에 원래 위치에서 보이도록 (애니메이션 효과 없이)
+                        // 드롭된 경우 0.2초 후에 원래 위치에서 보이도록 (애니메이션 효과 없이)
                         if ($this.data("dropped")) {
                             setTimeout(function () {
                                 $this.css("visibility", "visible");
