@@ -154,7 +154,7 @@ public class GameService {
         book.setEnded(true);
 
         // 제목 및 썸네일 생성 후 저장 (비동기 실행)
-        gameAsyncService.generateAndSaveBookDetails(book);
+        // gameAsyncService.generateAndSaveBookDetails(book);
     }
 
     @Transactional
