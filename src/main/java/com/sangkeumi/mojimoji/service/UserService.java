@@ -113,43 +113,52 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // 중복 닉네임 체크 (자신의 닉네임은 제외)
-        if (!user.getNickname().equals(userUpdateRequest.nickname()) &&
-                !existByNickname(userUpdateRequest.nickname())) {
-            throw new IllegalArgumentException("다른 유저가 사용중인 닉네임입니다.");
+        // 소셜 로그인 계정이라면, 닉네임만 업데이트하도록 처리
+        if (user.getSocialAccounts() != null && !user.getSocialAccounts().isEmpty()) {
+            // 중복 닉네임 체크 (자신의 닉네임은 제외)
+            if (!user.getNickname().equals(userUpdateRequest.nickname()) &&
+                    !existByNickname(userUpdateRequest.nickname())) {
+                throw new IllegalArgumentException("다른 유저가 사용중인 닉네임입니다.");
+            }
+            user.setNickname(userUpdateRequest.nickname());
+        } else {
+            // 일반 계정 업데이트 로직
+            // 중복 닉네임 체크 (자신의 닉네임은 제외)
+            if (!user.getNickname().equals(userUpdateRequest.nickname()) &&
+                    !existByNickname(userUpdateRequest.nickname())) {
+                throw new IllegalArgumentException("다른 유저가 사용중인 닉네임입니다.");
+            }
+            // 중복 이메일 체크 (자신의 이메일은 제외)
+            if (!user.getEmail().equals(userUpdateRequest.email()) &&
+                    !existByEmail(userUpdateRequest.email())) {
+                throw new IllegalArgumentException("다른 유저가 사용중인 이메일입니다.");
+            }
+            user.setNickname(userUpdateRequest.nickname());
+            user.setEmail(userUpdateRequest.email());
         }
-
-        // 중복 이메일 체크 (자신의 이메일은 제외)
-        if (!user.getEmail().equals(userUpdateRequest.email()) &&
-                !existByEmail(userUpdateRequest.email())) {
-            throw new IllegalArgumentException("다른 유저가 사용중인 이메일입니다.");
-        }
-        // 사용자 정보 업데이트
-        user.setNickname(userUpdateRequest.nickname());
-        user.setEmail(userUpdateRequest.email());
 
         MultipartFile profileImageFile = userUpdateRequest.profileImageFile();
         long maxFileSize = 100 * 1024 * 1024; // 100MB 제한
 
         try {
             if (profileImageFile != null && !profileImageFile.isEmpty()) {
-            if (profileImageFile.getSize() > maxFileSize) {
-                throw new IllegalArgumentException("파일 크기가 100MB를 초과할 수 없습니다.");
-            }
+                if (profileImageFile.getSize() > maxFileSize) {
+                    throw new IllegalArgumentException("파일 크기가 100MB를 초과할 수 없습니다.");
+                }
 
-            // 저장될 디렉토리 확인 및 생성 (imagesPath는 @Value로 주입받음)
-            Path dirPath = Paths.get(imagePath, "profile_images");
-            if (!Files.exists(dirPath)) {
-                Files.createDirectories(dirPath);
-            }
+                // 저장될 디렉토리 확인 및 생성
+                Path dirPath = Paths.get(imagePath, "profile_images");
+                if (!Files.exists(dirPath)) {
+                    Files.createDirectories(dirPath);
+                }
 
-            // 고유 파일명 생성 후 파일 저장
-            String fileName = UUID.randomUUID().toString() + "_" + profileImageFile.getOriginalFilename();
-            Path filePath = dirPath.resolve(fileName);
-            Files.copy(profileImageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                // 고유 파일명 생성 후 파일 저장
+                String fileName = UUID.randomUUID().toString() + "_" + profileImageFile.getOriginalFilename();
+                Path filePath = dirPath.resolve(fileName);
+                Files.copy(profileImageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // 웹 접근 가능한 상대 URL로 설정 (예: /images/profile_images/파일명)
-            user.setProfileUrl("/image/profile_images/" + fileName);
+                // 웹 접근 가능한 상대 URL로 설정
+                user.setProfileUrl("/image/profile_images/" + fileName);
             }
 
             // 변경된 사용자 정보를 DB에 저장

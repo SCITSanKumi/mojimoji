@@ -62,6 +62,7 @@ $(document).ready(function () {
             contentType: false,
             success: function() {
                 alert("프로필이 변경되었습니다.");
+                window.location.reload(); // 페이지 새로고침
             },
             error: function (xhr) {
                 let errMsg = "";
