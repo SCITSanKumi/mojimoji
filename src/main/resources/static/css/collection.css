@@ -1,427 +1,428 @@
 body {
-    margin: 0;
-    padding: 20px;
-    position: relative;
+  margin: 0;
+  padding: 20px;
+  position: relative;
 }
 
 #top {
-    text-align: center;
+  text-align: center;
 }
 
 h2 {
-    text-align: center;
+  text-align: center;
 }
 
 /* 검색 영역 (내부 돋보기 포함) */
 .search-wrapper {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 0.5rem;
-    flex: 1;
-    margin-bottom: 30px;
-    margin-top: 20px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+  flex: 1;
+  margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 /* 검색 조건 select 둥글게 */
 select.form-select {
-    border-radius: 9999px;
-    width: 130px;
-    min-width: 100px;
-    margin-right: 5px;
+  border-radius: 9999px;
+  width: 130px;
+  min-width: 100px;
+  margin-right: 5px;
 }
 
 .search-container {
-    position: relative;
-    flex: 1;
-    /* 최소 폭을 낮춰 축소 허용 */
-    min-width: 200px;
+  position: relative;
+  flex: 1;
+  /* 최소 폭을 낮춰 축소 허용 */
+  min-width: 200px;
 }
 
 .search-container input[type="text"] {
-    width: 100%;
-    border-radius: 9999px;
-    padding-right: 3rem;
+  width: 100%;
+  border-radius: 9999px;
+  padding-right: 3rem;
 }
 
 /* 돋보기 아이콘 버튼 */
 .search-container button {
-    position: absolute;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    color: #6c757d;
-    cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #6c757d;
+  cursor: pointer;
 }
 
 .search-container .bi-search {
-    font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 
 
 
 #kanjiCurrent {
-    font-size: 20px;
-    font-weight: bold;
-    width: 100px;
-    line-height: 60px;
-    margin-left: 60px;
-    /* float: left; */
+  font-size: 20px;
+  font-weight: bold;
+  width: 100px;
+  line-height: 60px;
+  margin-left: 60px;
+  /* float: left; */
 }
 
 #kanjiSort,
 #sortDirection {
-    float: left;
-    margin-left: 10px;
+  float: left;
+  margin-left: 10px;
 }
 
 #searchRight {
-    display: flex;
-    justify-content: flex-end;
-    margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 /* 그리드: 5열 */
 .grid-container {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-    max-width: 1600px;
-    margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 /* 스크롤 화살표 */
 .scroll-arrow {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2rem;
-    opacity: 0.5;
-    transition: opacity 0.3s;
-    cursor: pointer;
-    z-index: 3000;
-    display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  cursor: pointer;
+  z-index: 3000;
+  display: none;
 }
 
 .scroll-arrow:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* 카드 공통 */
 .kanjiCard,
 .notKanjiCard {
-    width: 245px;
-    height: 367px;
-    border: 1px solid gray;
-    background-color: white;
-    text-align: center;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    /* ↓↓↓ 추가 ↓↓↓ */
-    overflow: hidden;
-    /* 카드 범위를 넘어가는 컨텐츠가 보이지 않도록 */
+  width: 245px;
+  height: 367px;
+  border: 1px solid gray;
+  background-color: white;
+  text-align: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  /* ↓↓↓ 추가 ↓↓↓ */
+  overflow: hidden;
+  /* 카드 범위를 넘어가는 컨텐츠가 보이지 않도록 */
 }
 
 
 .kanjiCard:hover,
 .notKanjiCard:hover {
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 /* 등록/미등록 구분 */
 .notKanjiCard {
-    background-color: lightgray;
+  background-color: lightgray;
 
 }
 
 /* 한자 글자 스타일 */
 .kanji {
-    font-size: 100px;
-    font-weight: bold;
+  font-size: 100px;
+  font-weight: bold;
 }
 
 .kanjiExplain {
-    text-align: left;
-    font-size: 16px;
-    margin-left: 10px;
+  text-align: left;
+  font-size: 16px;
+  margin-left: 10px;
 
 }
 
 .category {
-    line-height: 15px;
+  line-height: 15px;
+  margin-top: 10px;
 }
 
 .jlptRank {
-    line-height: 15px;
-    font-weight: bold;
-    text-align: left;
-    margin-top: 5px;
+  line-height: 15px;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 5px;
 }
 
 .yomi {
-    text-align: center;
-    font-size: 34px;
-    margin-top: 10px;
-    margin-right: 10px;
+  text-align: center;
+  font-size: 34px;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 
 .kanjiId {
-    margin-top: 50px;
-    font-size: 15px;
-    color: #1063FE;
-    float: left;
+  margin-top: 50px;
+  font-size: 15px;
+  color: #1063FE;
+  float: left;
 }
 
 .createdAt {
-    margin-top: 50px;
-    font-size: 15px;
-    float: right;
-    margin-right: 10px;
+  margin-top: 50px;
+  font-size: 15px;
+  float: right;
+  margin-right: 10px;
 }
 
 
 
 @keyframes neonFlicker2 {
 
-    0%,
-    100% {
-        box-shadow: 0 0 5px #9400d3, 0 0 10px #9400d3;
-    }
+  0%,
+  100% {
+    box-shadow: 0 0 5px #9400d3, 0 0 10px #9400d3;
+  }
 
-    50% {
-        box-shadow: 0 0 20px #9400d3, 0 0 30px #9400d3;
-    }
+  50% {
+    box-shadow: 0 0 20px #9400d3, 0 0 30px #9400d3;
+  }
 }
 
 @keyframes neonFlicker3 {
 
-    0%,
-    100% {
-        box-shadow: 0 0 5px #ffa500, 0 0 10px #ffa500;
-    }
+  0%,
+  100% {
+    box-shadow: 0 0 5px #ffa500, 0 0 10px #ffa500;
+  }
 
-    50% {
-        box-shadow: 0 0 20px #ffa500, 0 0 30px #ffa500;
-    }
+  50% {
+    box-shadow: 0 0 20px #ffa500, 0 0 30px #ffa500;
+  }
 }
 
 
 .border-lv3 {
-    animation: neonFlicker3 1.5s infinite;
+  animation: neonFlicker3 1.5s infinite;
 }
 
 .border-lv2 {
-    animation: neonFlicker2 1.5s infinite;
+  animation: neonFlicker2 1.5s infinite;
 }
 
 
 /* placeholder: 카드 원래 자리를 차지 (투명) */
 .placeholder {
-    width: 100%;
-    height: 100%;
-    visibility: hidden;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
 }
 
 /* 활성 카드 레이어: 화면 맨 위(fixed)에 카드가 뜸 */
 #activeLayer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    /* 배경 클릭 이벤트 통과 */
-    z-index: 2000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* 배경 클릭 이벤트 통과 */
+  z-index: 2000;
 }
 
 .toKanjiList {
-    width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
 }
 
 .detailKanjiCard {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    border: 1px solid lightgray;
-    text-align: center;
-    margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid lightgray;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .detailKanji {
-    display: inline-block;
-    font-size: 130px;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    border: 1px solid lightgray;
-    margin-top: 10px;
+  display: inline-block;
+  font-size: 130px;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid lightgray;
+  margin-top: 10px;
 }
 
 .detailKanjiExplain {
-    text-align: left;
-    font-size: 16px;
-    margin-left: 10px;
+  text-align: left;
+  font-size: 16px;
+  margin-left: 10px;
 }
 
 .detailCategory,
 .detailCreatedAt {
-    font-size: 15px;
+  font-size: 15px;
 }
 
 .detail-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
 }
 
 .detailJlptRank {
-    font-weight: bold;
-    text-align: right;
-    margin-right: 25px;
+  font-weight: bold;
+  text-align: right;
+  margin-right: 25px;
 }
 
 .detailYomi {
-    text-align: center;
-    font-size: 40px;
-    margin-top: 10px;
+  text-align: center;
+  font-size: 40px;
+  margin-top: 10px;
 }
 
 .detailKanjiId {
-    font-size: 15px;
-    color: #1063FE;
-    margin-left: 25px;
+  font-size: 15px;
+  color: #1063FE;
+  margin-left: 25px;
 }
 
 .detail-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow: visible;
-    margin-top: 0;
-    height: 168px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: visible;
+  margin-top: 0;
+  height: 168px;
 }
 
 .card-back {
-    display: none;
+  display: none;
 }
 
 .kanji {
-    transition: text-shadow 0.3s ease;
+  transition: text-shadow 0.3s ease;
 }
 
 .kanji:hover {
-    text-shadow: 0 0 10px rgba(125, 125, 125, 0.8);
-    animation: textPulse 1s infinite alternate;
+  text-shadow: 0 0 10px rgba(125, 125, 125, 0.8);
+  animation: textPulse 1s infinite alternate;
 }
 
 @keyframes textPulse {
-    from {
-        text-shadow: 0 0 10px rgba(125, 125, 125, 0.8);
-    }
+  from {
+    text-shadow: 0 0 10px rgba(125, 125, 125, 0.8);
+  }
 
-    to {
-        text-shadow: 0 0 20px rgba(125, 125, 125, 1);
-    }
+  to {
+    text-shadow: 0 0 20px rgba(125, 125, 125, 1);
+  }
 }
 
 /* 뒷면은 처음엔 숨김, 뒤집힐 때 active 클래스가 붙으면 flex로 보이도록 */
 .card-face.card-back {
-    display: none;
-    width: 100%;
-    height: 100%;
+  display: none;
+  width: 100%;
+  height: 100%;
 }
 
 .card-face.card-back.active {
-    display: flex;
-    /* 카드 전체를 채우도록 */
-    flex-direction: column;
+  display: flex;
+  /* 카드 전체를 채우도록 */
+  flex-direction: column;
 }
 
 /* 내부 wrapper: card-back-inner */
 .card-back-inner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    /* 세로/가로 가운데 정렬 */
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #1a1a1a, #000);
-    position: relative;
-    color: #fff;
-    font-family: 'Arial', sans-serif;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  /* 세로/가로 가운데 정렬 */
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a1a, #000);
+  position: relative;
+  color: #fff;
+  font-family: 'Arial', sans-serif;
 }
 
 /* 광택 효과 */
 .card-back-inner::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 70%);
-    opacity: 0.7;
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 70%);
+  opacity: 0.7;
+  pointer-events: none;
 }
 
 /* 실제 내용 */
 .card-back-content {
-    z-index: 1;
-    text-align: center;
+  z-index: 1;
+  text-align: center;
 }
 
 .card-back-title {
-    font-size: 200px;
-    font-weight: bold;
-    margin: 0;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  font-size: 200px;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 .card-back-subtitle {
-    font-size: 18px;
-    margin-top: 10px;
-    letter-spacing: 1px;
-    opacity: 0.8;
+  font-size: 18px;
+  margin-top: 10px;
+  letter-spacing: 1px;
+  opacity: 0.8;
 }
 
 /* 스크롤 맨 위로 가는 버튼 */
 .scroll-to-top-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #ffffff;
-    color: black;
-    border: none;
-    border-radius: 50%;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.3s, transform 0.3s;
-    z-index: 1000;
-    display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #ffffff;
+  color: black;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display: none;
 }
 
 .scroll-to-top-btn:hover {
-    opacity: 1;
-    transform: scale(1.1);
+  opacity: 1;
+  transform: scale(1.1);
 }
