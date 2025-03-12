@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
+import com.sangkeumi.mojimoji.dto.kanji.QuizKanjiDTO;
 import com.sangkeumi.mojimoji.dto.kanji.WrongKanji;
 import com.sangkeumi.mojimoji.dto.mypage.*;
 import com.sangkeumi.mojimoji.entity.*;
@@ -148,4 +149,15 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
             SELECT kc.kanji_collection_id,kc.user_id,kc.bookmarked,kc.collected_count,kc.wrong_count,kc.created_at,kc.updated_at,k.* FROM Kanji_Collections kc inner join kanjis k on kc.kanji_id = k.kanji_id  where kc.user_id = :userId and kc.wrong_count >=1 order by kc.wrong_count desc;
             """, nativeQuery = true)
     List<WrongKanji> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT new com.sangkeumi.mojimoji.dto.kanji.QuizKanjiDTO(
+                k.kanjiId, k.kanji, k.jlptRank, k.category, k.korOnyomi, k.korKunyomi, k.jpnOnyomi, k.jpnKunyomi, k.meaning, kc.bookmarked)
+            FROM Kanji k
+            JOIN UsedBookKanji ubk ON ubk.kanji.kanjiId = k.kanjiId
+            JOIN ubk.bookLine bl
+            LEFT JOIN KanjiCollection kc ON kc.kanji.kanjiId = k.kanjiId AND kc.user.userId = :userId
+            WHERE bl.book.bookId = :bookId
+            """)
+    List<QuizKanjiDTO> findKanjisToQuiz(@Param("bookId") Long bookId, @Param("userId") Long userId);
 }

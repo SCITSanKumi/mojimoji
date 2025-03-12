@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 public class GameController {
 
     private final GameService gameService;
+    private final KanjiCollectionService kanjiCollectionService;
 
     @GetMapping("/play")
     public String game(@RequestParam(name = "bookId", defaultValue = "-1") String bookId, Model model) {
@@ -61,7 +62,13 @@ public class GameController {
 
     @GetMapping("/end/{bookId}")
     @ResponseBody
-    public ResponseEntity<GameEndResponse> gameEnd(@PathVariable("bookId") Long bookId) {
-        return ResponseEntity.ok(gameService.gameEnd(bookId));
+    public ResponseEntity<GameEndResponse> gameEnd(
+            @PathVariable("bookId") Long bookId,
+            @AuthenticationPrincipal MyPrincipal principal) {
+        gameService.gameEnd(bookId);
+        GameEndResponse gameEndResponse
+            = new GameEndResponse(kanjiCollectionService.getKanjiQuiz(bookId, principal.getUserId()));
+
+        return ResponseEntity.ok(gameEndResponse);
     }
 }
