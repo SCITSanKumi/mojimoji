@@ -122,6 +122,7 @@ public class BoardService {
                     .profileUrl(sharedBook.getBook().getUser().getProfileUrl())
                     .hitCount(sharedBook.getHitCount())
                     .gaechu(sharedBook.getGaechu())
+                    .createdAt(sharedBook.getCreatedAt())
                     .liked(liked)
                     .build();
             return storyInfo;
@@ -201,6 +202,7 @@ public class BoardService {
                 .profileUrl(sharedBook.getBook().getUser().getProfileUrl())
                 .hitCount(sharedBook.getHitCount())
                 .gaechu(sharedBook.getGaechu())
+                .createdAt(sharedBook.getCreatedAt())
                 .liked(liked)
                 .build();
     }
