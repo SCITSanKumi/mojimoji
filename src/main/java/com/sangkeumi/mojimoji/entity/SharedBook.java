@@ -1,6 +1,7 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -63,5 +64,6 @@ public class SharedBook {
      * 공유된 책에 대한 댓글 목록 (Shared_Book_Replies 테이블과 일대다 관계)
      */
     @OneToMany(mappedBy = "sharedBook", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SharedBookReply> sharedBookReplies;
+    @Builder.Default
+    private List<SharedBookReply> sharedBookReplies = new ArrayList<>();
 }

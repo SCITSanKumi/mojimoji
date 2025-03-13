@@ -32,12 +32,6 @@ body {
   --transition: all 0.3s ease;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   color: #333;
   line-height: 1.6;
