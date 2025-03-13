@@ -101,7 +101,6 @@ public class BoardController {
 
         // 공유된 스토리의 내용 조회
         List<SharedStoryContentResponse> sharedStoryContent = boardService.getSharedStoryContent(bookId);
-
         // 모델에 데이터 추가
         model.addAttribute("sharedStoryContent", sharedStoryContent);
         model.addAttribute("sharedStoryInfo", sharedStoryInfo);
