@@ -89,13 +89,13 @@ public class BoardController {
         }
 
         // 공유된 스토리의 정보 조회
-        SharedStoryInfoResponse sharedStoryInfo = boardService.getSharedStoryInfo(bookId);
+        SharedStoryInfoResponse sharedStoryInfo = boardService.getSharedStoryInfo(bookId, principal.getUserId());
 
         if (sharedStoryInfo != null) {
             // 현재 사용자와 작성자가 다르면 조회수 증가 처리
             if (!sharedStoryInfo.userId().equals(principal.getUserId())) {
                 boardService.incrementHitCount(bookId, principal.getUserId());
-                sharedStoryInfo = boardService.getSharedStoryInfo(bookId);
+                sharedStoryInfo = boardService.getSharedStoryInfo(bookId, principal.getUserId());
             }
         }
 

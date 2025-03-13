@@ -1,6 +1,7 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -69,7 +70,8 @@ public class Book {
      */
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequence ASC")
-    private List<BookLine> bookLines;
+    @Builder.Default
+    private List<BookLine> bookLines = new ArrayList<>();
 
     /**
      * 책이 공유된 정보 (Shared_Books 테이블과 1:1 또는 1:N 관계; 여기서는 1:1로 가정)
