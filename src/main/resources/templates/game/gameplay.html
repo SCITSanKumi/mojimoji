@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     integrity="sha512-bM8OCHy7kxPLh6kPKC0MdNyS9qC/7K8+18ehc6XbDGjc8fZkAZA90/eBISss2AbzLVcVDM9b9zq5TxG3NEHQHw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js"></script>
 
 
@@ -360,6 +361,88 @@
       z-index: 1100;
       padding: 10px;
     }
+
+    .lightbulb-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100px;
+      /* 광원의 크기 조정 가능 */
+      height: 100px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(rgba(255, 238, 130, 0.7), transparent 70%);
+      animation: glowPulse 0.7s infinite;
+      pointer-events: none;
+      z-index: -1;
+      /* 전구 아이콘보다 뒤 */
+    }
+
+    @keyframes glowPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.7;
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(2.0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.7;
+      }
+    }
+
+    .loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .book-wrapper {
+      width: 150px;
+      height: fit-content;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      position: relative;
+    }
+
+    .book {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(10px 10px 5px rgba(0, 0, 0, 0.137));
+    }
+
+    .book-wrapper .book-page {
+      width: 50%;
+      height: auto;
+      position: absolute;
+      animation: paging 0.5s linear infinite;
+      transform-origin: left;
+    }
+
+    @keyframes paging {
+      0% {
+        transform: rotateY(0deg) skewY(0deg);
+      }
+
+      50% {
+        transform: rotateY(90deg) skewY(-20deg);
+      }
+
+      100% {
+        transform: rotateY(180deg) skewY(0deg);
+      }
+    }
   </style>
 
   <!-- 게임플레이 관련 JS -->
@@ -426,6 +509,28 @@
       </div>
       <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
     </div>
+
+
+    <div class="loader">
+      <div class="book-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 126 75" class="book">
+          <rect stroke-width="5" stroke="#e05452" rx="7.5" height="70" width="121" y="2.5" x="2.5"></rect>
+          <line stroke-width="5" stroke="#e05452" y2="75" x2="63.5" x1="63.5"></line>
+          <path stroke-linecap="round" stroke-width="4" stroke="#c18949" d="M25 20H50"></path>
+          <path stroke-linecap="round" stroke-width="4" stroke="#c18949" d="M101 20H76"></path>
+          <path stroke-linecap="round" stroke-width="4" stroke="#c18949" d="M16 30L50 30"></path>
+          <path stroke-linecap="round" stroke-width="4" stroke="#c18949" d="M110 30L76 30"></path>
+        </svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff74" viewBox="0 0 65 75" class="book-page">
+          <path stroke-linecap="round" stroke-width="4" stroke="#c18949" d="M40 20H15"></path>
+          <path stroke-linecap="round" stroke-width="4" stroke="#c18949" d="M49 30L15 30"></path>
+          <path stroke-width="5" stroke="#e05452"
+            d="M2.5 2.5H55C59.1421 2.5 62.5 5.85786 62.5 10V65C62.5 69.1421 59.1421 72.5 55 72.5H2.5V2.5Z"></path>
+        </svg>
+      </div>
+    </div>
+
 
     <!-- 퀴즈 모달 (생략된 부분) -->
     <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true"
@@ -498,8 +603,7 @@
       <div class="kanji-card">
         <div class="kanji-character">一</div>
         <div class="kanji-readings">
-          <div>음: 일</div>
-          <div>뜻: 하나</div>
+          <div style="font-weight: bold; font-size: 0.76rem;">한 일</div>
         </div>
       </div>
       <div class="kanji-card">
