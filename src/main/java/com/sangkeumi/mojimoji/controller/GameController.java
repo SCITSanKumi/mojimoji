@@ -29,11 +29,11 @@ public class GameController {
 
     @GetMapping("/play")
     public String game(@RequestParam(name = "bookId", defaultValue = "-1") String bookId, Model model) {
-        // 쿼리파라미터는 js에서 Number(new URLSearchParams(window.location.search).get("bookId")) || -1; 로 찾음
+        // 쿼리파라미터는 js에서 Number(new
+        // URLSearchParams(window.location.search).get("bookId")) || -1; 로 찾음
 
         return "game/gameplay";
     }
-
 
     @GetMapping("/start/{bookId}")
     @ResponseBody
@@ -66,8 +66,9 @@ public class GameController {
             @PathVariable("bookId") Long bookId,
             @AuthenticationPrincipal MyPrincipal principal) {
         gameService.gameEnd(bookId);
-        GameEndResponse gameEndResponse
-            = new GameEndResponse(kanjiCollectionService.getKanjiQuiz(bookId, principal.getUserId()));
+        GameEndResponse gameEndResponse = new GameEndResponse(
+                kanjiCollectionService.getKanjiQuiz(bookId, principal.getUserId()));
+        log.info("bookmark={}", gameEndResponse.kanjis().get(0).getBookmarked());
 
         return ResponseEntity.ok(gameEndResponse);
     }

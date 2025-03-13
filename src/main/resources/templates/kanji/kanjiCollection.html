@@ -48,8 +48,9 @@
             display: inline-block;
             background-color: white;
             overflow-y: scroll;
+            overflow-x: hidden;
 
-            width: 400px;
+            width: 350px;
             height: 537px;
             border-radius: 10px;
             border: 1px solid gray;
@@ -93,18 +94,103 @@
         .bookMark:hover {
             cursor: pointer;
         }
+
+
+
+        /* 지워야함 */
+        .page {
+            position: relative;
+            box-sizing: border-box;
+            font-family: cursive;
+            font-size: 20px;
+            border-radius: 10px;
+            background: #fff;
+            background-image: linear-gradient(#f5f5f0 1.1rem, #ccc 1.2rem);
+            background-size: 100% 1.2rem;
+            background-attachment: local;
+            background-position-y: 4px;
+
+            /* line-height: 1.2rem; */
+            /* padding: 1.4rem 0.5rem 0.3rem 4.5rem; */
+        }
+
+        .page::before,
+        .page::after {
+            position: absolute;
+            content: "";
+            bottom: 10px;
+            width: 40%;
+            height: 10px;
+            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.7);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .page::before {
+            left: 15px;
+            transform: skew(-5deg) rotate(-5deg);
+        }
+
+        .page::after {
+            right: 15px;
+            transform: skew(5deg) rotate(5deg);
+        }
+
+        .page:hover::before,
+        .page:hover::after {
+            box-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
+        }
+
+        .margin {
+            position: absolute;
+            border-left: 1px solid #d88;
+            /* height: 100%; */
+            width: 86.3%;
+            left: 3.3rem;
+            top: 0;
+        }
+
+        .page p {
+            margin: 0;
+            text-indent: 1rem;
+            padding-bottom: 1.2rem;
+            color: black;
+            line-height: 20px;
+        }
+
+        .phone {
+            display: flex;
+            justify-content: center;
+            border-radius: 1rem;
+            border-width: 1px;
+            border-width: 4px;
+            border-color: #000000;
+            /* height: 300px; */
+            /* width: 160px; */
+        }
+
+        .phoneBtn1 {
+            border-bottom-right-radius: 0.75rem;
+            border-color: #000000;
+            width: 5rem;
+            height: 0.5rem;
+            background-color: #000000;
+        }
     </style>
 
 </head>
 
 <body>
     <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
+
+
+
     <div class="container px-4 py-5" id="custom-cards"><br><br><br>
         <form th:action="@{/kanji/collection}" method="get" id="searchForm">
             <div id="top">
                 <h2>한자 수집북</h2>
                 <span id="kanjiCurrent" th:text="${collected} + '/' + ${totalCount}">0/0</span>
-                <span style="float: right;" class="toWrongNote">오답노트</span>
+                <span style="float: right;" class="toWrongNote btn btn-dark">오답노트</span>
             </div>
 
             <!-- 검색 폼 -->
@@ -159,8 +245,8 @@
                         <option value="N5" th:selected="${searchRequest.jlptRank} == 'N5'">N5</option>
                     </select>
                     <div class="search-container">
-                        <input type="text" name="kanjiSearch" th:value="${kanjiSearch}" placeholder="한자를 입력해주세요"
-                            class="form-control">
+                        <input type="text" name="kanjiSearch" th:value="${searchRequest.kanjiSearch}"
+                            placeholder="한자를 입력해주세요" class="form-control">
                         <button type="submit">
                             <i class="bi bi-search"></i>
                         </button>
@@ -173,13 +259,15 @@
 
         <!-- 초기 카드 목록(서버 렌더링된 10개) -->
         <div class="grid-container" id="cardContainer">
-            <div th:each="kanji : ${searchResponse}">
-                <div th:if="${kanji.collectedCount} > 0" th:class="kanjiCard" th:classappend="
-        ${kanji.collectedCount} >= 10 ? ' border-lv3' :
-        (${kanji.collectedCount} >= 5 ? ' border-lv2' :
-        (${kanji.collectedCount} >= 1 ? ' border-lv1' : ''))
-        ">
 
+            <div th:each="kanji : ${searchResponse}">
+
+                <div th:if="${kanji.collectedCount} > 0" th:class="kanjiCard" th:classappend="
+                    ${kanji.collectedCount} >= 10 ? ' border-lv3' :
+                    (${kanji.collectedCount} >= 5 ? ' border-lv2' :
+                    (${kanji.collectedCount} >= 1 ? ' border-lv1' : ''))
+                    ">
+                    <span class="bookMark2" style="position: absolute; font-size: 20px;">☆</span>
                     <div class="card-face card-front">
                         <span class="kanji" th:text="${kanji.kanji}">水</span>
                         <hr>
@@ -197,6 +285,7 @@
                             <div class="detail-header">
                                 <div class="detailKanjiId" th:text="'No. ' +${kanji.kanjiId}"></div>
                                 <div class="detailJlptRank" th:text="${kanji.jlptRank}"></div>
+
                             </div>
                             <div class="detailKanjiCard">
                                 <span class="detailKanji" th:text="${kanji.kanji}"></span>
@@ -257,22 +346,25 @@
             $('.toWrongNote').on('click', function () {
                 $(".wrongModal").css("display", "block");
                 $('#scrollArrow').css('display', 'none');
+                document.body.style.overflow = 'hidden';
             });
+
+
+
             $(document).on('click', '.wrongModal', function (e) {
                 if (!$(e.target).parents('.modal_popup').length && !$(e.target).is('.modal_popup')) {
                     if ($(".wrongModal").css("display") == 'block') {
 
                         $(".wrongModal").css("display", "none");
+                        document.body.style.overflow = 'auto';
+                        $('#scrollArrow').css('display', 'block');
                     }
                 }
             });
 
+
             $(document).on('click', '.wrongMoreView', function () {
-
-
-
                 if ($(this).text() == '△') {
-
                     $(this).parent().parent().find(".wrongMeaning").css('display', 'none');
                     $(this).text('▽');
                 } else {
@@ -282,9 +374,7 @@
             })
 
             $(document).on('click', '.wrongDelete', function (e) {
-
                 let kanjiId = $(this).parents('tr').find('input[type = "hidden"]').val();
-
                 $.ajax({
                     url: "/kanji/wrongDelete",
                     method: "POST",
@@ -292,20 +382,14 @@
                     success: function () {
                     }
                 })
-
                 e.stopPropagation();
                 $(this).parents('tr').remove();
-
                 $('.wrongSize').text($('.wrongSize').text() - 1);
-
             });
 
             $(document).on('click', '.bookMark', function (e) {
-
                 let kanjiId = $(this).parents('tr').find('input[type = "hidden"]').val();
-
                 if ($(this).text() == '☆') {
-
                     $.ajax({
                         url: "/kanji/addBookMark",
                         method: "POST",
@@ -314,6 +398,7 @@
                         }
                     })
                     $(this).text('★');
+                    $(this).css('color', 'gold');
 
                 } else {
                     $.ajax({
@@ -324,59 +409,68 @@
                         }
                     })
                     $(this).text('☆')
+                    $(this).css('color', 'black');
                     e.stopPropagation();
                 }
             });
-        })
 
+        })
     </script>
     <div class="wrongModal">
         <div class="modal_popup">
             <div class="wrongNote">
-                <h3 style="text-align: center; margin-top: 10px;">오답노트</h3>
-                <div style="float: left; margin-left: 10px;">등록된 한자 : <span class="wrongSize"
-                        th:text="${wrongKanji.size()}"></span>개</div>
-                <br>
-                <hr>
-                <table style="width: 100%;">
-                    <tr th:each="wrong : ${wrongKanji}">
-                        <td>
-                            <div class="wrongItem">
-                                <input type="hidden" th:value="${wrong.kanjiId}">
-                                <span style="font-size: 50px; margin:  0px 25px 0px;">[[${wrong.kanji}]] </span>
-                                <span style="float: right; margin: 20px 20px 0px 0px;">오답횟수 :
-                                    [[${wrong.wrongCount}]]</span>
-                                <div style="background-color: #F8F8F8; padding: 12px 14px; margin:  0px 18px 0px;">
-                                    <div style="font-size: 25px; ">
-                                        <span>[[${wrong.korKunyomi}]]
-                                            [[${wrong.korOnyomi}]]</span>
-                                        <span style="float: right;" class="wrongMoreView">▽</span>
+                <span>
+                    <h3 style="text-align: center; margin-top: 10px;">오답노트</h3>
+                    <div style="float: left; margin-left: 110px;">등록된 한자 : <span class="wrongSize"
+                            th:text="${wrongKanji.size()}"></span>개</div>
+                    <br>
+                    <hr>
+                    <table style="width: 100%;">
+                        <tr th:each="wrong : ${wrongKanji}">
+                            <td>
+                                <div class="wrongItem">
+                                    <input type="hidden" th:value="${wrong.kanjiId}">
+                                    <span style="font-size: 50px; margin:  0px 30px 0px;">[[${wrong.kanji}]] </span>
+                                    <span style="float: right; margin: 20px 20px 0px 0px;">오답횟수 :
+                                        [[${wrong.wrongCount}]]</span>
+                                    <div style="background-color: #F8F8F8; padding: 12px 14px; margin:  0px 18px 0px;">
+                                        <div style="font-size: 25px; ">
+                                            <span>[[${wrong.korKunyomi}]]
+                                                [[${wrong.korOnyomi}]]</span>
+                                            <span style="float: right;" class="wrongMoreView">▽</span>
+                                        </div>
+
+                                        <span class="wrongMeaning"><br>
+                                            <span>훈독 [[${wrong.jpnKunyomi}]] </span>
+                                            <br>
+                                            <span>음독 [[${wrong.jpnOnyomi}]] </span>
+                                            <br>
+                                            <span
+                                                th:utext=" ${#strings.replace(#strings.replace(wrong.meaning, '\n','<br>'), ';', ',')}"></span>
+                                        </span>
+                                    </div><br>
+                                    <div style="background-color: #F8F8F8;">
+                                        <span style="font-size: 15px; padding-left: 20px;">
+                                            [[${#temporals.format(wrong.updatedAt,'yyyy-MM-dd')}]] 사용</span>
+                                        <span style="float: right; padding-right: 20px;" class="wrongDelete">초기화</span>
+
+                                        <span th:if="${wrong.bookmarked} == 0"
+                                            style="float: right; padding-right: 30px; color: black;"
+                                            class="bookMark">☆</span>
+                                        <span th:unless="${wrong.bookmarked} == 0"
+                                            style="float: right; padding-right: 30px; color: gold;"
+                                            class="bookMark">★</span>
+                                        <hr>
                                     </div>
-
-                                    <span class="wrongMeaning"><br>
-                                        <span>훈독 [[${wrong.jpnKunyomi}]] </span>
-                                        <br>
-                                        <span>음독 [[${wrong.jpnOnyomi}]] </span>
-                                        <br>
-                                        <span
-                                            th:utext=" ${#strings.replace(#strings.replace(wrong.meaning, '\n','<br>'), ';', ',')}"></span>
-                                    </span>
-                                </div><br>
-                                <div style="background-color: #F8F8F8;">
-                                    <span style="font-size: 15px; padding-left: 20px;">
-                                        [[${#temporals.format(wrong.updatedAt,'yyyy-MM-dd')}]] 사용</span>
-                                    <span style="float: right; padding-right: 20px;" class="wrongDelete">초기화</span>
-
-                                    <span th:if="${wrong.bookmarked} == 0" style="float: right; padding-right: 30px;"
-                                        class="bookMark">☆</span>
-                                    <span th:unless="${wrong.bookmarked} == 0"
-                                        style="float: right; padding-right: 30px;" class="bookMark">★</span>
-                                    <hr>
                                 </div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+
+
+                            </td>
+                        </tr>
+
+
+                    </table>
+                </span>
             </div>
         </div>
     </div>

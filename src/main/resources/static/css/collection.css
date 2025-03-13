@@ -67,7 +67,7 @@ select.form-select {
     font-weight: bold;
     width: 100px;
     line-height: 60px;
-    margin-left: 60px;
+    margin-left: 85px;
     /* float: left; */
 }
 
@@ -147,6 +147,7 @@ select.form-select {
 .kanjiExplain {
     text-align: left;
     font-size: 16px;
+    margin-top: 10px;
     margin-left: 10px;
 
 }
@@ -286,7 +287,7 @@ select.form-select {
 .detailJlptRank {
     font-weight: bold;
     text-align: right;
-    margin-right: 25px;
+    margin-right: 15px;
 }
 
 .detailYomi {
@@ -305,7 +306,8 @@ select.form-select {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 pre {

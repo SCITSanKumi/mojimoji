@@ -56,14 +56,14 @@ $(() => {
         inputField.val("");
 
         fetch(`/game/send/${bookId}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({
-                    message: inputText
-                })
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                message: inputText
             })
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error("메시지 전송 중 오류");
