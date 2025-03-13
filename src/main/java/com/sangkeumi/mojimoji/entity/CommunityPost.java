@@ -1,6 +1,7 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -67,6 +68,7 @@ public class CommunityPost {
     /**
      * 게시글에 달린 댓글 목록 (Community_Replies 테이블과 일대다 관계)
      */
+    @Builder.Default
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityReply> communityReplies;
+    private List<CommunityReply> communityReplies = new ArrayList<>();
 }

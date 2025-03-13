@@ -4364,29 +4364,29 @@ INSERT INTO Kanji_Collections VALUES
 (DEFAULT, 846, 1, 0, 1,0, '2025-05-01 09:00:00', '2025-05-09 09:00:00');
 
 INSERT INTO Books (user_id, title, thumbnail_url, is_ended, created_at, updated_at) VALUES
-(1, 'Samurai Story', '/image/thumbnail_images/ecffc11f-0706-484a-9759-e4c415436a76_thumbnail.png', true, '2025-03-01 10:00:00', '2025-03-01 10:00:00'),
+(1, 'Samurai Story', null, true, '2025-03-01 10:00:00', '2025-03-01 10:00:00'),
 (1, 'Way of the Sword', '/image/b2.png', false, '2025-03-05 11:00:00', '2025-03-05 11:00:00'),
 (2, 'Hana''s Journey', null, true, '2025-03-02 09:30:00', '2025-03-02 09:30:00'),
 (3, 'Wind Whisper', '/image/cloud1.png', false, '2025-03-03 14:00:00', '2025-03-03 14:00:00'),
-(4, 'Shadowed Past', '/image/thumbnail_images/258f9b33-c89f-4f3a-a7aa-17346f13b646_thumbnail.png', true, '2025-03-04 16:00:00', '2025-03-04 16:00:00'),
+(4, 'Shadowed Past', null, true, '2025-03-04 16:00:00', '2025-03-04 16:00:00'),
 (5, 'Blue Horizon', '/image/shadow.png', false, '2025-03-05 12:00:00', '2025-03-05 12:00:00'),
-(6, 'Roaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-06 13:00:00', '2025-03-06 13:00:00'),
-(7, 'Imperial Dreams', '/image/thumbnail_images/99687a69-9356-4158-944e-9673a2c9b880_thumbnail.png', true, '2025-03-07 15:00:00', '2025-03-07 15:00:00'),
+(6, 'Roaring Battle', null, true, '2025-03-06 13:00:00', '2025-03-06 13:00:00'),
+(7, 'Imperial Dreams', null, true, '2025-03-07 15:00:00', '2025-03-07 15:00:00'),
 (8, 'Chill of Winter', '/image/d3.png', true, '2025-03-08 17:00:00', '2025-03-08 17:00:00'),
-(9, 'True Faith', '/image/thumbnail_images/ecffc11f-0706-484a-9759-e4c415436a76_thumbnail.png', true, '2025-03-09 18:00:00', '2025-03-09 18:00:00'),
+(9, 'True Faith', null, true, '2025-03-09 18:00:00', '2025-03-09 18:00:00'),
 (10, 'Pure Heart', '/image/bg.png', false, '2025-03-10 19:00:00', '2025-03-10 19:00:00'),
 (11, 'Gentle Breeze', '/image/c4/png', false, '2025-03-11 20:00:00', '2025-03-11 20:00:00'),
-(6, 'Soaring Battle', '/image/thumbnail_images/ecffc11f-0706-484a-9759-e4c415436a76_thumbnail.png', true, '2025-03-01 13:00:00', '2025-03-01 13:00:00'),
-(6, 'Doaring Battle', '/image/thumbnail_images/99687a69-9356-4158-944e-9673a2c9b880_thumbnail.png', true, '2025-03-02 13:00:00', '2025-03-02 13:00:00'),
-(6, 'Qoaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-03 13:00:00', '2025-03-03 13:00:00'),
-(6, 'Zoaring Battle', '/image/thumbnail_images/258f9b33-c89f-4f3a-a7aa-17346f13b646_thumbnail.png', true, '2025-03-04 13:00:00', '2025-03-04 13:00:00'),
-(6, 'Woaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-05 13:00:00', '2025-03-05 13:00:00'),
-(6, 'Eoaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-06 13:00:00', '2025-03-06 13:00:00'),
-(6, 'Roaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-07 13:00:00', '2025-03-07 13:00:00'),
-(6, 'Toaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-08 13:00:00', '2025-03-08 13:00:00'),
-(6, 'Goaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-09 13:00:00', '2025-03-09 13:00:00'),
-(6, 'Hoaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-10 13:00:00', '2025-03-10 13:00:00'),
-(6, 'Ioaring Battle', '/image/thumbnail_images/6cac3c8b-2e1d-4bac-ab88-47b9b01f4b04_thumbnail.png', true, '2025-03-11 13:00:00', '2025-03-11 13:00:00');
+(6, 'Soaring Battle', null, true, '2025-03-01 13:00:00', '2025-03-01 13:00:00'),
+(6, 'Doaring Battle', null, true, '2025-03-02 13:00:00', '2025-03-02 13:00:00'),
+(6, 'Qoaring Battle', null, true, '2025-03-03 13:00:00', '2025-03-03 13:00:00'),
+(6, 'Zoaring Battle', null, true, '2025-03-04 13:00:00', '2025-03-04 13:00:00'),
+(6, 'Woaring Battle', null, true, '2025-03-05 13:00:00', '2025-03-05 13:00:00'),
+(6, 'Eoaring Battle', null, true, '2025-03-06 13:00:00', '2025-03-06 13:00:00'),
+(6, 'Roaring Battle', null, true, '2025-03-07 13:00:00', '2025-03-07 13:00:00'),
+(6, 'Toaring Battle', null, true, '2025-03-08 13:00:00', '2025-03-08 13:00:00'),
+(6, 'Goaring Battle', null, true, '2025-03-09 13:00:00', '2025-03-09 13:00:00'),
+(6, 'Hoaring Battle', null, true, '2025-03-10 13:00:00', '2025-03-10 13:00:00'),
+(6, 'Ioaring Battle', null, true, '2025-03-11 13:00:00', '2025-03-11 13:00:00');
 
 
 -- Book 1 (user 1)
