@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -87,37 +88,43 @@ public class User {
      * 유저가 작성한 책(스토리) 목록 (Books 테이블과 연관)
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Book> books;
+    @Builder.Default
+    private List<Book> books = new ArrayList<>();;
 
     /**
      * 유저가 작성한 커뮤니티 게시글 목록
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityPost> communityPosts;
+    @Builder.Default
+    private List<CommunityPost> communityPosts = new ArrayList<>();;
 
     /**
      * 유저가 작성한 커뮤니티 댓글 목록
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommunityReply> communityReplies;
+    @Builder.Default
+    private List<CommunityReply> communityReplies = new ArrayList<>();;
 
     /**
      * 유저의 한자 컬렉션 목록
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<KanjiCollection> kanjiCollections;
+    @Builder.Default
+    private List<KanjiCollection> kanjiCollections = new ArrayList<>();;
 
     /**
      * 유저가 작성한 공유된 책 댓글 목록
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SharedBookReply> sharedBookReplies;
+    @Builder.Default
+    private List<SharedBookReply> sharedBookReplies = new ArrayList<>();;
 
     /**
      * 유저의 소셜 로그인 목록
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SocialAccount> socialAccounts;
+    @Builder.Default
+    private List<SocialAccount> socialAccounts = new ArrayList<>();;
 
     public enum UserStatus {
         ACTIVE, INACTIVE, BANNED, PENDING, DELETED

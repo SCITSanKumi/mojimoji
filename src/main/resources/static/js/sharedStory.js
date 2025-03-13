@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     var sharedBookId = $("#sharedBookId").val();
     var currentUserId = $("#currentUserId").val(); // 현재 로그인한 사용자의 ID
 
@@ -26,7 +26,15 @@ $(document).ready(function() {
                 page: page,
                 size: size
             },
-            success: function(comments) {
+            success: function (comments) {
+                // 만약 처음 페이지(page=0)에서 불러온 댓글이 0개라면, '댓글 영역' 숨김
+                if (page === 0 && comments.length === 0) {
+                    $(".comment-container").hide();    // 댓글 컨테이너 영역
+                } else {
+                    $(".comment-container").show();    // 댓글이 있으면 보이도록
+                }
+
+                // 페이지네이션 처리
                 if (comments.length < size) {
                     noMoreComments = true;
                     $("#load-more-button").hide(); // 더보기 버튼 숨기기
@@ -35,7 +43,7 @@ $(document).ready(function() {
                 }
 
                 var list = $("#comment-list");
-                $.each(comments, function(index, comment) {
+                $.each(comments, function (index, comment) {
                     // 댓글 항목 생성
                     var listItem = $("<li class='list-group-item'></li>")
                         .attr("data-comment-id", comment.sharedBookReplyId)
@@ -49,14 +57,18 @@ $(document).ready(function() {
                     // 삭제 버튼 (현재 로그인한 사용자가 댓글 작성자인 경우에만)
                     if (comment.userId == currentUserId) {
                         var deleteBtn = $("<button class='btn btn-sm btn-danger'>삭제</button>");
-                        deleteBtn.click(function() {
+                        deleteBtn.click(function () {
                             $.ajax({
                                 url: "/board/story/comment?sharedBookReplyId=" + comment.sharedBookReplyId,
                                 type: "DELETE",
-                                success: function() {
+                                success: function () {
                                     listItem.remove();
+                                    // 혹시 마지막 댓글이었다면 다시 체크
+                                    if ($("#comment-list li").length === 0) {
+                                        $(".comment-container").hide();
+                                    }
                                 },
-                                error: function(err) {
+                                error: function (err) {
                                     console.error("댓글 삭제 실패:", err);
                                 }
                             });
@@ -69,7 +81,7 @@ $(document).ready(function() {
                 page++; // 다음 페이지 번호
                 loading = false;
             },
-            error: function(err) {
+            error: function (err) {
                 console.error("댓글 불러오기 실패:", err);
                 loading = false;
             }
@@ -80,12 +92,12 @@ $(document).ready(function() {
     loadComments();
 
     // "더보기" 버튼 클릭 시 다음 페이지 로드
-    $("#load-more-button").click(function() {
+    $("#load-more-button").click(function () {
         loadComments(false);
     });
 
     // 댓글 등록 버튼 클릭 이벤트 핸들러
-    $("#add-comment").click(function() {
+    $("#add-comment").click(function () {
         var commentContent = $("#comment-input").val().trim();
         if (commentContent === "") {
             alert("댓글을 입력해주세요.");
@@ -99,8 +111,11 @@ $(document).ready(function() {
                 sharedBookId: sharedBookId,
                 content: commentContent
             }),
-            success: function(newComment) {
+            success: function (newComment) {
                 $("#comment-input").val(""); // 입력창 초기화
+
+                // 만약 기존에 '댓글 없음'으로 숨겨져 있었다면 다시 보여주기
+                $(".comment-container").show();
 
                 // 새 댓글을 맨 위에 추가 (prepend)
                 var listItem = $("<li class='list-group-item'></li>")
@@ -113,45 +128,49 @@ $(document).ready(function() {
 
                 // 삭제 버튼 생성 (작성자 본인이므로 추가)
                 var deleteBtn = $("<button class='btn btn-sm btn-danger'>삭제</button>");
-                deleteBtn.click(function() {
+                deleteBtn.click(function () {
                     $.ajax({
                         url: "/board/story/comment?sharedBookReplyId=" + newComment.sharedBookReplyId,
                         type: "DELETE",
-                        success: function() {
+                        success: function () {
                             listItem.remove();
+                            // 삭제 후 목록이 0개라면 숨김
+                            if ($("#comment-list li").length === 0) {
+                                $(".comment-container").hide();
+                            }
                         },
-                        error: function(err) {
+                        error: function (err) {
                             console.error("댓글 삭제 실패:", err);
                         }
                     });
                 });
                 listItem.append(deleteBtn);
 
-                // 최상단에 새 댓글 추가 및 스크롤 최상단으로 이동
+                // 최상단에 새 댓글 추가
                 $("#comment-list").prepend(listItem);
                 $("#comment-list").scrollTop(0);
             },
-            error: function(err) {
+            error: function (err) {
                 console.error("댓글 등록 실패:", err);
             }
         });
     });
 
     // 추천 수 토글 기능
-    $('#like-button').click(function() {
+    $('#like-button').click(function () {
         $.ajax({
             url: '/board/story/like',
             type: 'POST',
             data: {
                 sharedBookId: sharedBookId
             },
-            success: function(response) {
+            success: function (response) {
                 // 추천 수 업데이트
                 $('#like-count').text(response.gaechu);
-                // 추천 상태에 따라 하트 아이콘 변경: liked가 true이면 채워진 하트(♥), 아니면 빈 하트(♡)
+                // 추천 상태에 따라 하트 아이콘 변경
                 $('#Give-It-An-Id').prop('checked', response.liked);
             },
-            error: function(err) {
+            error: function (err) {
                 console.error("추천 토글 실패", err);
                 alert(err.responseText);
             }
@@ -168,11 +187,11 @@ function deleteStory(bookId) {
         data: {
             bookId: bookId
         },
-        success: function(response) {
+        success: function (response) {
             alert('삭제되었습니다.');
             window.location.href = '/board/story/list';
         },
-        error: function(xhr) {
+        error: function (xhr) {
             alert('삭제 실패: ' + xhr.responseText);
         }
     });

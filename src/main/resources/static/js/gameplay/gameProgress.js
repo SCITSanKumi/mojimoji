@@ -30,6 +30,12 @@ $(() => {
             url: `/game/start/${bookId}`,
             success: (response) => {
                 bookId = response.bookId;
+
+                // 주소창에도 파라미터 반영
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set("bookId", bookId);
+                window.history.pushState({}, '', newUrl);
+
                 $("#start-btn").addClass("d-none");
                 $(".show-at-game-start").removeClass("d-none");
 
@@ -193,9 +199,20 @@ $(() => {
         if (typeof gameState.hp === "number") {
             $("#healthBar").css("width", gameState.hp + "%").text(gameState.hp);
         }
-        if (typeof gameState.mp === "number") {
-            $("#mentalBar").css("width", gameState.mp + "%").text(gameState.mp);
+        if (typeof gameState.gold === "number") {
+            $("#goldAmount").text(gameState.gold);
         }
+        if (typeof gameState.current_location === "string") {
+            $("#currentLocation").text(gameState.current_location);
+        }
+        if (Array.isArray(gameState.inventory)) {
+            // let inventoryHTML = "";
+            // gameState.inventory.forEach(item => {
+            //     inventoryHTML += `<li class="list-group-item">${item}</li>`;
+            // });
+            // $("#inventoryList").html(inventoryHTML);
+        }
+        // 게임 종료 시 UI 변경
         if (gameState.isEnded) {
             isGameEnded = true;
 

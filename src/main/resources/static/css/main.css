@@ -32,12 +32,6 @@ body {
   --transition: all 0.3s ease;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   color: #333;
   line-height: 1.6;
@@ -151,4 +145,21 @@ body {
 .dropdown-item:hover {
   background-color: rgba(255, 107, 107, 0.1);
   color: var(--primary);
+}
+
+/* main.css 맨 아래나 적절한 위치에 추가 */
+.nickname-fixed {
+  /* 기존 .dropdown-item 패딩/마진은 그대로 유지됨 */
+
+  display: inline-block;
+  /* 너비를 가지려면 inline-block이나 block이어야 함 */
+  width: 144px;
+  /* 원하는 고정 너비 (예: 120px) */
+
+  white-space: nowrap;
+  /* 줄바꿈 방지 */
+  overflow: hidden;
+  /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis;
+  /* 숨긴 텍스트를 ...으로 표시 */
 }

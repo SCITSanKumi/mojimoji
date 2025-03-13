@@ -77,16 +77,17 @@
         <!-- 파일 선택을 위한 숨김 input (name 속성 추가하여 파일이 폼에 포함되도록 함) -->
         <input type="file" id="profileImageInput" name="profileImageFile" accept="image/*" style="display: none;">
       </div>
-      <div class="mb-3">
-        <label for="nickname" class="form-label">닉네임</label>
+      <div class="form-floating mb-2">
         <input type="text" id="nickname" name="nickname" class="form-control" th:value="${user.nickname}">
+        <label for="nickname" class="form-label">닉네임</label>
       </div>
-      <div class="mb-3" th:if="${!user.socialUser}">
-        <label for="email" class="form-label">이메일 주소</label>
+      <div class="form-floating mb-2" th:if="${!user.socialUser}">
         <input type="email" id="email" name="email" class="form-control" th:value="${user.email}">
+        <label for="email" class="form-label">이메일 주소</label>
       </div>
       <div class="text-center">
-        <button type="submit" id="profileUpdateBtn" class="btn btn-primary btn-lg px-5">프로필 수정</button>
+        <button type="submit" id="profileUpdateBtn" class="btn w-100 py-2 text-white mb-3"
+          style="background-color: #EE697D;">프로필 수정</button>
       </div>
     </form>
     <div class="action-buttons">
