@@ -204,7 +204,9 @@
     <div class="shared-story-box">
       <div th:each="sharedStory : ${sharedStoryContent}">
         <p th:text="${sharedStory.userContent}"></p>
-        <p th:text="${sharedStory.formattedGptContent()}"></p>
+        <p th:text="${sharedStory.formattedGptContent()}" data-bs-toggle="popover" data-bs-trigger="hover"
+          data-bs-placement="top" data-bs-content="추가 정보입니다.">
+        </p>
       </div>
     </div>
 
@@ -266,6 +268,15 @@
       </div>
     </div>
   </div>
+  <!-- Popover 초기화 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+      popoverTriggerList.forEach(function (popoverTriggerEl) {
+        new bootstrap.Popover(popoverTriggerEl);
+      });
+    });
+  </script>
 </body>
 
 </html>

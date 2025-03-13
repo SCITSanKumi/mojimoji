@@ -105,7 +105,6 @@ public class BoardController {
         // 모델에 데이터 추가
         model.addAttribute("sharedStoryContent", sharedStoryContent);
         model.addAttribute("sharedStoryInfo", sharedStoryInfo);
-        log.info("ssss{}", sharedStoryInfo.liked());
 
         return "board/story/storyDetail";
     }
