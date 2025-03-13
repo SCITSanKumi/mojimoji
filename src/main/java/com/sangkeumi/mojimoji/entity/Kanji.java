@@ -1,6 +1,7 @@
 package com.sangkeumi.mojimoji.entity;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -75,11 +76,15 @@ public class Kanji {
      * 이 한자가 사용된 책의 줄(UsedBookKanji)의 목록
      */
     @OneToMany(mappedBy = "kanji", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UsedBookKanji> usedBookKanjis;
+    @ToString.Exclude
+    @Builder.Default
+    private List<UsedBookKanji> usedBookKanjis = new ArrayList<>();
 
     /**
      * 한자 컬렉션 (유저가 소장한 한자) 목록
      */
     @OneToMany(mappedBy = "kanji", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<KanjiCollection> kanjiCollections;
+    @ToString.Exclude
+    @Builder.Default
+    private List<KanjiCollection> kanjiCollections = new ArrayList<>();
 }

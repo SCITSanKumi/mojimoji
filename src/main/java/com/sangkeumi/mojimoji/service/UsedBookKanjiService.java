@@ -17,7 +17,5 @@ public class UsedBookKanjiService {
 
     public List<UsedBookKanji> selectAll() {
         return usedBookKanjiRepository.findAll();
-
     }
-
 }

@@ -29,7 +29,7 @@ public class GameService {
     private final UsedBookKanjiRepository usedBookKanjiRepository;
     private final UserRepository userRepository;
     private final KanjiRepository kanjiRepository;
-    private final GameAsyncService gameAsyncService;
+    // private final GameAsyncService gameAsyncService;
     private final WebClient webClient;
     private final GameConfiguraton gameConfiguraton;
 
@@ -42,7 +42,7 @@ public class GameService {
         Book book = bookRepository.findById(bookId)
                 .filter(b -> b.getUser().getUserId() == userId) // 사용자 검증(다른 사용자의 bookId를 URL에서 조작하여 요청한 경우)
                 .orElseGet(() -> {
-                    Book newBook = bookRepository.saveAndFlush(Book.builder()
+                    Book newBook = bookRepository.save(Book.builder()
                             .user(user)
                             .title("새로운 모험")
                             .isEnded(false)
@@ -120,30 +120,12 @@ public class GameService {
             throw new RuntimeException("해당 한자가 존재하지 않습니다.");
         }
 
-        // 기존에 저장된 UsedBookKanji를 book 기준으로 모두 조회
-        List<UsedBookKanji> existingKanjiList = usedBookKanjiRepository.findByBook(bookLine.getBook());
-
-        // 기존 저장된 한자들을 Set으로 만듦
-        Set<String> existingKanjiSet = existingKanjiList.stream()
-                .map(uk -> uk.getKanji().getKanji())
-                .collect(Collectors.toSet());
-
-        List<UsedBookKanji> newKanjiToSave = new ArrayList<>();
-
-        // message에서 추출한 한자 중 아직 저장되지 않은 한자만 추가
-        for (Kanji kanji : kanjiList) {
-            log.info("kanji : {}", kanji.getKanji());
-            if (!existingKanjiSet.contains(kanji.getKanji())) {
-                newKanjiToSave.add(UsedBookKanji.builder()
-                        .bookLine(bookLine)
-                        .kanji(kanji)
-                        .build());
-            }
-        }
-
-        if (!newKanjiToSave.isEmpty()) {
-            usedBookKanjiRepository.saveAll(newKanjiToSave);
-        }
+        usedBookKanjiRepository.saveAll(kanjiList.stream()
+            .map(kanji -> UsedBookKanji.builder()
+                .bookLine(bookLine)
+                .kanji(kanji)
+                .build())
+            .collect(Collectors.toList()));
     }
 
     @Transactional
