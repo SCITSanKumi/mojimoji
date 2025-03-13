@@ -102,12 +102,16 @@ public class BoardService {
      * @param bookId
      * @return
      */
-    public SharedStoryInfoResponse getSharedStoryInfo(Long bookId) {
+    public SharedStoryInfoResponse getSharedStoryInfo(Long bookId, Long currentUserId) {
 
         Optional<SharedBook> sharedBookOpt = sharedBookRepository.findByBook_bookId(bookId);
 
         if (sharedBookOpt.isPresent()) {
             SharedBook sharedBook = sharedBookOpt.get();
+            // 현재 사용자가 이 스토리를 추천했는지 확인
+            User user = userRepository.findById(currentUserId)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            boolean liked = sharedBookLikeRepository.findBySharedBookAndUser(sharedBook, user).isPresent();
             SharedStoryInfoResponse storyInfo = SharedStoryInfoResponse.builder()
                     .sharedBookId(sharedBook.getSharedBookId())
                     .bookId(sharedBook.getBook().getBookId())
@@ -118,7 +122,8 @@ public class BoardService {
                     .profileUrl(sharedBook.getBook().getUser().getProfileUrl())
                     .hitCount(sharedBook.getHitCount())
                     .gaechu(sharedBook.getGaechu())
-                    .liked(false)
+                    .createdAt(sharedBook.getCreatedAt())
+                    .liked(liked)
                     .build();
             return storyInfo;
         } else {
@@ -197,6 +202,7 @@ public class BoardService {
                 .profileUrl(sharedBook.getBook().getUser().getProfileUrl())
                 .hitCount(sharedBook.getHitCount())
                 .gaechu(sharedBook.getGaechu())
+                .createdAt(sharedBook.getCreatedAt())
                 .liked(liked)
                 .build();
     }
@@ -316,7 +322,7 @@ public class BoardService {
         }
         // 이미 공유된 상태면 기존 정보 반환
         if (book.getSharedBook() != null) {
-            return getSharedStoryInfo(bookId);
+            return getSharedStoryInfo(bookId, userId);
         }
         // 공유되지 않은 경우 SharedBook 엔티티 생성 후 저장
         SharedBook sharedBook = SharedBook.builder()
@@ -325,7 +331,7 @@ public class BoardService {
                 .gaechu(0)
                 .build();
         sharedBookRepository.save(sharedBook);
-        return getSharedStoryInfo(bookId);
+        return getSharedStoryInfo(bookId, userId);
     }
 
     /**
