@@ -286,7 +286,7 @@
           <a class="author-link"
             th:href="${#authentication.principal.userId == sharedStoryInfo.userId} ? '/mypage' : '/user/otherProfile?userId=' + ${sharedStoryInfo.userId}">
             <div class="author-info">
-              <img th:src="${sharedStoryInfo.profileUrl}" alt="Author" class="author-img">
+              <img th:src="${sharedStoryInfo.profileUrl != null ? sharedStoryInfo.profileUrl : 'https://cdn2.iconfinder.com/data/icons/people-80/96/Picture1-1024.png'}" alt="Author" class="author-img">
               <div class="author-text">
                 <h3 class="author-name" th:text="${sharedStoryInfo.nickname}">작성자</h3>
                 <p class="author-title" th:text="${sharedStoryInfo.title}">제목</p>
