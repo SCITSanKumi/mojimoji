@@ -1,430 +1,491 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>mojimoji</title>
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
-        <!-- Bootstrap JS -->
-        <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-        <!-- jQuery -->
-        <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
-        <!-- jQuery UI (for draggable/droppable) -->
-        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
-        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-        <!-- Bootstrap Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 
-        <style>
-            /* 기본 레이아웃 설정 */
-            body {
-                margin: 0;
-                padding-top: 100px; /* 고정 헤더에 의한 여백 */
-                background-color: #f8f9fa;
-            }
-            nav.navbar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 1030;
-            }
-            .game-container {
-                width: 600px;
-                margin: 0 auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            /* 새로 추가한 chat-wrapper: 채팅 영역과 인벤토리 영역을 감싸서 인벤토리 스크롤 영향 제거 */
-            .chat-wrapper {
-                position: relative;
-                width: 100%;
-            }
-            .chat-container {
-                height: 400px;
-                width: 100%;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                background: white;
-                padding: 10px;
-                overflow-y: auto;
-                display: flex;
-                flex-direction: column;
-                position: relative;
-            }
-            .chat-container::-webkit-scrollbar {
-                width: 8px;
-            }
-            .chat-container::-webkit-scrollbar-thumb {
-                background-color: #0d6efd;
-                border-radius: 4px;
-            }
-            .message {
-                display: flex;
-                flex-direction: column;
-                margin: 10px 0;
-                width: 100%;
-            }
-            .message-content {
-                display: inline-block;
-                max-width: 80%;
-                padding: 10px;
-                margin-top: 5px;
-                word-wrap: break-word;
-                white-space: pre-wrap;
-                border-radius: 10px;
-            }
-            /* 나레이션, 플레이어, NPC 스타일 */
-            .narration-message {
-                align-items: center;
-                text-align: center;
-            }
-            .narration-content {
-                background-color: #adb5bd;
-                color: #fff;
-                border-radius: 10px;
-            }
-            .player-message {
-                align-items: flex-end;
-                text-align: right;
-            }
-            .player-content {
-                background-color: #0d6efd;
-                color: #fff;
-                border-radius: 10px 0 10px 10px;
-            }
-            .npc-message {
-                align-items: flex-start;
-                text-align: left;
-            }
-            .npc-content {
-                background-color: #198754;
-                color: #fff;
-                border-radius: 0 10px 10px 10px;
-            }
-            .npc-profile {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 2px solid #ddd;
-            }
-            .status-label {
-                width: 60px;
-                text-align: right;
-            }
-            .quizEnd:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-                cursor: pointer;
-            }
-            /* 한자카드 모달 (기존 스타일) */
-            .kanjiModal {
-                text-align: center;
-                display: none;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                overflow: hidden;
-                background: rgba(0, 0, 0, 0.5);
-            }
-            .kanjiModal .modal_popup {
-                position: absolute;
-                top: 45%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                padding: 20px;
-            }
-            .toKanjiList {
-                display: inline-block;
-                background-color: white;
-                width: 340px;
-                border-radius: 10px;
-                border: 1px solid gray;
-                text-align: center;
-            }
-            .detailKanjiCard {
-                width: 298px;
-                border: 1px solid lightgray;
-                text-align: center;
-                margin-bottom: 10px;
-                margin: auto;
-            }
-            .detailKanji {
-                display: inline-block;
-                font-size: 130px;
-                width: 278px;
-                height: 192px;
-                font-weight: bold;
-                border: 1px solid lightgray;
-                margin-top: 10px;
-            }
-            .detailKanjiExplain {
-                text-align: left;
-                font-size: 16px;
-                margin-left: 10px;
-            }
-            .detailCategory {
-                display: inline-block;
-                margin: 5px 0 5px 25px;
-                float: left;
-            }
-            .bookMark {
-                margin: 0 auto;
-                width: 15.24px;
-                font-size: 25px;
-            }
-            .bookMark:hover {
-                cursor: pointer;
-            }
-            .detailJlptRank {
-                font-weight: bold;
-                text-align: right;
-                margin: 5px 25px 5px 0;
-            }
-            .detailYomi {
-                text-align: center;
-                font-size: 40px;
-                margin-top: 10px;
-            }
-            .detailKanjiId {
-                font-size: 15px;
-                color: #1063FE;
-                float: left;
-                margin: 5px 0 5px 25px;
-            }
-            .detailCreatedAt {
-                display: inline-block;
-                margin: 5px 25px 5px 0;
-                font-size: 15px;
-                float: right;
-            }
-            pre {
-                margin-top: 0;
-                height: 168px;
-            }
-            .quizScroll {
-                overflow-x: auto;
-                white-space: nowrap;
-                font-size: 20px;
-                padding-top: 5px;
-            }
-            .quizScroll::-webkit-scrollbar {
-                width: 15px;
-            }
-            .quizScroll::-webkit-scrollbar-thumb {
-                background: #666;
-                border-radius: 20px;
-            }
-            .quizScroll::-webkit-scrollbar-track {
-                background: #ddd;
-                border-radius: 20px;
-            }
-            /* ---------- 힌트 박스 및 한자 카드 스타일 ---------- */
-            /* 힌트 박스: 게임 화면과 겹치지 않도록 크기를 조절 */
-            .hint-box {
-                position: fixed;
-                top: 100px;
-                right: 10px;
-                width: 350px;
-                max-height: 80vh;
-                border: 1px solid #ddd;
-                background-color: #fff;
-                padding: 10px;
-                overflow-y: auto;
-                display: none;
-                z-index: 1000;
-                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            /* 한자 카드 컨테이너: 한 줄에 3개씩 */
-            .kanji-cards-container {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-                padding: 5px;
-                justify-content: center;
-            }
-            /* 한자 카드 스타일: 3:4 비율 */
-            .kanji-card {
-                width: 90px;
-                height: 120px;
-                background: white;
-                border: 2px solid #333;
-                border-radius: 8px;
-                text-align: center;
-                padding: 10px;
-                font-size: 32px;
-                font-weight: bold;
-                cursor: grab;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                user-select: none;
-                position: relative;
-            }
-            /* 카드 내부 텍스트: 한자와 한국어 음/뜻 */
-            .kanji-character {
-                font-size: 40px;
-                margin-bottom: 5px;
-            }
-            .kanji-readings {
-                font-size: 12px;
-                text-align: center;
-                line-height: 1.2;
-            }
-            /* 드래그 시 스타일 */
-            .kanji-card:active {
-                cursor: grabbing;
-            }
-            /* 인벤토리 버튼과 패널은 chat-wrapper 내에 위치 (채팅 스크롤 영향X) */
-            #inventory-button {
-                position: absolute;
-                bottom: 10px;
-                right: 10px;
-                z-index: 1100;
-            }
-            #inventory-panel {
-                position: absolute;
-                bottom: 50px;
-                right: 10px;
-                width: 300px;
-                min-height: 150px;
-                background: #fff;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                display: none;
-                z-index: 1100;
-                padding: 10px;
-            }
-        </style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mojimoji</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+  <!-- Bootstrap JS -->
+  <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+  <!-- jQuery -->
+  <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <!-- jQuery UI (for draggable/droppable) -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
-        <!-- 게임플레이 관련 JS -->
-        <script src="../../static/js/gameplay/gameProgress.js" th:src="@{/js/gameplay/gameProgress.js}"></script>
-        <script src="../../static/js/gameplay/gameQuiz.js" th:src="@{/js/gameplay/gameQuiz.js}"></script>
-    </head>
-    <body>
-        <header th:insert="~{fragments/header :: header}"></header>
-
-        <!-- 메인 콘텐츠 영역 -->
-        <main class="container">
-            <div class="game-container">
-                <!-- 체력/골드/위치 표시 영역 -->
-                <div class="mb-3 w-100 d-none show-at-game-start">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1 d-flex align-items-center text-start">
-                            <i class="bi bi-heart-fill me-2" style="font-size: 1.2rem; color: #e74c3c;"></i>
-                            <div class="progress" style="width: 120px; height: 15px;">
-                                <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%;">100</div>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 d-flex align-items-center justify-content-center text-center">
-                            <i class="bi bi-currency-dollar me-2" style="font-size: 1.2rem; color: #f1c40f;"></i>
-                            <span id="goldAmount" class="fs-5" style="color: #f39c12;">1000</span>
-                        </div>
-                        <div class="flex-grow-1 d-flex align-items-center justify-content-end text-end">
-                            <i class="bi bi-geo-alt-fill me-2" style="font-size: 1.2rem; color: #3498db;"></i>
-                            <span id="currentLocation" class="fs-5" style="color: #2980b9;">태초마을</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 채팅 영역과 인벤토리 영역을 감싸는 chat-wrapper -->
-                <div class="chat-wrapper">
-                    <!-- 채팅 영역 (드롭 가능한 영역) -->
-                    <div class="chat-container" id="chatBox">
-                        <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">
-                            게임 시작
-                        </button>
-                    </div>
-
-                    <!-- 인벤토리 버튼과 인벤토리 패널은 chat-wrapper 내에 배치 -->
-                    <button id="inventory-button" class="btn btn-secondary">
-                        인벤토리
-                    </button>
-                    <div id="inventory-panel">
-                        <h5>인벤토리</h5>
-                        <ul id="inventory-list" class="list-group">
-                            <!-- 인벤토리 아이템들이 이곳에 추가됩니다 -->
-                        </ul>
-                    </div>
-                </div>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    integrity="sha512-bM8OCHy7kxPLh6kPKC0MdNyS9qC/7K8+18ehc6XbDGjc8fZkAZA90/eBISss2AbzLVcVDM9b9zq5TxG3NEHQHw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js"></script>
 
 
-                <!-- 입력창 및 종료 버튼 (게임 시작 후 표시) -->
-                <div class="input-group mt-3 w-100 d-none show-at-game-start">
-                    <input type="text" id="user-input" class="form-control" placeholder="입력하세요..." />
-                    <button id="hint-btn" class="btn btn-outline-secondary">
-                        <i class="bi bi-lightbulb"></i>
-                    </button>
-                    <button class="btn btn-primary" id="submit-btn">입력</button>
-                </div>
-                <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+  <style>
+    /* 기본 레이아웃 설정 */
+    body {
+      margin: 0;
+      padding-top: 100px;
+      /* 고정 헤더에 의한 여백 */
+      background-color: #f8f9fa;
+    }
+
+    nav.navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1030;
+    }
+
+    .game-container {
+      width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 새로 추가한 chat-wrapper: 채팅 영역과 인벤토리 영역을 감싸서 인벤토리 스크롤 영향 제거 */
+    .chat-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .chat-container {
+      height: 400px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: white;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .chat-container.over {
+      box-shadow: 0 0 10px 2px #ff6b6b;
+      transition: box-shadow 0.2s ease;
+    }
+
+
+    .chat-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+      background-color: #0d6efd;
+      border-radius: 4px;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      margin: 10px 0;
+      width: 100%;
+    }
+
+    .message-content {
+      display: inline-block;
+      max-width: 80%;
+      padding: 10px;
+      margin-top: 5px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      border-radius: 10px;
+    }
+
+    /* 나레이션, 플레이어, NPC 스타일 */
+    .narration-message {
+      align-items: center;
+      text-align: center;
+    }
+
+    .narration-content {
+      background-color: #adb5bd;
+      color: #fff;
+      border-radius: 10px;
+    }
+
+    .player-message {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .player-content {
+      background-color: #0d6efd;
+      color: #fff;
+      border-radius: 10px 0 10px 10px;
+    }
+
+    .npc-message {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .npc-content {
+      background-color: #198754;
+      color: #fff;
+      border-radius: 0 10px 10px 10px;
+    }
+
+    .npc-profile {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ddd;
+    }
+
+    .status-label {
+      width: 60px;
+      text-align: right;
+    }
+
+    .quizEnd:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    /* 한자카드 모달 (기존 스타일) */
+    .kanjiModal {
+      text-align: center;
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .kanjiModal .modal_popup {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+    }
+
+    .toKanjiList {
+      display: inline-block;
+      background-color: white;
+      width: 340px;
+      border-radius: 10px;
+      border: 1px solid gray;
+      text-align: center;
+    }
+
+    .detailKanjiCard {
+      width: 298px;
+      border: 1px solid lightgray;
+      text-align: center;
+      margin-bottom: 10px;
+      margin: auto;
+    }
+
+    .detailKanji {
+      display: inline-block;
+      font-size: 130px;
+      width: 278px;
+      height: 192px;
+      font-weight: bold;
+      border: 1px solid lightgray;
+      margin-top: 10px;
+    }
+
+    .detailKanjiExplain {
+      text-align: left;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+
+    .detailCategory {
+      display: inline-block;
+      margin: 5px 0 5px 25px;
+      float: left;
+    }
+
+    .bookMark {
+      margin: 0 auto;
+      width: 15.24px;
+      font-size: 25px;
+    }
+
+    .bookMark:hover {
+      cursor: pointer;
+    }
+
+    .detailJlptRank {
+      font-weight: bold;
+      text-align: right;
+      margin: 5px 25px 5px 0;
+    }
+
+    .detailYomi {
+      text-align: center;
+      font-size: 40px;
+      margin-top: 10px;
+    }
+
+    .detailKanjiId {
+      font-size: 15px;
+      color: #1063FE;
+      float: left;
+      margin: 5px 0 5px 25px;
+    }
+
+    .detailCreatedAt {
+      display: inline-block;
+      margin: 5px 25px 5px 0;
+      font-size: 15px;
+      float: right;
+    }
+
+    pre {
+      margin-top: 0;
+      height: 168px;
+    }
+
+    .quizScroll {
+      overflow-x: auto;
+      white-space: nowrap;
+      font-size: 20px;
+      padding-top: 5px;
+    }
+
+    .quizScroll::-webkit-scrollbar {
+      width: 15px;
+    }
+
+    .quizScroll::-webkit-scrollbar-thumb {
+      background: #666;
+      border-radius: 20px;
+    }
+
+    .quizScroll::-webkit-scrollbar-track {
+      background: #ddd;
+      border-radius: 20px;
+    }
+
+    /* ---------- 힌트 박스 및 한자 카드 스타일 ---------- */
+    /* 힌트 박스: 게임 화면과 겹치지 않도록 크기를 조절 */
+    .hint-box {
+      position: fixed;
+      top: 100px;
+      right: 10px;
+      width: 350px;
+      max-height: 80vh;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      padding: 10px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 한자 카드 컨테이너: 한 줄에 3개씩 */
+    .kanji-cards-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 5px;
+      justify-content: center;
+    }
+
+    /* 한자 카드 스타일: 3:4 비율 */
+    .kanji-card {
+      width: 90px;
+      height: 120px;
+      background: white;
+      border: 2px solid #333;
+      border-radius: 8px;
+      text-align: center;
+      padding: 10px;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      position: relative;
+    }
+
+    /* 카드 내부 텍스트: 한자와 한국어 음/뜻 */
+    .kanji-character {
+      font-size: 40px;
+      margin-bottom: 5px;
+    }
+
+    .kanji-readings {
+      font-size: 12px;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* 드래그 시 스타일 */
+    .kanji-card:active {
+      cursor: grabbing;
+    }
+
+    /* 인벤토리 버튼과 패널은 chat-wrapper 내에 위치 (채팅 스크롤 영향X) */
+    #inventory-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 1100;
+    }
+
+    #inventory-panel {
+      position: absolute;
+      bottom: 50px;
+      right: 10px;
+      width: 300px;
+      min-height: 150px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      display: none;
+      z-index: 1100;
+      padding: 10px;
+    }
+  </style>
+
+  <!-- 게임플레이 관련 JS -->
+  <script src="../../static/js/gameplay/gameProgress.js" th:src="@{/js/gameplay/gameProgress.js}"></script>
+  <script src="../../static/js/gameplay/gameQuiz.js" th:src="@{/js/gameplay/gameQuiz.js}"></script>
+  <script src="../../static/js/gameplay/hint.js" th:src="@{/js/gameplay/hint.js}"></script>
+</head>
+
+<body>
+  <header th:insert="~{fragments/header :: header}"></header>
+
+  <!-- 메인 콘텐츠 영역 -->
+  <main class="container">
+    <div class="game-container">
+      <!-- 체력/골드/위치 표시 영역 -->
+      <div class="mb-3 w-100 d-none show-at-game-start">
+        <div class="d-flex align-items-center">
+          <div class="flex-grow-1 d-flex align-items-center text-start">
+            <i class="bi bi-heart-fill me-2" style="font-size: 1.2rem; color: #e74c3c;"></i>
+            <div class="progress" style="width: 120px; height: 15px;">
+              <div id="healthBar" class="progress-bar bg-danger" role="progressbar" style="width: 100%;">100</div>
             </div>
+          </div>
+          <div class="flex-grow-1 d-flex align-items-center justify-content-center text-center">
+            <i class="bi bi-currency-dollar me-2" style="font-size: 1.2rem; color: #f1c40f;"></i>
+            <span id="goldAmount" class="fs-5" style="color: #f39c12;">1000</span>
+          </div>
+          <div class="flex-grow-1 d-flex align-items-center justify-content-end text-end">
+            <i class="bi bi-geo-alt-fill me-2" style="font-size: 1.2rem; color: #3498db;"></i>
+            <span id="currentLocation" class="fs-5" style="color: #2980b9;">태초마을</span>
+          </div>
+        </div>
+      </div>
 
-            <!-- 퀴즈 모달 (생략된 부분) -->
-            <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content p-4" style="text-align: center;">
-                        <h2 class="text-center kanjiQuiz">한자 퀴즈</h2>
-                        <div id="quiz-container">
-                            <div class="quiz-item">
-                                <div class="quizScroll"><span class="quizNow"></span></div>
-                                <h5 class="kanji-question" style="font-size: 100px;"></h5>
-                                <table style="width: 100%;">
-                                    <tr>
-                                        <td><label>한글 훈독</label></td>
-                                        <td><label>한글 음독</label></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 0px 20px;">
-                                            <input type="text" class="form-control kunyomi-input" />
-                                        </td>
-                                        <td style="padding: 0px 20px;">
-                                            <input type="text" class="form-control onyomi-input" />
-                                        </td>
-                                    </tr>
-                                </table>
-                                <br>
-                                <div id="quizProc"></div>
-                                <button class="answer-btn btn btn-secondary mt-2">제출</button>
-                            </div>
-                        </div>
-                        <div id="game-result" class="mt-3 d-none"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="kanjiModal">
-                <div class="modal_popup">
-                    <div class="toKanjiList">
-                        <div class="detailKanjiId"></div>
-                        <div class="detailJlptRank">N3</div>
-                        <div class="detailKanjiCard">
-                            <span class="detailKanji">一</span>
-                            <div class="detailKanjiExplain">
-                                <div class="detailYomi">하나 일</div>
-                                <div class="detailJpnKunyomi">음독 :</div>
-                                <div class="detailJpnOnyomi">훈독 :</div>
-                                <pre class="detailMeaning">의미:</pre>
-                                <div class="bookMark">☆</div>
-                            </div>
-                        </div>
-                        <div class="detailCategory">카테고리 :</div>
-                        <div class="detailCreatedAt"></div>
-                    </div>
-                </div>
-            </div>
-        </main>
+      <!-- 채팅 영역과 인벤토리 영역을 감싸는 chat-wrapper -->
+      <div class="chat-wrapper">
+        <!-- 채팅 영역 (드롭 가능한 영역) -->
+        <div class="chat-container" id="chatBox">
+          <button class="btn btn-primary position-absolute top-50 start-50 translate-middle" id="start-btn">
+            게임 시작
+          </button>
+        </div>
 
-        <!-- ---------- 힌트 박스 (백엔드 데이터로 동적 생성) ---------- -->
-        <div id="hint-box" class="hint-box">
-            <h5 class="mb-2">힌트</h5>
-            <!-- <div class="kanji-cards-container" th:if="${kanjiList != null}" th:each="kanji : ${kanjiList}">
+        <!-- 인벤토리 버튼과 인벤토리 패널은 chat-wrapper 내에 배치 -->
+        <button id="inventory-button" class="btn btn-secondary">
+          인벤토리
+        </button>
+        <div id="inventory-panel">
+          <h5>인벤토리</h5>
+          <ul id="inventory-list" class="list-group">
+            <!-- 인벤토리 아이템들이 이곳에 추가됩니다 -->
+          </ul>
+        </div>
+      </div>
+
+
+      <!-- 입력창 및 종료 버튼 (게임 시작 후 표시) -->
+      <div class="input-group mt-3 w-100 d-none show-at-game-start">
+        <input type="text" id="user-input" class="form-control" placeholder="입력하세요..." />
+        <button id="hint-btn" class="btn btn-outline-secondary">
+          <i class="bi bi-lightbulb"></i>
+        </button>
+        <button class="btn btn-primary" id="submit-btn">입력</button>
+      </div>
+      <button class="btn btn-danger mt-3 d-none" id="end-btn">마치기</button>
+    </div>
+
+    <!-- 퀴즈 모달 (생략된 부분) -->
+    <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true"
+      data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content p-4" style="text-align: center;">
+          <h2 class="text-center kanjiQuiz">한자 퀴즈</h2>
+          <div id="quiz-container">
+            <div class="quiz-item">
+              <div class="quizScroll"><span class="quizNow"></span></div>
+              <h5 class="kanji-question" style="font-size: 100px;"></h5>
+              <table style="width: 100%;">
+                <tr>
+                  <td><label>한글 훈독</label></td>
+                  <td><label>한글 음독</label></td>
+                </tr>
+                <tr>
+                  <td style="padding: 0px 20px;">
+                    <input type="text" class="form-control kunyomi-input" />
+                  </td>
+                  <td style="padding: 0px 20px;">
+                    <input type="text" class="form-control onyomi-input" />
+                  </td>
+                </tr>
+              </table>
+              <br>
+              <div id="quizProc"></div>
+              <button class="answer-btn btn btn-secondary mt-2">제출</button>
+            </div>
+          </div>
+          <div id="game-result" class="mt-3 d-none"></div>
+        </div>
+      </div>
+    </div>
+    <div class="kanjiModal">
+      <div class="modal_popup">
+        <div class="toKanjiList">
+          <div class="detailKanjiId"></div>
+          <div class="detailJlptRank">N3</div>
+          <div class="detailKanjiCard">
+            <span class="detailKanji">一</span>
+            <div class="detailKanjiExplain">
+              <div class="detailYomi">하나 일</div>
+              <div class="detailJpnKunyomi">음독 :</div>
+              <div class="detailJpnOnyomi">훈독 :</div>
+              <pre class="detailMeaning">의미:</pre>
+              <div class="bookMark">☆</div>
+            </div>
+          </div>
+          <div class="detailCategory">카테고리 :</div>
+          <div class="detailCreatedAt"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ---------- 힌트 박스 (백엔드 데이터로 동적 생성) ---------- -->
+  <div id="hint-box" class="hint-box">
+    <h5 class="mb-2">힌트</h5>
+    <!-- <div class="kanji-cards-container" th:if="${kanjiList != null}" th:each="kanji : ${kanjiList}">
                 <div class="kanji-card" th:id="'kanji-' + ${kanji.id}">
                     <div class="kanji-character" th:text="${kanji.character}">一</div>
                     <div class="kanji-readings">
@@ -433,207 +494,143 @@
                     </div>
                 </div>
             </div> -->
-            <div class="kanji-cards-container">
-                <div class="kanji-card">
-                    <div class="kanji-character">一</div>
-                    <div class="kanji-readings">
-                        <div>음: 일</div>
-                        <div>뜻: 하나</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">二</div>
-                    <div class="kanji-readings">
-                        <div>음: 이</div>
-                        <div>뜻: 둘</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">三</div>
-                    <div class="kanji-readings">
-                        <div>음: 삼</div>
-                        <div>뜻: 셋</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">四</div>
-                    <div class="kanji-readings">
-                        <div>음: 사</div>
-                        <div>뜻: 넷</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">五</div>
-                    <div class="kanji-readings">
-                        <div>음: 오</div>
-                        <div>뜻: 다섯</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">六</div>
-                    <div class="kanji-readings">
-                        <div>음: 육</div>
-                        <div>뜻: 여섯</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">七</div>
-                    <div class="kanji-readings">
-                        <div>음: 칠</div>
-                        <div>뜻: 일곱</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">八</div>
-                    <div class="kanji-readings">
-                        <div>음: 팔</div>
-                        <div>뜻: 여덟</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">九</div>
-                    <div class="kanji-readings">
-                        <div>음: 구</div>
-                        <div>뜻: 아홉</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">十</div>
-                    <div class="kanji-readings">
-                        <div>음: 십</div>
-                        <div>뜻: 열</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">百</div>
-                    <div class="kanji-readings">
-                        <div>음: 백</div>
-                        <div>뜻: 백</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">千</div>
-                    <div class="kanji-readings">
-                        <div>음: 천</div>
-                        <div>뜻: 천</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">万</div>
-                    <div class="kanji-readings">
-                        <div>음: 만</div>
-                        <div>뜻: 만</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">円</div>
-                    <div class="kanji-readings">
-                        <div>음: 엔</div>
-                        <div>뜻: 동그라미</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">日</div>
-                    <div class="kanji-readings">
-                        <div>음: 일</div>
-                        <div>뜻: 날</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">月</div>
-                    <div class="kanji-readings">
-                        <div>음: 월</div>
-                        <div>뜻: 달</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">火</div>
-                    <div class="kanji-readings">
-                        <div>음: 화</div>
-                        <div>뜻: 불</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">水</div>
-                    <div class="kanji-readings">
-                        <div>음: 수</div>
-                        <div>뜻: 물</div>
-                    </div>
-                </div>
-                <div class="kanji-card">
-                    <div class="kanji-character">木</div>
-                    <div class="kanji-readings">
-                        <div>음: 목</div>
-                        <div>뜻: 나무</div>
-                    </div>
-                </div>
-            </div>
+    <div class="kanji-cards-container">
+      <div class="kanji-card">
+        <div class="kanji-character">一</div>
+        <div class="kanji-readings">
+          <div>음: 일</div>
+          <div>뜻: 하나</div>
         </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">二</div>
+        <div class="kanji-readings">
+          <div>음: 이</div>
+          <div>뜻: 둘</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">三</div>
+        <div class="kanji-readings">
+          <div>음: 삼</div>
+          <div>뜻: 셋</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">四</div>
+        <div class="kanji-readings">
+          <div>음: 사</div>
+          <div>뜻: 넷</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">五</div>
+        <div class="kanji-readings">
+          <div>음: 오</div>
+          <div>뜻: 다섯</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">六</div>
+        <div class="kanji-readings">
+          <div>음: 육</div>
+          <div>뜻: 여섯</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">七</div>
+        <div class="kanji-readings">
+          <div>음: 칠</div>
+          <div>뜻: 일곱</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">八</div>
+        <div class="kanji-readings">
+          <div>음: 팔</div>
+          <div>뜻: 여덟</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">九</div>
+        <div class="kanji-readings">
+          <div>음: 구</div>
+          <div>뜻: 아홉</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">十</div>
+        <div class="kanji-readings">
+          <div>음: 십</div>
+          <div>뜻: 열</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">百</div>
+        <div class="kanji-readings">
+          <div>음: 백</div>
+          <div>뜻: 백</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">千</div>
+        <div class="kanji-readings">
+          <div>음: 천</div>
+          <div>뜻: 천</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">万</div>
+        <div class="kanji-readings">
+          <div>음: 만</div>
+          <div>뜻: 만</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">円</div>
+        <div class="kanji-readings">
+          <div>음: 엔</div>
+          <div>뜻: 동그라미</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">日</div>
+        <div class="kanji-readings">
+          <div>음: 일</div>
+          <div>뜻: 날</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">月</div>
+        <div class="kanji-readings">
+          <div>음: 월</div>
+          <div>뜻: 달</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">火</div>
+        <div class="kanji-readings">
+          <div>음: 화</div>
+          <div>뜻: 불</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">水</div>
+        <div class="kanji-readings">
+          <div>음: 수</div>
+          <div>뜻: 물</div>
+        </div>
+      </div>
+      <div class="kanji-card">
+        <div class="kanji-character">木</div>
+        <div class="kanji-readings">
+          <div>음: 목</div>
+          <div>뜻: 나무</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- 드래그 앤 드롭 스크립트 -->
-        <script>
-            $(document).ready(function () {
-                $("#inventory-button").click(function(){
-                    $("#inventory-panel").toggle();
-                });
+</body>
 
-                // 힌트 버튼 클릭 시 힌트 박스 토글
-                $("#hint-btn").click(function () {
-                    $("#hint-box").toggle();
-                });
-
-                // 한자 카드 드래그 설정
-                $(".kanji-card").draggable({
-                    appendTo: "body",
-                    helper: "clone",
-                    scroll: false,
-                    zIndex: 2000,
-                    revert: function (dropped) {
-                        // 유효한 드롭 영역에 놓이면 revert하지 않음
-                        return !dropped;
-                    },
-                    revertDuration: 500,
-                    start: function (event, ui) {
-                        $(this).css("visibility", "hidden"); // 드래그 시작 시 원본 숨김
-                        ui.helper.css("z-index", 3000);
-                        $(this).removeData("dropped"); // dropped 플래그 초기화
-                    },
-                    stop: function (event, ui) {
-                        var $this = $(this);
-                        // 드롭된 경우 0.2초 후에 원래 위치에서 보이도록 (애니메이션 효과 없이)
-                        if ($this.data("dropped")) {
-                            setTimeout(function () {
-                                $this.css("visibility", "visible");
-                            }, 200);
-                        } else {
-                            $this.css("visibility", "visible");
-                        }
-                    }
-                });
-
-                // 채팅 영역을 드롭 영역으로 설정
-                $(".chat-container").droppable({
-                    accept: ".kanji-card",
-                    drop: function (event, ui) {
-                        // 드롭 시, 해당 한자 카드에 dropped 플래그 설정
-                        ui.draggable.data("dropped", true);
-                        // 드래그된 한자 카드에서 선택한 한자 텍스트 추출 (kanji-character 클래스로)
-                        let selectedKanji = ui.draggable.find(".kanji-character").text();
-                        // AJAX 요청: bookId는 전역 또는 템플릿 변수로 정의되어 있다고 가정
-                        $.ajax({
-                            url: `/game/hint/${bookId}`,
-                            method: "GET",
-                            data: { kanji: selectedKanji },
-                            success: function (response) {
-                                $("#user-input").val(response);
-                            },
-                            error: function (e) {
-                                alert("힌트 요청 중 오류 발생");
-                            }
-                        });
-                    }
-                });
-            });
-        </script>
-    </body>
 </html>
