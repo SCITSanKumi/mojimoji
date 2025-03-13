@@ -6,13 +6,13 @@ $(function () {
     const originalData = new Map();
     let isAnimating = false;
 
-    $('#kanjiSort').on('change', function () {
+    $(document).on('change', '#kanjiSort', function () {
         $('#searchForm').submit();
-    })
+    });
 
-    $('#sortDirection').on('change', function () {
+    $(document).on('change', '#sortDirection', function () {
         $('#searchForm').submit();
-    })
+    });
 
     // $(document).on('click', '.wrongModal', function (e) {
     // $('.bookMark2').on('click', function (e) {

@@ -44,7 +44,7 @@ $(() => {
 
 
             setTimeout(() => {
-                $('.quizScroll').scrollLeft($('.quizScroll')[0].scrollWidth);
+                $('.quizScroll').scrollLeft($('.quizScroll')[0].scrollWidth * (currentIndex/questionList.length)-100);
             }, 25);
 
             quizItem.find(".kanji-question").text(`${question.kanji}`);
@@ -74,7 +74,7 @@ $(() => {
                 data: { "kanjiId": question.kanjiId },
                 success: function () {
                     $('#quizProc').css('color', 'black');
-                    $('#quizProc').html('정답입니다! 컬렉션에 추가되었습니다.')
+                    $('#quizProc').html('정답입니다! 컬렉션에 추가되었습니다. <br> ㅤ')
                     quizNowProc = quizNowProc.replace('●', `<div class= "quizEnd" data-kanjiId="${question.kanjiId}"
                     data-kanji="${question.kanji}" data-category="${question.category}" data-jlptrank="${question.jlptRank}"
                     data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
