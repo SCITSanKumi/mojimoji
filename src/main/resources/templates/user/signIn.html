@@ -2,144 +2,141 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>로그인</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css"
-        th:href="@{/css/bootstrap.min.css}">
-    <!-- Bootstrap JS -->
-    <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <!-- 공통 리소스 (CSS, 폰트 preload) -->
-    <link rel="stylesheet" href="../../../static/css/main.css" th:href="@{/css/main.css}">
-    <link rel="preload" href="/fonts/PretendardJPVariable.ttf" as="font" type="font/ttf" crossorigin>
+  <meta charset="UTF-8">
+  <title>로그인</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+  <!-- Bootstrap JS -->
+  <script defer src="../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+  <!-- 공통 리소스 (CSS, 폰트 preload) -->
+  <link rel="stylesheet" href="../../../static/css/main.css" th:href="@{/css/main.css}">
+  <link rel="preload" href="/fonts/PretendardJPVariable.ttf" as="font" type="font/ttf" crossorigin>
 
-    <!-- jQuery -->
-    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script defer>
-        // Bootstrap Tooltip 초기화
-        document.addEventListener("DOMContentLoaded", () => {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(tooltipTriggerEl => {
-                new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-            // URL 파라미터에 따라 토스트 표시
-            showMessageToastIfNeeded();
-        });
+  <!-- jQuery -->
+  <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <script defer>
+    // Bootstrap Tooltip 초기화
+    document.addEventListener("DOMContentLoaded", () => {
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.forEach(tooltipTriggerEl => {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+      // URL 파라미터에 따라 토스트 표시
+      showMessageToastIfNeeded();
+    });
 
-        // 토스트 표시 함수
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+    // 토스트 표시 함수
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
 
-        // URL 파라미터에서 error 또는 success와 message를 확인 후 토스트 표시
-        function showMessageToastIfNeeded() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const success = urlParams.get("success");
-            const error = urlParams.get("error");
-            const message = urlParams.get("message");
+    // URL 파라미터에서 error 또는 success와 message를 확인 후 토스트 표시
+    function showMessageToastIfNeeded() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const success = urlParams.get("success");
+      const error = urlParams.get("error");
+      const message = urlParams.get("message");
 
-            if (success === "true" && message) {
-                showToast(decodeURIComponent(message));
-            } else if (error === "true" && message) {
-                showToast(decodeURIComponent(message));
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            text-align: center;
-            padding: 20px;
-        }
+      if (success === "true" && message) {
+        showToast(decodeURIComponent(message));
+      } else if (error === "true" && message) {
+        showToast(decodeURIComponent(message));
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      text-align: center;
+      padding: 20px;
+    }
 
-        .d-flex {
-            display: flex;
-        }
+    .d-flex {
+      display: flex;
+    }
 
-        .vh-100 {
-            height: 100vh;
-        }
+    .vh-100 {
+      height: 100vh;
+    }
 
-        .bg-light {
-            background-color: #f8f9fa !important;
-        }
+    .bg-light {
+      background-color: #f8f9fa !important;
+    }
 
-        form {
-            max-width: 400px;
-            width: 100%;
-        }
+    form {
+      max-width: 400px;
+      width: 100%;
+    }
 
-        .logo {
-            margin-left: 27px;
-        }
+    .logo {
+      margin-left: 27px;
+    }
 
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translate(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 1050;
-        }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translate(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1050;
+    }
 
-        .toast.show {
-            opacity: 1;
-        }
-    </style>
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="d-flex align-items-center justify-content-center vh-100 bg-light">
-        <form method="post" th:action="@{/user/sign-in}"
-            class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle">
-            <a href="/" class="navbar-brand" th:href="@{/}">
-                <img th:src="@{/image/logo.png}" style="height: 50px;" class="logo">
-            </a>
-            <h1 class="h2 fw-bolder mb-4">로그인</h1>
-            <div class="form-floating mb-2">
-                <input type="text" class="form-control" id="username" name="username" placeholder="hong">
-                <label for="username">아이디</label>
-            </div>
-            <small id="usernameFeedback" class="text-danger d-block mb-2"></small>
-            <div class="form-floating mb-4">
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                <label for="password">비밀번호</label>
-            </div>
-            <small id="passwordFeedback" class="text-danger d-block mb-4"></small>
-            <button class="btn w-100 py-2 text-white mb-3" type="submit" style="background-color: #EE697D;">로그인</button>
-            <p class="mb-3">
-                <a href="#" class="text-decoration-none text-secondary">아이디 찾기</a> |
-                <a href="#" class="text-decoration-none text-secondary">비밀번호 재설정</a> |
-                <a th:href="@{/user/sign-up}" class="text-decoration-none text-primary fw-bold">회원가입</a>
-            </p>
-            <div class="d-flex align-items-center my-3">
-                <hr class="flex-grow-1">
-                <span class="px-2 text-muted">또는</span>
-                <hr class="flex-grow-1">
-            </div>
-            <div class="d-flex justify-content-center gap-3 mt-3">
-                <a href="/oauth2/authorization/google" class="btn btn-light rounded-circle p-2 shadow">
-                    <img src="https://img.icons8.com/color/48/google-logo.png" width="28" />
-                </a>
-                <a href="/oauth2/authorization/github" class="btn btn-dark rounded-circle p-2 shadow"
-                    data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub 계정에 public email이 설정되어 있어야 합니다.">
-                    <img src="https://img.icons8.com/ios-filled/48/ffffff/github.png" width="28" />
-                </a>
-                <a href="/oauth2/authorization/discord" class="btn btn-primary rounded-circle p-2 shadow">
-                    <img src="https://img.icons8.com/ios-filled/48/ffffff/discord.png" width="28" />
-                </a>
-            </div>
-        </form>
-        <div id="toast" class="toast"></div>
-    </div>
+  <div class="d-flex align-items-center justify-content-center vh-100 bg-light">
+    <form method="post" th:action="@{/user/sign-in}"
+      class="p-4 shadow-lg rounded text-center bg-white border border-light-subtle">
+      <a href="/" class="navbar-brand" th:href="@{/}">
+        <img th:src="@{/image/logo.png}" style="height: 50px;" class="logo">
+      </a>
+      <h1 class="h2 fw-bolder mb-4">로그인</h1>
+      <div class="form-floating mb-2">
+        <input type="text" class="form-control" id="username" name="username" placeholder="hong">
+        <label for="username">아이디</label>
+      </div>
+      <small id="usernameFeedback" class="text-danger d-block mb-2"></small>
+      <div class="form-floating mb-4">
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+        <label for="password">비밀번호</label>
+      </div>
+      <small id="passwordFeedback" class="text-danger d-block mb-4"></small>
+      <button class="btn w-100 py-2 text-white mb-3" type="submit" style="background-color: #EE697D;">로그인</button>
+      <p class="mb-3">
+        <a th:href="@{/user/sign-up}" class="text-decoration-none text-primary fw-bold">회원가입</a>
+      </p>
+      <div class="d-flex align-items-center my-3">
+        <hr class="flex-grow-1">
+        <span class="px-2 text-muted">간편 로그인</span>
+        <hr class="flex-grow-1">
+      </div>
+      <div class="d-flex justify-content-center gap-3 mt-3">
+        <a href="/oauth2/authorization/google" class="btn btn-light rounded-circle p-2 shadow">
+          <img src="https://img.icons8.com/color/48/google-logo.png" width="28" />
+        </a>
+        <a href="/oauth2/authorization/github" class="btn btn-dark rounded-circle p-2 shadow" data-bs-toggle="tooltip"
+          data-bs-placement="top" title="GitHub 계정에 public email이 설정되어 있어야 합니다.">
+          <img src="https://img.icons8.com/ios-filled/48/ffffff/github.png" width="28" />
+        </a>
+        <a href="/oauth2/authorization/discord" class="btn btn-primary rounded-circle p-2 shadow">
+          <img src="https://img.icons8.com/ios-filled/48/ffffff/discord.png" width="28" />
+        </a>
+      </div>
+    </form>
+    <div id="toast" class="toast"></div>
+  </div>
 </body>
 
 </html>
