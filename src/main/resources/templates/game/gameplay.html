@@ -165,6 +165,7 @@
       height: 100vh;
       overflow: hidden;
       background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
     }
 
     .kanjiModal .modal_popup {
@@ -260,6 +261,7 @@
       white-space: nowrap;
       font-size: 20px;
       padding-top: 5px;
+      height: 97.4px;
     }
 
     .quizScroll::-webkit-scrollbar {
@@ -531,6 +533,27 @@
       </div>
     </div>
 
+    <div class="kanjiModal">
+        <div class="modal_popup">
+            <div class="toKanjiList">
+                <div class="detailKanjiId"></div>
+                <div class="detailJlptRank">N3</div>
+                <div class="detailKanjiCard">
+                    <span class="detailKanji">一</span>
+                    <div class="detailKanjiExplain">
+                        <div class="detailYomi">하나 일</div>
+                        <div class="detailJpnKunyomi">음독 :</div>
+                        <div class="detailJpnOnyomi">훈독 :</div>
+                        <pre class="detailMeaning">의미:</pre>
+                        <div class="bookMark"></div>
+                    </div>
+                </div>
+                <div class="detailCategory">카테고리 :</div>
+                <div class="detailCreatedAt"></div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- 퀴즈 모달 (생략된 부분) -->
     <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true"
@@ -557,31 +580,11 @@
                 </tr>
               </table>
               <br>
-              <div id="quizProc"></div>
+              <div id="quizProc">ㅤ<br>ㅤ<br></div>
               <button class="answer-btn btn btn-secondary mt-2">제출</button>
             </div>
           </div>
           <div id="game-result" class="mt-3 d-none"></div>
-        </div>
-      </div>
-    </div>
-    <div class="kanjiModal">
-      <div class="modal_popup">
-        <div class="toKanjiList">
-          <div class="detailKanjiId"></div>
-          <div class="detailJlptRank">N3</div>
-          <div class="detailKanjiCard">
-            <span class="detailKanji">一</span>
-            <div class="detailKanjiExplain">
-              <div class="detailYomi">하나 일</div>
-              <div class="detailJpnKunyomi">음독 :</div>
-              <div class="detailJpnOnyomi">훈독 :</div>
-              <pre class="detailMeaning">의미:</pre>
-              <div class="bookMark">☆</div>
-            </div>
-          </div>
-          <div class="detailCategory">카테고리 :</div>
-          <div class="detailCreatedAt"></div>
         </div>
       </div>
     </div>
