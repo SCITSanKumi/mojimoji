@@ -59,16 +59,22 @@
       flex: 1;
       text-align: left;
       margin-right: 10px;
-      white-space: pre-wrap;
-      word-break: break-all;
-      overflow-wrap: break-word;
-      /* 최신 브라우저에서 단어 감싸기 처리 */
-
     }
 
     /* 댓글 목록 스타일 */
     .comment-list {
       max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* 공유 스토리 내용을 감싸는 박스 스타일 (스크롤 적용) */
+    .shared-story-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      margin-bottom: 20px;
+      max-height: 400px;
       overflow-y: auto;
     }
 
@@ -82,17 +88,6 @@
       /* 댓글 영역과 동일한 최대 높이 */
       overflow-y: auto;
       margin-bottom: 20px
-    }
-
-    /* 정보 박스 스타일 */
-    .info-box {
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 15px;
-      background-color: #ffffff;
-      max-height: 300px;
-      /* 댓글 영역과 동일한 최대 높이 */
-      overflow-y: auto;
     }
 
     .info-box p {
@@ -218,7 +213,7 @@
       <!-- 좌측: 댓글 입력과 댓글 목록 -->
       <div class="col-md-8">
         <div class="comment-input-box">
-          <textarea id="comment-input" class="form-control" placeholder="댓글 추가..." rows="1"></textarea>
+          <input type="text" id="comment-input" class="form-control" placeholder="댓글 추가...">
           <button class="btn btn-dark mt-2" id="add-comment">댓글 등록</button>
         </div>
         <div class="comment-container">
