@@ -235,7 +235,7 @@
             <!-- 하트 버튼: 초기에는 빈 하트 표시 (클래스나 텍스트로 표현) -->
             <!-- From Uiverse.io by catraco -->
           <div class="heart-container" title="Like" id="like-button">
-            <input type="checkbox" class="checkbox" id="Give-It-An-Id">
+            <input type="checkbox" class="checkbox" id="Give-It-An-Id" th:checked="${sharedStoryInfo.liked}">
             <div class="svg-container">
               <svg viewBox="0 0 24 24" class="svg-outline" xmlns="http://www.w3.org/2000/svg">
                 <path
