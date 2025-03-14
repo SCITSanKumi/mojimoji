@@ -153,6 +153,11 @@ public class KanjiCollectionService {
         return kanjiCollectionsRepository.findKanjisToQuiz(bookId, userId);
     }
 
+    public List<BookmarkedKanjiDTO> getBookmarkedKanji(Long userId) {
+
+        return kanjiCollectionsRepository.findBookmarkedKanjis(userId);
+    }
+
     @Transactional
     public void wrongDelete(Long kanjiId, Long userId) {
 

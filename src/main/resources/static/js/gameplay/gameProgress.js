@@ -206,11 +206,11 @@ $(() => {
             $("#currentLocation").text(gameState.current_location);
         }
         if (Array.isArray(gameState.inventory)) {
-            // let inventoryHTML = "";
-            // gameState.inventory.forEach(item => {
-            //     inventoryHTML += `<li class="list-group-item">${item}</li>`;
-            // });
-            // $("#inventoryList").html(inventoryHTML);
+            let inventoryHTML = "";
+            gameState.inventory.forEach(item => {
+                inventoryHTML += `<li class="list-group-item">${item}</li>`;
+            });
+            $("#inventory-list").html(inventoryHTML);
         }
         // 게임 종료 시 UI 변경
         if (gameState.isEnded) {

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.sangkeumi.mojimoji.dto.kanji.BookmarkedKanjiDTO;
 import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
 import com.sangkeumi.mojimoji.dto.kanji.QuizKanjiDTO;
 import com.sangkeumi.mojimoji.dto.kanji.WrongKanji;
@@ -161,4 +162,16 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
             WHERE bl.book.bookId = :bookId
             """)
     List<QuizKanjiDTO> findKanjisToQuiz(@Param("bookId") Long bookId, @Param("userId") Long userId);
+
+    /**
+     * 북마크된 경우에 해당하는 한자 목록 조회
+     */
+    @Query("""
+            SELECT new com.sangkeumi.mojimoji.dto.kanji.BookmarkedKanjiDTO(
+                k.kanjiId, k.kanji, k.korOnyomi, k.korKunyomi, k.jpnOnyomi, k.jpnKunyomi, k.meaning)
+            FROM KanjiCollection kc
+            JOIN kc.kanji k
+            WHERE kc.user.userId = :userId AND kc.bookmarked = 1
+            """)
+    List<BookmarkedKanjiDTO> findBookmarkedKanjis(@Param("userId") Long userId);
 }
