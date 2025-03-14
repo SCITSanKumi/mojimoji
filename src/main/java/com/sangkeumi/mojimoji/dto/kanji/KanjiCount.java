@@ -1,6 +1,11 @@
 package com.sangkeumi.mojimoji.dto.kanji;
 
-public interface KanjiCount {
-    Long getTotalCount();
-    Long getCollectedCount();
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class KanjiCount {
+    private long totalCount;
+    private long collectedCount;
 }

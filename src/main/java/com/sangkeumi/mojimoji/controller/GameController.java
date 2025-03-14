@@ -28,11 +28,13 @@ public class GameController {
     private final KanjiCollectionService kanjiCollectionService;
 
     @GetMapping("/play")
-    public String game(@RequestParam(name = "bookId", defaultValue = "-1") String bookId, Model model) {
-        // 쿼리파라미터는 js에서 Number(new
-        // URLSearchParams(window.location.search).get("bookId")) || -1; 로 찾음
+    public String game(
+            @RequestParam(name = "bookId", defaultValue = "-1") String bookId, // 쿼리파라미터는 js에서 Number(new URLSearchParams(window.location.search).get("bookId")) || -1; 로 찾음
+            @AuthenticationPrincipal MyPrincipal principal,
+            Model model) {
+    model.addAttribute("bookmarkedKanjiList", kanjiCollectionService.getBookmarkedKanji(principal.getUserId()));
 
-        return "game/gameplay";
+    return "game/gameplay";
     }
 
     @GetMapping("/start/{bookId}")
