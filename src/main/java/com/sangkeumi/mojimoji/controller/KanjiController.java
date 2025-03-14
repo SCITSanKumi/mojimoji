@@ -47,15 +47,12 @@ public class KanjiController {
     KanjiCount countDto = kanjiCollectionService.findTotalAndCollected(searchRequest,
         principal.getUserId());
 
-    Long totalCount = (countDto.getTotalCount() != null) ? countDto.getTotalCount() : 0;
-    Long collectedCount = (countDto.getCollectedCount() != null) ? countDto.getCollectedCount() : 0;
-
     model.addAttribute("searchRequest", searchRequest);
     model.addAttribute("searchResponse", searchResponse.getContent());
     model.addAttribute("wrongKanji", wrongKanji);
     // 여기서 "전체 결과" 기준으로 collectedCount / totalCount
-    model.addAttribute("totalCount", totalCount);
-    model.addAttribute("collected", collectedCount);
+    model.addAttribute("totalCount", countDto.getTotalCount());
+    model.addAttribute("collected", countDto.getCollectedCount());
 
     return "kanji/kanjiCollection";
   }

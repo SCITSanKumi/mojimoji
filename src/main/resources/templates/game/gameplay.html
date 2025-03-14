@@ -39,7 +39,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      z-index: 1030;
+      z-index: 1100;
     }
 
     .game-container {
@@ -261,7 +261,6 @@
       white-space: nowrap;
       font-size: 20px;
       padding-top: 5px;
-      height: 97.4px;
     }
 
     .quizScroll::-webkit-scrollbar {
@@ -345,14 +344,13 @@
     #inventory-button {
       position: absolute;
       bottom: 10px;
-      right: 10px;
-      z-index: 1100;
+      left: 10px;
     }
 
     #inventory-panel {
       position: absolute;
       bottom: 50px;
-      right: 10px;
+      left: 10px;
       width: 300px;
       min-height: 150px;
       background: #fff;
@@ -360,7 +358,6 @@
       border-radius: 5px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       display: none;
-      z-index: 1100;
       padding: 10px;
     }
 
@@ -555,7 +552,7 @@
     </div>
 
 
-    <!-- 퀴즈 모달 (생략된 부분) -->
+    <!-- 퀴즈 모달 -->
     <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true"
       data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-lg">
@@ -593,148 +590,11 @@
   <!-- ---------- 힌트 박스 (백엔드 데이터로 동적 생성) ---------- -->
   <div id="hint-box" class="hint-box">
     <h5 class="mb-2">힌트</h5>
-    <!-- <div class="kanji-cards-container" th:if="${kanjiList != null}" th:each="kanji : ${kanjiList}">
-                <div class="kanji-card" th:id="'kanji-' + ${kanji.id}">
-                    <div class="kanji-character" th:text="${kanji.character}">一</div>
-                    <div class="kanji-readings">
-                        <div th:text="'음: ' + ${kanji.reading}">음: 일</div>
-                        <div th:text="'뜻: ' + ${kanji.meaning}">뜻: 하나</div>
-                    </div>
-                </div>
-            </div> -->
     <div class="kanji-cards-container">
-      <div class="kanji-card">
-        <div class="kanji-character">一</div>
-        <div class="kanji-readings">
-          <div style="font-weight: bold; font-size: 0.76rem;">한 일</div>
+        <div class="kanji-card" th:if="${bookmarkedKanjiList != null}" th:each="kanji : ${bookmarkedKanjiList}">
+            <div class="kanji-character" th:text="${kanji.kanji}">一</div>
+            <div class="kanji-readings" th:text="${kanji.korKunyomi} + ' ' + ${kanji.korOnyomi}">하나 일</div>
         </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">二</div>
-        <div class="kanji-readings">
-          <div>음: 이</div>
-          <div>뜻: 둘</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">三</div>
-        <div class="kanji-readings">
-          <div>음: 삼</div>
-          <div>뜻: 셋</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">四</div>
-        <div class="kanji-readings">
-          <div>음: 사</div>
-          <div>뜻: 넷</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">五</div>
-        <div class="kanji-readings">
-          <div>음: 오</div>
-          <div>뜻: 다섯</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">六</div>
-        <div class="kanji-readings">
-          <div>음: 육</div>
-          <div>뜻: 여섯</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">七</div>
-        <div class="kanji-readings">
-          <div>음: 칠</div>
-          <div>뜻: 일곱</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">八</div>
-        <div class="kanji-readings">
-          <div>음: 팔</div>
-          <div>뜻: 여덟</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">九</div>
-        <div class="kanji-readings">
-          <div>음: 구</div>
-          <div>뜻: 아홉</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">十</div>
-        <div class="kanji-readings">
-          <div>음: 십</div>
-          <div>뜻: 열</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">百</div>
-        <div class="kanji-readings">
-          <div>음: 백</div>
-          <div>뜻: 백</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">千</div>
-        <div class="kanji-readings">
-          <div>음: 천</div>
-          <div>뜻: 천</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">万</div>
-        <div class="kanji-readings">
-          <div>음: 만</div>
-          <div>뜻: 만</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">円</div>
-        <div class="kanji-readings">
-          <div>음: 엔</div>
-          <div>뜻: 동그라미</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">日</div>
-        <div class="kanji-readings">
-          <div>음: 일</div>
-          <div>뜻: 날</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">月</div>
-        <div class="kanji-readings">
-          <div>음: 월</div>
-          <div>뜻: 달</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">火</div>
-        <div class="kanji-readings">
-          <div>음: 화</div>
-          <div>뜻: 불</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">水</div>
-        <div class="kanji-readings">
-          <div>음: 수</div>
-          <div>뜻: 물</div>
-        </div>
-      </div>
-      <div class="kanji-card">
-        <div class="kanji-character">木</div>
-        <div class="kanji-readings">
-          <div>음: 목</div>
-          <div>뜻: 나무</div>
-        </div>
-      </div>
     </div>
   </div>
 
