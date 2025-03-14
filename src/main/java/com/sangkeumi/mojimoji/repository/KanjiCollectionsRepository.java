@@ -123,7 +123,7 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
               k.meaning                                 AS meaning,
               COALESCE(kc.bookmarked, false)            AS bookmarked,
               COALESCE(kc.collectedCount, 0)            AS collectedCount,
-              COALESCE(kc.createdAt, CURRENT_TIMESTAMP) AS firstCollectedAt
+              COALESCE(kc.createdAt, '9999-12-31 23:59:59') AS firstCollectedAt
           )
           FROM Kanji k
           LEFT JOIN KanjiCollection kc
@@ -151,7 +151,7 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
   @Query("""
           SELECT new com.sangkeumi.mojimoji.dto.kanji.KanjiCount(
               COUNT(k),
-              SUM(CASE WHEN kc IS NOT NULL THEN 1 ELSE 0 END)
+              COALESCE(SUM(CASE WHEN kc IS NOT NULL THEN 1 ELSE 0 END), 0)
           )
           FROM Kanji k
           LEFT JOIN KanjiCollection kc
