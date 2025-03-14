@@ -72,7 +72,7 @@ $(document).ready(function () {
 
 
           // (C) .textWrapper fadeOut 후 제거
-          $(".loader").fadeOut(300, function () {
+          $(".loader").fadeOut(100, function () {
             $(this).hide();
             $("#user-input").val(response);
           });
