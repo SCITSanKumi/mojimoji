@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.sangkeumi.mojimoji.dto.kanji.*;
@@ -80,14 +81,26 @@ public class KanjiCollectionService {
     }
 
     public Page<KanjiSearchResponse> getMyCollection(Long userId, KanjiSearchRequest searchRequest, int page) {
+        // 1. 고정 정렬 조건: collectedCount가 0보다 큰 항목을 우선 (컬렉션에 데이터가 있으면 0, 없으면 1로 정렬)
+        Sort primarySort = JpaSort.unsafe("case when COALESCE(kc.collectedCount, 0) > 0 then 0 else 1 end").ascending();
 
-        Sort sort = Sort.by(
-                searchRequest.sortDirection().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
-                searchRequest.kanjiSort());
+        // 2. 사용자가 선택한 동적 정렬 조건
+        Sort dynamicSort = Sort.by(searchRequest.sortDirection().equalsIgnoreCase("ASC")
+            ? Sort.Direction.ASC : Sort.Direction.DESC, searchRequest.kanjiSort());
 
-        return kanjiRepository.findMyCollection(userId, searchRequest.category(), searchRequest.jlptRank(),
+        // 3. 두 정렬 조건 결합 (primarySort가 우선 적용됨)
+        Sort sort = primarySort.and(dynamicSort);
+
+        // 4. PageRequest 생성 (페이지 번호가 0 기반인지 확인)
+        PageRequest pageRequest = PageRequest.of(Math.max(page - 1, 0), 10, sort);
+
+        return kanjiCollectionsRepository.findMyCollection(
+                userId,
+                searchRequest.category(),
+                searchRequest.jlptRank(),
                 searchRequest.kanjiSearch(),
-                PageRequest.of(page - 1, 10, sort));
+                pageRequest
+        );
     }
 
     /**
