@@ -3,9 +3,21 @@ $(() => {
     window.bookId = Number(new URLSearchParams(window.location.search).get("bookId")) || -1;
     window.isGameEnded = false;
 
+    const npcImages = {
+        "마을 이장": "/image/npc_images/People1-7.png",
+        "퇴역 용사": "/image/npc_images/Actor1-3.png",
+        "퇴역 용사2": "/image/npc_images/People3-8.png",
+        "마을 사람": "/image/npc_images/People2-6.png",
+        "마왕": "/image/npc_images/Monster-8.png",
+        "고죠 사토루": "https://i.namu.wiki/i/_x0r8tR6SjcSjIKCT_6Zsfl9WIXngll2_-229D7dNKkL_hAUOlUA8cK5ChdyWebjLQMJpJ7xkobRCCq0xj0khbdQggnkDSnXUIu6Tvy_AfCXUXrTKJ5B4vlqb7gpLHyVfGgqi9n_ibE9AJsjqimUnw.webp"
+    };
+
     // 현재 화자/이전 화자
     let currentSpeaker = "narration";
     let previousSpeaker = "";
+
+    // 메시지 전송 상태 변수
+    let isSending = false;
 
     // JSON 파싱용 버퍼
     let readingJson = false;
@@ -41,6 +53,7 @@ $(() => {
 
                 // 첫 안내 문구(json 포함)
                 handleChunkText(response.message);
+                scrollToUp()
             },
             error: (err) => {
                 alert("게임 시작 중 오류가 발생했습니다.");
@@ -53,9 +66,12 @@ $(() => {
         let inputField = $("#user-input");
         let inputText = inputField.val().trim();
 
-        if (inputText === "" || bookId === -1) {
+        if (isSending || inputText === "" || bookId === -1) {
             return;
         }
+
+        isSending = true; // 전송 시작 (추가 전송 방지)
+
         // 플레이어 말풍선
         currentSpeaker = "player";
         appendMessage(inputText);
@@ -79,6 +95,9 @@ $(() => {
             .catch(error => {
                 console.error("fetch error:", error);
                 alert(error);
+            })
+            .finally(() => {
+                isSending = false; // 전송 완료 후 다시 전송 가능하도록 변경
             });
     }
 
@@ -90,8 +109,7 @@ $(() => {
 
         while (true) {
             const {
-                done,
-                value
+                done, value
             } = await reader.read();
             if (done) {
                 break;
@@ -167,18 +185,20 @@ $(() => {
             messageDiv = $("<div>").addClass("message");
             contentDiv = $("<div>").addClass("message-content");
 
-            if (currentSpeaker === "narration") {
+            if (currentSpeaker === "narration" || currentSpeaker === "teacher") {
                 messageDiv.addClass("narration-message");
                 contentDiv.addClass("narration-content");
             } else if (currentSpeaker === "player") {
                 messageDiv.addClass("player-message");
                 contentDiv.addClass("player-content");
             } else {
+                // 해당 NPC의 이미지 가져오기 (없으면 기본 이미지)
+                let profileImgSrc = npcImages[currentSpeaker] || "/image/npc_images/Actor1-1_silhouette.png";
+
                 let headerDiv = $("<div>").addClass("npc-header");
-                let profileImg = $("<img>")
-                    .attr("src", "https://i.namu.wiki/i/8ya30FvrlxJ3M5ymG057r_Xrp7tg_QC65K8mmwLjjKwIo8GbiAFNWNpTH1iwPGhOwRf9Fdpbr0ixrVPK6JoDBRD5_b5aWA0Ex88s8DARnrIKIWX_pXErLW9j71xW5CZW_M4za1O75ZVX4Rv4kfnyhw.webp")
-                    .addClass("npc-profile");
+                let profileImg = $("<img>").attr("src", profileImgSrc).addClass("npc-profile");
                 let nameSpan = $("<span>").text(currentSpeaker).addClass("npc-name");
+
                 headerDiv.append(profileImg).append(nameSpan);
                 messageDiv.append(headerDiv);
 
@@ -210,6 +230,13 @@ $(() => {
             gameState.inventory.forEach(item => {
                 inventoryHTML += `<li class="list-group-item">${item}</li>`;
             });
+
+            if (gameState.inventory.length > 0) {
+                $("#inventory-panel").show();
+            } else {
+                $("#inventory-panel").hide();
+            }
+
             $("#inventory-list").html(inventoryHTML);
         }
         // 게임 종료 시 UI 변경
@@ -224,6 +251,12 @@ $(() => {
     // 화자 정보 반영
     function updateSpeaker(speaker) {
         currentSpeaker = speaker.name;
+    }
+
+    function scrollToUp() {
+        requestAnimationFrame(() => {
+            $("#chatBox").scrollTop(0);
+        });
     }
 
     function scrollToBottom() {
