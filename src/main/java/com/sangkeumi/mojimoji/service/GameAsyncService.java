@@ -66,7 +66,7 @@ public class GameAsyncService {
      * AI를 이용해 제목을 생성하는 비동기 메서드
      */
     private Mono<String> generateTitle(String combinedText) {
-        String prompt = "다음 줄거리를 기반으로 감동적이고 창의적인 제목을 간결하게 만들어주세요:\n" + combinedText;
+        String prompt = "다음 줄거리를 참고하여 서식이나 부호 없이 감동적이고 창의적인 제목을 한 문장으로 만들어주세요:\n" + combinedText;
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", "당신은 창의적인 제목을 만드는 전문가 AI입니다."));
         messages.add(Map.of("role", "user", "content", prompt));
@@ -88,7 +88,7 @@ public class GameAsyncService {
      * AI를 이용해 썸네일 이미지를 생성하는 비동기 메서드
      */
     private Mono<String> generateThumbnail(String generatedTitle) {
-        String prompt = "다음 제목을 밝고 화사한 색감, 또렷한 선의 캐릭터 중심 일러스트로 표현해주세요: \"" + generatedTitle + "\"";
+        String prompt = "다음 제목을 밝고 화사한 색감, 또렷한 선의 캐릭터 중심 일러스트로 표현해주세요: " + generatedTitle;
 
         return webClient.post()
             .uri("https://api.openai.com/v1/images/generations")
@@ -121,7 +121,7 @@ public class GameAsyncService {
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, Base64.getDecoder().decode(base64Image),
                         StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            return "/image/thumbnail_images/" + fileName + ".png";
+            return "/uploads/image/thumbnail_images/" + fileName + ".png";
         }).subscribeOn(Schedulers.boundedElastic());
     }
 }
