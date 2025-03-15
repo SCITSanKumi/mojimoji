@@ -81,26 +81,39 @@ public class KanjiCollectionService {
     }
 
     public Page<KanjiSearchResponse> getMyCollection(Long userId, KanjiSearchRequest searchRequest, int page) {
-        // 1. 고정 정렬 조건: collectedCount가 0보다 큰 항목을 우선 (컬렉션에 데이터가 있으면 0, 없으면 1로 정렬)
+        // 1. 기본적으로 수집된 한자가 먼저 오도록 정렬
         Sort primarySort = JpaSort.unsafe("case when COALESCE(kc.collectedCount, 0) > 0 then 0 else 1 end").ascending();
 
-        // 2. 사용자가 선택한 동적 정렬 조건
-        Sort dynamicSort = Sort.by(searchRequest.sortDirection().equalsIgnoreCase("ASC")
-            ? Sort.Direction.ASC : Sort.Direction.DESC, searchRequest.kanjiSort());
+        // 2. 사용자가 선택한 정렬 방향 (ASC 또는 DESC)
+        Sort.Direction sortDirection = searchRequest.sortDirection().equalsIgnoreCase("ASC")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
 
-        // 3. 두 정렬 조건 결합 (primarySort가 우선 적용됨)
-        Sort sort = primarySort.and(dynamicSort);
+        // 3. 정렬 기준 설정 (한자 번호 또는 최근 등록순만 허용)
+        Sort dynamicSort;
+        if ("kanjiId".equals(searchRequest.kanjiSort())) {
+            // ✅ 한자 번호 기준 정렬
+            dynamicSort = Sort.by(sortDirection, "k.kanjiId");
+        } else {
+            // ✅ 최근 등록순 기준 정렬
+            dynamicSort = Sort.by(sortDirection, "firstCollectedAt");
+        }
 
-        // 4. PageRequest 생성 (페이지 번호가 0 기반인지 확인)
-        PageRequest pageRequest = PageRequest.of(Math.max(page - 1, 0), 10, sort);
+        // 4. 수집되지 않은 한자 정렬 처리
+        Sort uncollectedSort = Sort.by(sortDirection, "k.kanjiId");
+
+        // 5. 최종 정렬 적용 (고정 정렬 + 사용자가 선택한 정렬 + 수집되지 않은 한자 정렬)
+        Sort finalSort = primarySort.and(dynamicSort).and(uncollectedSort);
+
+        // 6. PageRequest 생성
+        PageRequest pageRequest = PageRequest.of(Math.max(page - 1, 0), 10, finalSort);
 
         return kanjiCollectionsRepository.findMyCollection(
                 userId,
                 searchRequest.category(),
                 searchRequest.jlptRank(),
                 searchRequest.kanjiSearch(),
-                pageRequest
-        );
+                pageRequest);
     }
 
     /**
@@ -114,27 +127,27 @@ public class KanjiCollectionService {
      */
     @Transactional
     public KanjiDetailResponse getKanjiDetail(Long kanjiId, Long userId) {
-            // 1. Kanji 테이블에서 한자 정보 조회
-            Kanji kanji = kanjiRepository.findById(kanjiId)
-                            .orElseThrow(() -> new RuntimeException("Kanji not found"));
+        // 1. Kanji 테이블에서 한자 정보 조회
+        Kanji kanji = kanjiRepository.findById(kanjiId)
+                .orElseThrow(() -> new RuntimeException("Kanji not found"));
 
-            // 2. Kanji_Collections에서 해당 한자를 사용자가 획득한 기록 조회 (최초 획득 날짜)
-            Optional<KanjiCollection> collectionOpt = kanjiCollectionsRepository
-                            .findByUserUserIdAndKanji_KanjiId(userId, kanjiId);
+        // 2. Kanji_Collections에서 해당 한자를 사용자가 획득한 기록 조회 (최초 획득 날짜)
+        Optional<KanjiCollection> collectionOpt = kanjiCollectionsRepository
+                .findByUserUserIdAndKanji_KanjiId(userId, kanjiId);
 
-            LocalDateTime obtainedAt = collectionOpt.map(kc -> kc.getCreatedAt()).orElse(null);
+        LocalDateTime obtainedAt = collectionOpt.map(kc -> kc.getCreatedAt()).orElse(null);
 
-            return new KanjiDetailResponse(
-                            kanji.getKanjiId(),
-                            kanji.getJlptRank(),
-                            kanji.getCategory(),
-                            kanji.getKanji(),
-                            kanji.getKorOnyomi(),
-                            kanji.getKorKunyomi(),
-                            kanji.getJpnOnyomi(),
-                            kanji.getJpnKunyomi(),
-                            kanji.getMeaning(),
-                            obtainedAt);
+        return new KanjiDetailResponse(
+                kanji.getKanjiId(),
+                kanji.getJlptRank(),
+                kanji.getCategory(),
+                kanji.getKanji(),
+                kanji.getKorOnyomi(),
+                kanji.getKorKunyomi(),
+                kanji.getJpnOnyomi(),
+                kanji.getJpnKunyomi(),
+                kanji.getMeaning(),
+                obtainedAt);
     }
 
     /**
@@ -159,16 +172,6 @@ public class KanjiCollectionService {
                 req.category(),
                 req.jlptRank(),
                 req.kanjiSearch());
-    }
-
-    public List<QuizKanjiDTO> getKanjiQuiz(Long bookId, Long userId) {
-
-        return kanjiCollectionsRepository.findKanjisToQuiz(bookId, userId);
-    }
-
-    public List<BookmarkedKanjiDTO> getBookmarkedKanji(Long userId) {
-
-        return kanjiCollectionsRepository.findBookmarkedKanjis(userId);
     }
 
     @Transactional
@@ -205,16 +208,24 @@ public class KanjiCollectionService {
     @Transactional
     public void deleteBookMark(Long kanjiId, Long userId) {
         Kanji kanji = kanjiRepository.findById(kanjiId)
-                .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
+            .orElseThrow(() -> new RuntimeException("한자가 존재하지 않습니다."));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
+            .orElseThrow(() -> new UsernameNotFoundException("ID가 존재하지 않습니다."));
 
         Optional<KanjiCollection> temp = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user);
 
         if (temp.isPresent()) {
             temp.get().setBookmarked(0);
         }
+    }
+
+    public List<QuizKanjiDTO> getKanjiQuiz(Long bookId, Long userId) {
+        return kanjiCollectionsRepository.findKanjisToQuiz(bookId, userId);
+    }
+
+    public List<BookmarkedKanjiDTO> getBookmarkedKanji(Long userId) {
+        return kanjiCollectionsRepository.findBookmarkedKanjis(userId);
     }
 
     public List<JlptCollectionStats> getJlptStats(Long userId) {
