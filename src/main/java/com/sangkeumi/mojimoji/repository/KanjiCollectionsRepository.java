@@ -110,70 +110,71 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
           """, nativeQuery = true)
   CategoryCollectionSummary findCategoryCollectionSummary(@Param("userId") Long userId);
 
-    @Query("""
-        SELECT new com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse(
-            k.kanjiId                                 AS kanjiId,
-            k.kanji                                   AS kanji,
-            k.jlptRank                                AS jlptRank,
-            k.category                                AS category,
-            k.korOnyomi                               AS korOnyomi,
-            k.korKunyomi                              AS korKunyomi,
-            k.jpnOnyomi                               AS jpnOnyomi,
-            k.jpnKunyomi                              AS jpnKunyomi,
-            k.meaning                                 AS meaning,
-            COALESCE(kc.bookmarked, false)            AS bookmarked,
-            COALESCE(kc.collectedCount, 0)            AS collectedCount,
-            COALESCE(kc.createdAt, CURRENT_TIMESTAMP) AS firstCollectedAt
-        )
-        FROM Kanji k
-        LEFT JOIN KanjiCollection kc
-            ON k.kanjiId = kc.kanji.kanjiId
-            AND kc.user.id = :userId
-            AND kc.collectedCount > 0
-        WHERE (:category IS NULL OR k.category = :category)
-            AND (:jlptRank IS NULL OR k.jlptRank = :jlptRank)
-            AND (
-                :kanjiSearch IS NULL OR
-                k.kanji       LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.korKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.korOnyomi   LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.jpnKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.jpnOnyomi   LIKE CONCAT('%', :kanjiSearch, '%')
-                )
-    """)
-    Page<KanjiSearchResponse> findMyCollection(
-            @Param("userId") Long userId,
-            @Param("category") String category,
-            @Param("jlptRank") String jlptRank,
-            @Param("kanjiSearch") String kanjiSearch,
-            Pageable pageable);
+  @Query("""
+          SELECT new com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse(
+              k.kanjiId                                 AS kanjiId,
+              k.kanji                                   AS kanji,
+              k.jlptRank                                AS jlptRank,
+              k.category                                AS category,
+              k.korOnyomi                               AS korOnyomi,
+              k.korKunyomi                              AS korKunyomi,
+              k.jpnOnyomi                               AS jpnOnyomi,
+              k.jpnKunyomi                              AS jpnKunyomi,
+              k.meaning                                 AS meaning,
+              COALESCE(kc.bookmarked, false)            AS bookmarked,
+              COALESCE(kc.collectedCount, 0)            AS collectedCount,
+              COALESCE(kc.createdAt, '9999-12-31 23:59:59') AS firstCollectedAt
+          )
+          FROM Kanji k
+          LEFT JOIN KanjiCollection kc
+              ON k.kanjiId = kc.kanji.kanjiId
+              AND kc.user.id = :userId
+              AND kc.collectedCount > 0
+          WHERE (:category IS NULL OR k.category = :category)
+              AND (:jlptRank IS NULL OR k.jlptRank = :jlptRank)
+              AND (
+                  :kanjiSearch IS NULL OR
+                  k.kanji       LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.korKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.korOnyomi   LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.jpnKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.jpnOnyomi   LIKE CONCAT('%', :kanjiSearch, '%')
+                  )
+      """)
+  Page<KanjiSearchResponse> findMyCollection(
+      @Param("userId") Long userId,
+      @Param("category") String category,
+      @Param("jlptRank") String jlptRank,
+      @Param("kanjiSearch") String kanjiSearch,
+      Pageable pageable);
 
-    @Query("""
-        SELECT new com.sangkeumi.mojimoji.dto.kanji.KanjiCount(
-            COUNT(k),
-            SUM(CASE WHEN kc IS NOT NULL THEN 1 ELSE 0 END)
-        )
-        FROM Kanji k
-        LEFT JOIN KanjiCollection kc
-            ON k.kanjiId = kc.kanji.kanjiId
-            AND kc.user.id = :userId
-            AND kc.collectedCount > 0
-        WHERE (:category IS NULL OR k.category = :category)
-            AND (:jlptRank IS NULL OR k.jlptRank = :jlptRank)
-            AND (
-                :kanjiSearch IS NULL OR
-                k.kanji       LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.korKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.korOnyomi   LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.jpnKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
-                k.jpnOnyomi   LIKE CONCAT('%', :kanjiSearch, '%')
-                )
-    """)
-    KanjiCount findTotalAndCollected(
-            @Param("userId") Long userId,
-            @Param("category") String category,
-            @Param("jlptRank") String jlptRank,
-            @Param("kanjiSearch") String kanjiSearch);
+  @Query("""
+          SELECT new com.sangkeumi.mojimoji.dto.kanji.KanjiCount(
+              COUNT(k),
+              COALESCE(SUM(CASE WHEN kc IS NOT NULL THEN 1 ELSE 0 END), 0)
+          )
+          FROM Kanji k
+          LEFT JOIN KanjiCollection kc
+              ON k.kanjiId = kc.kanji.kanjiId
+              AND kc.user.id = :userId
+              AND kc.collectedCount > 0
+          WHERE (:category IS NULL OR k.category = :category)
+              AND (:jlptRank IS NULL OR k.jlptRank = :jlptRank)
+              AND (
+                  :kanjiSearch IS NULL OR
+                  k.kanji       LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.korKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.korOnyomi   LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.jpnKunyomi  LIKE CONCAT('%', :kanjiSearch, '%') OR
+                  k.jpnOnyomi   LIKE CONCAT('%', :kanjiSearch, '%')
+                  )
+      """)
+  KanjiCount findTotalAndCollected(
+      @Param("userId") Long userId,
+      @Param("category") String category,
+      @Param("jlptRank") String jlptRank,
+      @Param("kanjiSearch") String kanjiSearch);
+
   @Query(value = """
           SELECT DISTINCT
           k.category   AS category,
@@ -190,18 +191,18 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
           """, nativeQuery = true)
   List<CategoryKanjiRow> findCategoryKanjiRows(@Param("userId") Long userId);
 
+  /**
+   * 북마크된 경우에 해당하는 한자 목록 조회
+   */
+  @Query("""
+      SELECT new com.sangkeumi.mojimoji.dto.kanji.BookmarkedKanjiDTO(
+          k.kanjiId, k.kanji, k.korOnyomi, k.korKunyomi, k.jpnOnyomi, k.jpnKunyomi, k.meaning)
+      FROM KanjiCollection kc
+      JOIN kc.kanji k
+      WHERE kc.user.userId = :userId AND kc.bookmarked = 1
+      """)
+  List<BookmarkedKanjiDTO> findBookmarkedKanjis(@Param("userId") Long userId);
 
-    /**
-     * 북마크된 경우에 해당하는 한자 목록 조회
-     */
-    @Query("""
-            SELECT new com.sangkeumi.mojimoji.dto.kanji.BookmarkedKanjiDTO(
-                k.kanjiId, k.kanji, k.korOnyomi, k.korKunyomi, k.jpnOnyomi, k.jpnKunyomi, k.meaning)
-            FROM KanjiCollection kc
-            JOIN kc.kanji k
-            WHERE kc.user.userId = :userId AND kc.bookmarked = 1
-            """)
-    List<BookmarkedKanjiDTO> findBookmarkedKanjis(@Param("userId") Long userId);
   @Query(value = """
       SELECT kc.kanji_collection_id,kc.user_id,kc.bookmarked,kc.collected_count,kc.wrong_count,kc.created_at,kc.updated_at,k.* FROM Kanji_Collections kc inner join kanjis k on kc.kanji_id = k.kanji_id  where kc.user_id = :userId and kc.wrong_count >=1 order by kc.updated_at desc;
       """, nativeQuery = true)
