@@ -121,7 +121,7 @@ public class GameAsyncService {
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, Base64.getDecoder().decode(base64Image),
                         StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            return "/image/thumbnail_images/" + fileName + ".png";
+            return "/uploads/image/thumbnail_images/" + fileName + ".png";
         }).subscribeOn(Schedulers.boundedElastic());
     }
 }
