@@ -21,16 +21,16 @@ public interface RankingRepository extends JpaRepository<User, Long> {
           CAST(COALESCE(SB.TotalHit, 0) AS SIGNED) AS totalHit,
           CAST(COALESCE(SB.TotalGaechu, 0) AS SIGNED) AS totalGaechu,
           CAST(COALESCE(SBR.SharedBookReplyCount, 0) AS SIGNED) AS sharedBookReplies,
-          CAST((COALESCE(B.BookCount, 0) * 5 + COALESCE(BL.LineCount, 0) * 1) AS DECIMAL(10,2)) AS bookScore,
-          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 2 + COALESCE(KC.KanjiCollectionBonus, 0) * 1) AS DECIMAL(10,2)) AS kanjiScore,
+          CAST((COALESCE(B.BookCount, 0) * 5 + COALESCE(BL.LineCount, 0) * 1) AS DOUBLE) AS bookScore,
+          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 2 + COALESCE(KC.KanjiCollectionBonus, 0) * 1) AS DOUBLE) AS kanjiScore,
           CAST((COALESCE(SB.SharedBooksCount, 0) * 4 + COALESCE(SB.TotalHit, 0) / 100.0 +
-                COALESCE(SB.TotalGaechu, 0) * 2 + COALESCE(SBR.SharedBookReplyCount, 0) * 2) AS DECIMAL(10,2)) AS likeScore,
+                COALESCE(SB.TotalGaechu, 0) * 2 + COALESCE(SBR.SharedBookReplyCount, 0) * 2) AS DOUBLE) AS likeScore,
           CAST(((COALESCE(B.BookCount, 0) * 5 + COALESCE(BL.LineCount, 0) * 1) +
                 (COALESCE(KC.KanjiCollectionCount, 0) * 2 + COALESCE(KC.KanjiCollectionBonus, 0) * 1) +
                 (COALESCE(SB.SharedBooksCount, 0) * 4 + COALESCE(SB.TotalHit, 0) / 100.0 +
                  COALESCE(SB.TotalGaechu, 0) * 2 + COALESCE(SBR.SharedBookReplyCount, 0) * 2)
-               ) AS DECIMAL(10,2)) AS totalScore,
-          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 100.0 / 2136) AS DECIMAL(10,2)) AS collectionPercentage
+               ) AS DOUBLE) AS totalScore,
+          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 100.0 / 2136) AS DOUBLE) AS collectionPercentage
       FROM Users U
       LEFT JOIN (SELECT user_id, COUNT(*) AS BookCount FROM Books GROUP BY user_id) B ON U.user_id = B.user_id
       LEFT JOIN (
@@ -73,8 +73,8 @@ public interface RankingRepository extends JpaRepository<User, Long> {
           U.profile_url AS profileUrl,
           CAST(COALESCE(KC.KanjiCollectionCount, 0) AS SIGNED) AS kanjiCollections,
           CAST(COALESCE(KC.KanjiCollectionBonus, 0) AS SIGNED) AS kanjiCollectionBonus,
-          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 2 + COALESCE(KC.KanjiCollectionBonus, 0) * 1) AS DECIMAL(10,2)) AS kanjiScore,
-          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 100.0 / 2136) AS DECIMAL(10,2)) AS collectionPercentage
+          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 2 + COALESCE(KC.KanjiCollectionBonus, 0)) AS DOUBLE) AS kanjiScore,
+          CAST((COALESCE(KC.KanjiCollectionCount, 0) * 100.0 / 2136) AS DOUBLE) AS collectionPercentage
       FROM Users U
       LEFT JOIN (
           SELECT user_id,
@@ -95,7 +95,7 @@ public interface RankingRepository extends JpaRepository<User, Long> {
           U.profile_url AS profileUrl,
           CAST(COALESCE(B.BookCount, 0) AS SIGNED) AS books,
           CAST(COALESCE(BL.LineCount, 0) AS SIGNED) AS bookLines,
-          CAST((COALESCE(B.BookCount, 0) * 5 + COALESCE(BL.LineCount, 0) * 1) AS DECIMAL(10,2)) AS bookScore
+          CAST((COALESCE(B.BookCount, 0) * 5 + COALESCE(BL.LineCount, 0)) AS DOUBLE) AS bookScore
       FROM Users U
       LEFT JOIN (SELECT user_id, COUNT(*) AS BookCount FROM Books GROUP BY user_id) B ON U.user_id = B.user_id
       LEFT JOIN (
@@ -117,7 +117,7 @@ public interface RankingRepository extends JpaRepository<User, Long> {
           CAST(COALESCE(SB.TotalGaechu, 0) AS SIGNED) AS totalGaechu,
           CAST(COALESCE(SBR.SharedBookReplyCount, 0) AS SIGNED) AS sharedBookReplies,
           CAST((COALESCE(SB.SharedBooksCount, 0) * 4 + COALESCE(SB.TotalHit, 0) / 100.0 +
-                COALESCE(SB.TotalGaechu, 0) * 2 + COALESCE(SBR.SharedBookReplyCount, 0) * 2) AS DECIMAL(10,2)) AS likeScore
+                COALESCE(SB.TotalGaechu, 0) * 2 + COALESCE(SBR.SharedBookReplyCount, 0) * 2) AS DOUBLE) AS likeScore
       FROM Users U
       LEFT JOIN (
           SELECT B.user_id,
@@ -138,4 +138,5 @@ public interface RankingRepository extends JpaRepository<User, Long> {
       ORDER BY likeScore DESC
       """, nativeQuery = true)
   List<LikeRanking> findLikesRankingRecords();
+
 }
