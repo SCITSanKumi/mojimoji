@@ -1,7 +1,7 @@
-
+        
         /* Hero 섹션 */
         .hero-section {
-            min-height: 90vh;
+            min-height: 80vh;
             position: relative;
             display: flex;
             align-items: center;
@@ -33,9 +33,8 @@
         }
 
         @font-face {
-            font-family: 'Jua-Regular';
-             /* src: url('/fonts/Jua-Regular.ttf') format('truetype'); */
-            src: url('../static/fonts/Jua-Regular.ttf') format('truetype'); 
+            font-family: 'NanumSquareRoundB';
+            src: url('../static/fonts/NanumSquareRoundB.ttf') format('truetype');
         }
 
         @font-face {
@@ -44,8 +43,25 @@
             src: url('../static/fonts/DokiDokiFantasia.otf') format('opentype');
         }
 
+        @font-face {
+            font-family: 'NanumGothicBold';
+            /* src: url('../static/fonts/DokiDokiFantasia.otf') format('opentype'); */
+            src: url('../static/fonts/NanumGothicBold.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'DoHyeon-Regular';
+            /* src: url('../static/fonts/DokiDokiFantasia.otf') format('opentype'); */
+            src: url('../static/fonts/DoHyeon-Regular.ttf') format('truetype');
+        }
+
+        .font-nanum-gothic-bold {
+            font-family: 'NanumGothicBold', sans-serif;
+        }
+
+
         .title-fancy {
-            font-family: 'Jua-Regular', ttf; /* sans-serif 제거하고 !important 추가 */
+            font-family: 'NanumGothicBold', sans-serif !important; 
             font-size: 3.5rem;
             color: #615b5c;
             margin-bottom: 3rem;
@@ -53,7 +69,7 @@
         }
 
         .hanja-display {
-            font-family: 'DokiDokiFantasia', otf;
+            font-family: 'DokiDokiFantasia', sans-serif;
             font-size: 7rem;
             color: #ee8897;
             display: block;
@@ -63,16 +79,12 @@
         /* 서비스 섹션 */
 
         .service-section {
-            min-height: 100vh; /* 현재 높이의 2배 */
+            min-height: 80vh; 
             display: flex;
             align-items: center;  /* 상단 정렬로 변경 */
             padding-top: 8rem;  /* 하단 여백 추가 */
         }
                 
-        .service-section h1 {
-            margin-bottom: 5rem;  /* 제목과 서비스 박스 사이 간격 */
-            margin-top: -2rem;   /* 제목을 위로 끌어올림 */
-        }
 
         .service-section .service-box {
             transition: transform 0.2s ease;
@@ -80,13 +92,13 @@
             flex-direction: column;
             align-items: center;
             padding-top: 2rem !important;  /* 상단 여백 줄임 */
-            min-height: 350px;  /* 박스 높이 고정 */
+            min-height: 300px;  /* 박스 높이 고정 */
             margin-top: -1rem;
             border-radius: 0.5rem;
         }
 
-        .service-section .title-fancy {
-            font-family: 'Jua-Regular', ttf;
+        .service-section h1 {
+            font-family: 'NanumGothicBold', sans-serif !important;
             font-size: 3.5rem;
             color: #615b5c;
             margin-bottom: 3rem;
@@ -108,29 +120,149 @@
             box-shadow: 0 .7rem 1rem rgba(0,0,0,.15);
         }
 
-        /* "더보기" 링크 스타일 */
-        .more-link {
-            display: inline-flex;
-            align-items: center;
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
+
+        /* 슬라이드 */
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            opacity: 0.7;
         }
 
-        .more-link:hover {
-            color: #555;
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #ee8897;
+            border-radius: 50%;
+            padding: 1rem;
         }
+
+        .carousel-indicators {
+            bottom: -70px;
+        }
+
+        .carousel-indicators [data-bs-target] {
+            background-color: #fc7c8f !important;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 5px; 
+            opacity: 0.5;
+            border: 0;
+        }
+
+        /* active 상태일 때의 스타일 추가 */
+        .carousel-indicators .active {
+            opacity: 1;
+        }
+
+        .carousel-item {
+            transition: transform .6s ease-in-out;  /* 전환 시간을 조정 */
+        }
+
+
+        /* testimonial-box 스타일 추가 */
+        .testimonial-box {
+            background-color: #f8d7da;
+            border-radius: 20px;
+            padding: 30px;
+            height: 400px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;  /* 수직 중앙 정렬 */
+            align-items: center;
+        }
+
+        .testimonial-box .blockquote {
+            font-family: 'NanumSquareRoundB', sans-serif !important;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            font-weight: 550;
+            line-height: 1.5;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .testimonial-box .d-flex {
+            margin-top: 10px;
+        }
+
+        .testimonial-box img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .testimonial-box h5 {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+            font-weight: 350;
+        }
+
+        .testimonial-box p {
+            margin-bottom: 0;
+            color: #6c757d;
+        }
+
+
+        /* 모지모지의 성과들 */
+        .stats-section {
+            background-color: #ffffff;
+            padding: 60px 0;
+        }
+        
+        .stats-section h2 {
+            font-family: 'NanumGothicBold', sans-serif;
+            color: #e13d76;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .stats-section p.lead {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #777e85;
+        }
+        
+        .stats-section .display-4 {
+            font-size: 3rem;
+            color: #343a40;
+        }
+        
+        .stats-section p {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #e980a8;
+        }
+
+        .reduced-size {
+            width: 75%; /* 원하는 크기로 조정 */
+            height: auto; /* 비율을 유지하면서 높이를 자동으로 조정 */
+        }
+
+
+
 
         /* 사용자 추천 섹션 */
         .recommendation-section {
-            min-height: 80vh; /* 현재 높이의 2배 */
-            background-color: #f8f9fa;
+            height: 85vh; /* 높이 조절 */
+            background-color: #ffffff;
             background-size: 70%;
             background-position: center;
             background-repeat: no-repeat;
             display: flex;
             align-items: center;
+        }
+
+        .recommendation-section .mb-4 {
+            font-family: 'DoHyeon-Regular', ttf !important;
+            font-weight: 550;
+            margin-top: 0;
+            padding-top: 0.5rem;
         }
 
         .recommendation-section .blockquote {
@@ -139,18 +271,57 @@
         }
         
         .recommendation-section .blockquote p {
-            font-family: 'Jua-Regular', sans-serif !important; /* 폰트 변경 */
+            font-family: 'DoHyeon-Regular', ttf;
             font-size: 2rem; /* 텍스트 크기 1.3배 */
             line-height: 1.5;
-            color: #6c757d; /* text-muted 색상 */
+            color: #466885; /* text-muted 색상 */
         }
 
         .recommendation-section .rounded-circle {
             border: 2px solid #ddd;
         }
 
-        /* Q&A 목록 스타일 */
-        .faq-question-btn {
+        
+        /* 하단 가입 유도 버튼 */
+
+        .join_button {
+            background-color: #ffc4d4;
+            color: white;
+            padding: 60px 0;
+        }
+        
+        .join_button h2 {
+            font-family: 'NanumGothicBold', sans-serif;
+            color: rgb(80, 79, 79);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .join_button p {
+            font-family: 'NanumGothicBold', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 30px;
+        }
+        
+        .join_button .btn {
+            background-color: #FF6F61;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.25rem;
+            font-family: 'NanumGothicBold', sans-serif;
+        }
+
+
+
+        
+        /* Q&A 목록 스타일
+        
+        .col-md-4 {
+            font-size: 1.2rem;
+
+        } */
+
+        /* .faq-question-btn {
             width: 100%;
             text-align: left;
             background: none;
@@ -178,4 +349,4 @@
             margin-bottom: 1rem;
             line-height: 1.5;
             color: #555;
-        }
+        } */

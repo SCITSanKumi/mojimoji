@@ -12,7 +12,6 @@
     <script th:src="@{js/jquery-3.7.1.min.js}"></script>
     <!-- Bootstrap Icons (아이콘 사용 시 필요) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="../static/css/mojimoji_main.css" th:href="@{css/mojimoji_main.css}">
 </head>
@@ -26,7 +25,7 @@
     <div class="container-fluid hero-section vh-100">
         <div class="hero-text">
             <h2 class="display-4 fw-bolder">나만의 모험 스토리로<br>한자를 즐겁게!</h2>
-            <a class="btn text-white fw-lighter fs-3 px-4 py-3 mt-3" style="background-color: #EE697D;"
+            <a class="btn text-white fw-bold fs-3 px-4 py-3 mt-3" style="background-color: #EE697D;"
                 th:href="@{/game/play}">
                 스토리 시작
             </a>
@@ -41,7 +40,7 @@
         <div class="container text-center">
             <div class="row g-4">
                 <div>
-                    <h1 class="title-fancy fw-bolder"> 세상에 없던 한자 교육 플랫폼 </h1>
+                    <h1 class="title-fancy fw-bolder"> 세상에 없던 한자 교육 플랫폼! </h1>
                 </div>
                 <div class="col-md-3">
                     <div class="p-4 service-box bg-white rounded shadow-sm">
@@ -71,107 +70,139 @@
         </div>
     </section>
 
-<!-- user recommendation -->
-<section class="recommendation-section py-5" style="background-image: url('../static/image/말풍선.png'); background-size: 65%; background-position: center; background-repeat: no-repeat;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <blockquote class="blockquote" style="background: none; border: none;">
-                    <p class="mb-4 text-muted" style="font-size: 2rem; line-height: 1.5; font-family: 'Jua-Regular', sans-serif;">
-                        모지모지는 정말 혁신적인 한자 학습 플랫폼이에요. 저희 
-                        8살짜리 딸이 모지모지로 한자 공부를 하는데, 게임처럼 
-                        흥미로워서 지루할 틈이 없다네요. 
-                        한자 공부는 모지모지입니다!
+    <!-- 모지모지의 성과들 -->
+    <section class="stats-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2 class="mb-4" font-weight: 300;>모지모지의 성과들</h2>
+                    <p class="lead">
+                    모지모지는 대체 불가능한 기술과 학습 컨텐츠로
+                    최고의 한자 학습 경험을 제공하기 위해 노력하고 있습니다 
+                    저희의 성과를 확인해보세요
                     </p>
-                </blockquote>
-                <div class="d-flex align-items-center justify-content-center mt-4">
-                    <img src="../static/image/학부모.png" alt="학부모" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
-                    <div class="ms-3">
-                        <h5 class="mb-0">김희영</h5>
-                        <p class="mb-0 text-muted">바른교육연구소 소장</p>
-                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <img src="../static/image/모지모지실적.png" alt="모지모지실적" class="img-fluid reduced-size">
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-    
-    <!-- FAQ 섹션 시작 -->
-    <section class="faq-section">
-        <div class="container">
-            <div class="row">
-                <!-- 왼쪽 안내 영역 -->
-                <div class="col-md-4 faq-left">
-                    <div class="faq-title">자주 묻는 질문</div>
-                    <div class="faq-subtitle">
-                        스토리 작성과 한자 카드 수집, 그리고 기타 기능에 대한<br>
-                        궁금한 점들을 모아봤습니다.
-                    </div>
+            <div class="row text-center mt-5">
+                <div class="col-md-3">
+                    <h3 class="display-4 fw-bold">3만 명</h3>
+                    <p>모지모지 국내 가입자 수</p>
                 </div>
-                <!-- 오른쪽 FAQ 목록 -->
-                <div class="col-md-8">
-                    <!-- FAQ 1 -->
-                    <div class="mb-2">
-                        <button class="faq-question-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq1"
-                            aria-expanded="false" aria-controls="faq1">
-                            <span>Q. 스토리를 어떻게 시작하나요?</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <div class="collapse" id="faq1">
-                            <div class="faq-answer">
-                                A. 상단 메뉴의 <strong>"스토리 시작"</strong> 버튼을 클릭하시면, 원하는 주제를 선택하고 자유롭게 이야기를 작성할 수 있습니다.
-                                작성 후 공유 설정을 통해 다른 학습자들과 스토리를 함께 나눌 수 있어요.
-                            </div>
-                        </div>
-                    </div>
-                    <!-- FAQ 2 -->
-                    <div class="mb-2">
-                        <button class="faq-question-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq2"
-                            aria-expanded="false" aria-controls="faq2">
-                            <span>Q. 한자 카드는 어떻게 수집하나요?</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <div class="collapse" id="faq2">
-                            <div class="faq-answer">
-                                A. 스토리를 진행하며 등장하는 한자를 확인하면 자동으로 카드가 등록됩니다.
-                                <br>"카드 컬렉션" 페이지에서 수집 현황을 확인하고, 획득 조건을 충족하면 특별 카드도 얻을 수 있습니다.
-                            </div>
-                        </div>
-                    </div>
-                    <!-- FAQ 3 -->
-                    <div class="mb-2">
-                        <button class="faq-question-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq3"
-                            aria-expanded="false" aria-controls="#faq3">
-                            <span>Q. 학습 기록이나 랭킹은 어디서 확인하나요?</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <div class="collapse" id="faq3">
-                            <div class="faq-answer">
-                                A. <strong>"랭크"</strong> 메뉴에서 전체 사용자 기준의 순위를 확인할 수 있으며, 학습 기록은 <strong>"마이 페이지"</strong> 내
-                                "진행 현황" 탭에서 열람 가능합니다.
-                            </div>
-                        </div>
-                    </div>
-                    <!-- FAQ 4 -->
-                    <div class="mb-2">
-                        <button class="faq-question-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq4"
-                            aria-expanded="false" aria-controls="faq4">
-                            <span>Q. 다른 언어도 지원할 계획이 있나요?</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <div class="collapse" id="faq4">
-                            <div class="faq-answer">
-                                A. 현재는 일본어 한자 학습에 집중하고 있지만, 추후 업데이트를 통해 다른 언어에 대한 지원도 검토하고 있습니다.
-                                많은 의견 부탁드립니다!
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 필요하다면 FAQ 항목 추가 -->
+                <div class="col-md-3">
+                    <h3 class="display-4 fw-bold">15만 개+</h3>
+                    <p>생성된 스토리 개수</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="display-4 fw-bold">350</h3>
+                    <p>1인당 한자 카드 보유 개수</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="display-4 fw-bold">808M</h3>
+                    <p>저장된 한자 카드 수</p>
                 </div>
             </div>
         </div>
     </section>
-    <!-- FAQ 섹션 끝 -->
+
+
+    <!-- user recommendation -->
+    <section class="recommendation-section py-5">
+        <div class="container text-center">
+            <h1 class="mb-4">고객들이 모지모지를 ♥하는 이유</h1>
+            <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+                <!-- Indicators/dots -->
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="2"></button>
+                </div>
+
+                <!-- The slideshow/carousel -->
+                <div class="carousel-inner">
+                    
+                    <!-- 첫 번째 슬라이드 -->
+                    <div class="carousel-item active">
+                        <div class="testimonial-box">
+                            <blockquote class="blockquote">
+                                <p class="mb-4 text-muted">
+                                    모지모지는 너무 멋진 한자 학습 플랫폼이에요. 
+                                    저희 집 8살짜리 딸이 매일 모지모지로 한자 공부하고 싶다고 졸라요. 
+                                    정말 대박이에요.
+                                </p>
+                            </blockquote>
+                            <div class="d-flex align-items-center justify-content-center mt-4">
+                                <img src="../static/image/학부모.png" alt="학부모" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div class="ms-3">
+                                    <h5 class="mb-0">김희영</h5>
+                                    <p class="mb-0 text-muted">바른교육연구소 소장</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 두 번째 슬라이드 -->
+                    <div class="carousel-item">
+                        <div class="testimonial-box">
+                            <blockquote class="blockquote">
+                                <p class="mb-4 text-muted">
+                                    하나의 플랫폼 안에서 스토리 생성, 한자 퀴즈, 한자 카드 수집, 
+                                    공유를 모두 다 할 수 있다니! 저희 아들이 너무 좋아하네요. 
+                                    별 5개 드립니다.</p>
+                            </blockquote>
+                            <div class="d-flex align-items-center justify-content-center mt-4">
+                                <img src="../static/image/선생님.png" alt="선생님" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div class="ms-3">
+                                    <h5 class="mb-0">이민영</h5>
+                                    <p class="mb-0 text-muted">공교육혁신위원회 부회장</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 세 번째 슬라이드 -->
+                    <div class="carousel-item">
+                        <div class="testimonial-box">
+                            <blockquote class="blockquote">
+                                <p class="mb-4 text-muted">
+                                    요즘 저희 가족 모두 모지모지로 한자 공부해요 
+                                    할아버지, 할머니, 아빠, 엄마, 동생 모두 모지모지 덕에 
+                                    한자 공부가 즐거워졌대요.</p>
+                            </blockquote>
+                            <div class="d-flex align-items-center justify-content-center mt-4">
+                                <img src="../static/image/학부모2.png" alt="학부모" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div class="ms-3">
+                                    <h5 class="mb-0">최화영</h5>
+                                    <p class="mb-0 text-muted">대한한자교육협회장</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Left and right controls/icons -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+
+
+    </section>
+    
+    <section class="join_button py-5">
+        <div class="container text-center text-white">
+            <h2 class="mb-4">한자의 세계에 풍덩!</h2>
+            <a href="#" class="btn btn-warning btn-lg text-white fw-bold">모지모지 시작하기</a>
+        </div>
+    </section>
+
+
 
     <!-- Footer -->
     <footer th:insert="~{fragments/footer :: footer}"></footer>
