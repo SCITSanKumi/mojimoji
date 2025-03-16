@@ -6,23 +6,63 @@ $(function () {
     const originalData = new Map();
     let isAnimating = false;
 
-    $(document).on('change', '#kanjiSort', function () {
-        $('#searchForm').submit();
-    });
+  $(document).on('change', '#kanjiSort', function () {
+    if ($('select[name=kanjiSort] option:selected').val() == 'kanjiId') {
+      $('#sortDirection option:eq(0)').attr('selected', 'selected');
+    } else if ($('select[name=kanjiSort] option:selected').val() == 'firstCollectedAt') {
+      $('#sortDirection option:eq(1)').attr('selected', 'selected');
+    } else {
+      $('#sortDirection option:eq(1)').attr('selected', 'selected');
+    }
+
+    $('#searchForm').submit();
+  });
 
     $(document).on('change', '#sortDirection', function () {
         $('#searchForm').submit();
     });
 
-    // $(document).on('click', '.wrongModal', function (e) {
-    // $('.bookMark2').on('click', function (e) {
-    //     e.stopPropagation();
-    //     if ($(this).text() == '☆') {
-    //         $(this).text('★');
-    //     } else {
-    //         $(this).text('☆');
-    //     }
-    // })
+      
+    $(document).off('click', '.bookMark2').on('click', '.bookMark2', function (e) {
+        e.stopPropagation();
+        let kanjiId = $(this).attr('value');
+        console.log(kanjiId);
+        if ($(this).text() == '☆') {
+            $.ajax({
+                url: "/kanji/addBookMark",
+                method: "POST",
+                data: { "kanjiId": kanjiId },
+                success: function () {
+                }
+            })
+            $(this).text('★');
+            $(this).css('color', 'gold');
+            $(`.bookMark3[value=${kanjiId}]`).text('★');
+          $(`.bookMark3[value=${kanjiId}]`).css('color', 'gold');
+          $(`.bookMark[value=${kanjiId}]`).text('★');
+          $(`.bookMark[value=${kanjiId}]`).css('color', 'gold');
+
+        } else {
+            $.ajax({
+                url: "/kanji/deleteBookMark",
+                method: "POST",
+                data: { "kanjiId": kanjiId },
+                success: function () {
+                }
+            })
+            $(this).text('☆')
+            $(this).css('color', 'black');
+            $(`.bookMark3[value=${kanjiId}]`).text('☆');
+          $(`.bookMark3[value=${kanjiId}]`).css('color', 'black');
+          $(`.bookMark[value=${kanjiId}]`).text('☆');
+          $(`.bookMark[value=${kanjiId}]`).css('color', 'black');
+            e.stopPropagation();
+        }
+  })
+    
+    
+
+    
 
     // 무한 스크롤 & 스크롤 화살표
     $(window).on("scroll", function () {
@@ -52,20 +92,6 @@ $(function () {
                     max: 15, speed: 400, glare: true, "max-glare": 0.2,
                 });
 
-                let count = 0;
-
-                if (count == 0) {
-                    // $(document).on('click', '.bookMark2', function (e) {
-                    $('.bookMark2').on('click', function (e) {
-                        e.stopPropagation();
-                        if ($(this).text() == '☆') {
-                            $(this).text('★');
-                        } else {
-                            $(this).text('☆');
-                        }
-                    })
-                    count++;
-                }
 
                 if (document.querySelectorAll('.border-lv0').length) {
                     gsap.to('.border-lv0', {

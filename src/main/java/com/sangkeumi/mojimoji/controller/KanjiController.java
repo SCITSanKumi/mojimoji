@@ -164,4 +164,12 @@ public class KanjiController {
       @AuthenticationPrincipal MyPrincipal principal) {
     kanjiCollectionService.deleteBookMark(kanjiId, principal.getUserId());
   }
+
+  @ResponseBody
+  @PostMapping("getBookMarkNum")
+  public int getBookMarkNum(@RequestParam("kanjiId") Long kanjiId,
+      @AuthenticationPrincipal MyPrincipal principal) {
+    return kanjiCollectionService.getBookmarkNum(kanjiId, principal.getUserId());
+
+  }
 }

@@ -124,7 +124,6 @@ $(() => {
             let jpnOnyomi = $(this).data('jpnonyomi');
             let bookMark = $(this).attr('data-bookmark');
 
-            console.log(bookMark);
 
             let meaning = $(this).attr('data-meaning').replace(/\\n/g, '<br>');
             let createdAt = $(this).data('createdat');
@@ -164,33 +163,50 @@ $(() => {
 
     // 퀴즈 종료
     function endQuiz() {
-        let resultHtml = questionList.map((question, index) => {
-            let color = correctAnswerIndexes.includes(index) ? "white" : "lightgray; opacity : 0.5";
-            let inCreatedAt = correctAnswerIndexes.includes(index) ? "카드 수집 완료" : "오답노트 추가 완료";
-            return `<div div class= "quizEnd" data-kanjiId="${question.kanjiId}"
-            data-kanji="${question.kanji}" data-category="${question.category}" data-jlptrank="${question.jlptRank}"
-            data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
-            data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
-            data-meaning="${question.meaning}" data-createdAt="${inCreatedAt}" data-bookmark="${question.bookmarked}" style = "background-color: ${color}; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:65px; border:1px solid #ccc; padding:5px; margin-right:20px; text-align: center; width:77.4px; height:113.4px; display: inline-block;"> ${question.kanji}</div > `;
-        }).join(" ");
-        
-        $("#quiz-container").hide();
-        $('.kanjiQuiz').text('퀴즈 종료!');
-        $("#game-result").removeClass("d-none").html(`
-            <span span style = "margin-right : 15px; font-size: 20px;" > 맞힌 한자 개수: <strong>${score}</strong>개</span >
-            <span style="margin-left : 15px; font-size: 20px;">틀린 한자 개수: <strong>${questionList.length - score}</strong>개</span>
-            <div style="height:30px"></div>
-            <div class="quizScroll">${resultHtml}</div><br>
-
-            <div class="text-center mt-3">
-            <button id="to-main" class="btn btn-secondary" disabled" style="margin-right : 15px">메인으로</button>
-            <button id="share-story" class="btn btn-secondary" disabled"style="margin-left : 15px">스토리 공유하기</button>
-            </div >
+        let ajaxRequests = questionList.map((question, index) => {
+            let kanjiId = question.kanjiId;
+    
+            return $.ajax({
+                url: "/kanji/getBookMarkNum",
+                method: "POST",
+                data: { "kanjiId": kanjiId }
+            }).then(resp => {
+                let BookMarkNum = resp;
+                let color = correctAnswerIndexes.includes(index) ? "white" : "lightgray; opacity : 0.5";
+                let inCreatedAt = correctAnswerIndexes.includes(index) ? "카드 수집 완료" : "오답노트 추가 완료";
+                
+                return `<div class="quizEnd" data-kanjiId="${question.kanjiId}"
+                    data-kanji="${question.kanji}" data-category="${question.category}" data-jlptrank="${question.jlptRank}"
+                    data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
+                    data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
+                    data-meaning="${question.meaning}" data-createdAt="${inCreatedAt}" data-bookmark="${BookMarkNum}" 
+                    style="background-color: ${color}; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:65px; border:1px solid #ccc; padding:5px; margin-right:20px; text-align: center; width:77.4px; height:113.4px; display: inline-block;"> 
+                    ${question.kanji}
+                </div>`;
+            });
+        });
+    
+        Promise.all(ajaxRequests).then(resultHtmlArray => {
+            let resultHtml = resultHtmlArray.join(" ");
+            
+            $("#quiz-container").hide();
+            $('.kanjiQuiz').text('퀴즈 종료!');
+            $("#game-result").removeClass("d-none").html(`
+                <span style="margin-right: 15px; font-size: 20px;">맞힌 한자 개수: <strong>${score}</strong>개</span>
+                <span style="margin-left: 15px; font-size: 20px;">틀린 한자 개수: <strong>${questionList.length - score}</strong>개</span>
+                <div style="height:30px"></div>
+                <div class="quizScroll">${resultHtml}</div><br>
+    
+                <div class="text-center mt-3">
+                    <button id="to-main" class="btn btn-secondary" style="margin-right: 15px">메인으로</button>
+                    <button id="share-story" class="btn btn-secondary" style="margin-left: 15px">스토리 공유하기</button>
+                </div>
             `);
             
-            $('.quizScroll').css('height','');
+            $('.quizScroll').css('height', '');
             $("#to-main").off("click").on("click", () => location.href = "/");
             $("#share-story").off("click").on("click", shareStory);
+        });
     }
 
     function shareStory() {

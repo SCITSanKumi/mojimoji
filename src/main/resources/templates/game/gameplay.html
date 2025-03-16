@@ -216,9 +216,12 @@
     }
 
     .bookMark {
+      position: absolute;
+      top:11%;
+      left: 76%;
       margin: 0 auto;
       width: 15.24px;
-      font-size: 25px;
+      font-size: 30px;
     }
 
     .bookMark:hover {
@@ -258,6 +261,7 @@
 
     .quizScroll {
       overflow-x: auto;
+      overflow-y: hidden;
       white-space: nowrap;
       font-size: 20px;
       padding-top: 5px;
@@ -538,13 +542,13 @@
                 <div class="detailKanjiId"></div>
                 <div class="detailJlptRank">N3</div>
                 <div class="detailKanjiCard">
-                    <span class="detailKanji">一</span>
+                  <span class="bookMark"></span>
+                  <span class="detailKanji">一</span>
                     <div class="detailKanjiExplain">
                         <div class="detailYomi">하나 일</div>
                         <div class="detailJpnKunyomi">음독 :</div>
                         <div class="detailJpnOnyomi">훈독 :</div>
                         <pre class="detailMeaning">의미:</pre>
-                        <div class="bookMark"></div>
                     </div>
                 </div>
                 <div class="detailCategory">카테고리 :</div>
@@ -556,13 +560,13 @@
 
     <!-- 퀴즈 모달 (생략된 부분) -->
     <div class="modal fade" id="quiz-modal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true"
-      data-bs-backdrop="static" data-bs-keyboard="false">
+      data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1500;">
       <div class="modal-dialog modal-lg">
         <div class="modal-content p-4" style="text-align: center;">
           <h2 class="text-center kanjiQuiz">한자 퀴즈</h2>
           <div id="quiz-container">
             <div class="quiz-item">
-              <div class="quizScroll"><span class="quizNow"></span></div>
+              <div class="quizScroll"><span class="quizNow"><div style="height: 48.7px; display: inline-block;"></div></span></div>
               <h5 class="kanji-question" style="font-size: 100px;"></h5>
               <table style="width: 100%;">
                 <tr>
