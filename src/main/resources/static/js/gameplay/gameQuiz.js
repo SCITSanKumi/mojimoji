@@ -13,10 +13,10 @@ $(() => {
             url: `/game/end/${bookId}`,
             type: "GET",
             success: (response) => {
-                if (!response || !response.kanjis?.length) {
-                    alert("퀴즈 데이터를 불러올 수 없습니다.");
-                    return;
-                }
+                // if (!response || !response.kanjis?.length) {
+                //     alert("퀴즈 데이터를 불러올 수 없습니다.");
+                //     return;
+                // }
                 questionList = response.kanjis;
                 currentIndex = 0;
                 score = 0;
@@ -173,7 +173,7 @@ $(() => {
             data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
             data-meaning="${question.meaning}" data-createdAt="${inCreatedAt}" data-bookmark="${question.bookmarked}" style = "background-color: ${color}; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:65px; border:1px solid #ccc; padding:5px; margin-right:20px; text-align: center; width:77.4px; height:113.4px; display: inline-block;"> ${question.kanji}</div > `;
         }).join(" ");
-        
+
         $("#quiz-container").hide();
         $('.kanjiQuiz').text('퀴즈 종료!');
         $("#game-result").removeClass("d-none").html(`
@@ -187,7 +187,7 @@ $(() => {
             <button id="share-story" class="btn btn-secondary" disabled"style="margin-left : 15px">스토리 공유하기</button>
             </div >
             `);
-            
+
             $('.quizScroll').css('height','');
             $("#to-main").off("click").on("click", () => location.href = "/");
             $("#share-story").off("click").on("click", shareStory);

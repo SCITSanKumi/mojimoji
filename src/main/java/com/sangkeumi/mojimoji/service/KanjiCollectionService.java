@@ -1,9 +1,11 @@
 package com.sangkeumi.mojimoji.service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -220,8 +222,8 @@ public class KanjiCollectionService {
         }
     }
 
-    public List<QuizKanjiDTO> getKanjiQuiz(Long bookId, Long userId) {
-        return kanjiCollectionsRepository.findKanjisToQuiz(bookId, userId);
+    public Set<QuizKanjiDTO> getKanjiQuiz(Long bookId, Long userId) {
+        return new HashSet<>(kanjiCollectionsRepository.findKanjisToQuiz(bookId, userId));
     }
 
     public List<BookmarkedKanjiDTO> getBookmarkedKanji(Long userId) {
