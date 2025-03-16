@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="../../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
     <!-- Bootstrap JS -->
     <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <script defer th:src="@{/js/myStory.js}"></script>
     <style>
         /* 내 스토리 내용을 감싸는 박스 스타일 (스크롤 적용 가능) */
@@ -53,15 +55,40 @@
                 삭제
             </button>
         </div>
-        <h1 th:text="${myStoryInfo.title}">책제목</h1>
+        <h1 th:text="${myStoryInfo.title}">책 제목</h1>
 
         <!-- 내 스토리 내용을 하나의 박스에 표시 (내용이 길면 스크롤 생김) -->
         <div class="story-box">
-            <div th:each="myStory : ${myStoryContent}">
+            <div th:each="myStory : ${myStoryContent}"
+                th:with="gameInfo=|<div class='game-info' style='display:flex; align-items:center;'>
+                    <i class='bi bi-heart-fill me-1'></i> ${myStory.hp}
+                    <i class='bi bi-coin me-1'></i> ${myStory.gold}
+                    <i class='bi bi-map me-1'></i> ${myStory.currentLocation}
+                </div>|,
+                inventoryBox=${myStory.inventory != null and #lists.size(myStory.inventory) > 0} ?
+                    |<div class='inventory-box' style='overflow-x:auto; white-space:nowrap; margin-top:5px;'>
+                        <i class='bi bi-backpack-fill me-1'></i> ${#strings.arrayJoin(myStory.inventory, ' ')}
+                    </div>| : '',
+                teacherContent=${myStory.teacherContent != null and myStory.teacherContent != ''} ?
+                    |<hr><div class='teacher-content'>${myStory.teacherContent}</div>| : ''">
+
+                <!-- 사용자 입력 내용 -->
                 <p th:text="${myStory.userContent}"></p>
-                <p th:text="${myStory.formattedGptContent()}"></p>
+
+                <!-- gptContent를 <p> 태그로 출력 (줄바꿈 유지) 및 popover 적용 -->
+                <p th:text="${myStory.gptContent}" style="white-space: pre-line;"
+                    data-bs-toggle="popover"
+                    data-bs-trigger="hover"
+                    data-bs-placement="top"
+                    data-bs-html="true"
+                    th:attr="data-bs-content=${gameInfo + inventoryBox + teacherContent}">
+                </p>
             </div>
         </div>
+
+
+
+
     </div>
 </body>
 

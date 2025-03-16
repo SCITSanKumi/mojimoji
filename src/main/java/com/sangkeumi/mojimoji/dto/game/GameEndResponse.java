@@ -1,10 +1,10 @@
 package com.sangkeumi.mojimoji.dto.game;
 
-import java.util.List;
+import java.util.Set;
 
 import com.sangkeumi.mojimoji.dto.kanji.QuizKanjiDTO;
 
 public record GameEndResponse(
-    List<QuizKanjiDTO> kanjis
+    Set<QuizKanjiDTO> kanjis // 중복 없애기 위해 Set으로 받음
 ) {
 }

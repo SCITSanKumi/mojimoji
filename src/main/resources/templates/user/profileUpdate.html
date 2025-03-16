@@ -80,10 +80,12 @@
       <div class="form-floating mb-2">
         <input type="text" id="nickname" name="nickname" class="form-control" th:value="${user.nickname}">
         <label for="nickname" class="form-label">닉네임</label>
+        <small id="nicknameCheck" class="text-danger d-block mb-2"></small>
       </div>
       <div class="form-floating mb-2" th:if="${!user.socialUser}">
         <input type="email" id="email" name="email" class="form-control" th:value="${user.email}">
         <label for="email" class="form-label">이메일 주소</label>
+        <small id="emailCheck" class="text-danger d-block mb-2"></small>
       </div>
       <div class="text-center">
         <button type="submit" id="profileUpdateBtn" class="btn w-100 py-2 text-white mb-3"
@@ -120,10 +122,12 @@
             <div class="mb-3">
               <label for="newPassword" class="form-label">새 비밀번호</label>
               <input type="password" class="form-control" id="newPassword" placeholder="새 비밀번호를 입력하세요">
+              <small id="newPasswordCheck" class="text-danger d-block mb-2"></small>
             </div>
             <div class="mb-3">
               <label for="confirmNewPassword" class="form-label">새 비밀번호 확인</label>
               <input type="password" class="form-control" id="confirmNewPassword" placeholder="새 비밀번호를 다시 입력하세요">
+              <small id="confirmNewPasswordCheck" class="text-danger d-block mb-2"></small>
             </div>
           </form>
         </div>

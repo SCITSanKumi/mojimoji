@@ -136,7 +136,7 @@ public class GameService {
         book.setEnded(true);
 
         // 제목 및 썸네일 생성 후 저장 (비동기 실행)
-        // gameAsyncService.generateAndSaveBookDetails(book);
+        // gameAsyncService.generateAndSaveBookDetails(book); //TODO 오카네모찌라면 주석 풀기
     }
 
     @Transactional
@@ -156,32 +156,6 @@ public class GameService {
             .getGptContent();
 
         return generateDialogue(content, kanji);
-    }
-
-    private String generateDialogue(String content, String kanji) {
-        // content와 한자 정보를 활용한 프롬프트 작성 (일본어)
-        String prompt = "次のストーリーをもとに、以下の漢字を含む感動的で創造的な続きの内容を日本語で簡潔に作ってください：\n"
-                + content
-                + "\n【漢字】: " + kanji;
-
-        List<Map<String, String>> messages = new ArrayList<>();
-        messages.add(Map.of("role", "system", "content", "あなたは創造的な物語を作る専門家AIです。"));
-        messages.add(Map.of("role", "user", "content", prompt));
-
-        // 동기 방식으로 API 호출
-        ChatCompletionResponse response = webClient.post()
-            .uri("https://api.openai.com/v1/chat/completions")
-            .bodyValue(Map.of(
-                "model", "gpt-4o-mini",
-                "messages", messages,
-                "temperature", 0.7,
-                "max_tokens", 150
-            ))
-            .retrieve()
-            .bodyToMono(ChatCompletionResponse.class)
-            .block();
-
-        return Optional.ofNullable(response.getContent()).orElse("").trim();
     }
 
     /** OpenAI API 스트리밍 요청 처리 */
@@ -208,5 +182,32 @@ public class GameService {
                         .filter(content -> !content.isEmpty())
                         .isPresent())
                 .map(response -> response.getContent());
+    }
+
+    private String generateDialogue(String content, String kanji) {
+        // content와 한자 정보를 활용한 프롬프트 작성 (일본어)
+        String prompt =
+        "次のストーリーをもとに、ユーザーの具体的な行動を示す、20文字以内の文章を日本語で作成してください。なお、必ず【漢字】を含め、その漢字の意味に沿った行動を表現してください。例えば、『魔王城への道を急ぐ』のように、実際の行動を表現してください。\n"
+        + content + "\n【漢字】: " + kanji;
+
+
+        List<Map<String, String>> messages = new ArrayList<>();
+        messages.add(Map.of("role", "system", "content", "あなたはテキストゲームの物語生成システムです。プレイヤーの行動や発言を表現する短い（20文字以内）の日本語の文章を作成してください。文章は感動的かつ創造的で、必ず以下の漢字を含むようにしてください。ストーリーの内容は参考資料として利用してください。"));
+        messages.add(Map.of("role", "user", "content", prompt));
+
+        // 동기 방식으로 API 호출
+        ChatCompletionResponse response = webClient.post()
+            .uri("https://api.openai.com/v1/chat/completions")
+            .bodyValue(Map.of(
+                "model", "gpt-4o-mini",
+                "messages", messages,
+                "temperature", 0.7,
+                "max_tokens", 150
+            ))
+            .retrieve()
+            .bodyToMono(ChatCompletionResponse.class)
+            .block();
+
+        return Optional.ofNullable(response.getContent()).orElse("").trim();
     }
 }
