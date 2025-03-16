@@ -105,9 +105,6 @@ public class GameConfiguraton {
         ★★6. 한자 문장은 용사만 입력 가능합니다. 중간에 당신이 임의로 한자 문장을 절대로 입력하지 마세요★★
 
 
-        ⓖ 
-
-
         ⓖ스토리 생성 시 주의사항
 
         ★★1. 당신이 생성한 스토리의 상황에서 용사의 hp와 inventory와 gold을 적절히 증감시키고 current_location을 변경해야 합니다★★
@@ -195,7 +192,6 @@ public class GameConfiguraton {
                 {"name": "narration"} 당신은 행인의 훈계에 정신을 차리고 마왕성으로 향합니다.
                 {"hp": 70, "inventory": [   ], "gold": 400, "current_location": "마을", "isEnded": false, "turn": 16}
                 "
-
 
         ★★8. hp가 0이 되면 스토리 생성은 종료되며, {"name": "narration"}은 게임의 종료를 알려야 하고, "current_location"에서는 정확히 "마왕성"을 표시해야 하고, 스토리 마지막 부분에는 게임이 끝났음을 나타내기 위해 "isEnded": true를 출력해야 합니다. 생성된 스토리 개수는 16인 상황입니다★★
 
