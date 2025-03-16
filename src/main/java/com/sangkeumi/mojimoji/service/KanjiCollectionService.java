@@ -249,4 +249,16 @@ public class KanjiCollectionService {
     public List<WrongKanji> getWrongKanji(Long userId) {
         return kanjiCollectionsRepository.findAllByUserId(userId);
     }
+
+    public int getBookmarkNum(Long kanjiId, Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Kanji> kanji = kanjiRepository.findById(kanjiId);
+        Optional<KanjiCollection> temp = kanjiCollectionsRepository.findByUserAndKanji(user.get(),kanji.get());
+
+        if (temp.isPresent()) {
+            log.info("bookkkkkkkkkkkkkkkk{}", temp.get().getBookmarked());
+            return temp.get().getBookmarked();
+        }
+        return 0;
+    }
 }

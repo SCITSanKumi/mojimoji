@@ -176,6 +176,20 @@
             height: 0.5rem;
             background-color: #000000;
         }
+
+        .bookMark2 {
+            pointer-events: auto !important; /* 강제로 클릭 가능하게 설정 */
+            position: absolute;
+            font-size: 20px;
+            left: 81%;
+            top: 8.5%;
+            font-size: 30px;
+        }
+
+        
+
+       
+
     </style>
 
 </head>
@@ -200,6 +214,7 @@
                         <option value="kanjiId" th:selected="${searchRequest.kanjiSort} == 'kanjiId'">한자번호순</option>
                         <option value="firstCollectedAt" th:selected="${searchRequest.kanjiSort} == 'firstCollectedAt'">
                             최근등록순</option>
+                        <option value="bookmarked" th:selected="${searchRequest.kanjiSort} == 'bookmarked'">즐겨찾기순</option>
                     </select>
                     <select id="sortDirection" name="sortDirection" class="form-select">
                         <option value="asc" th:selected="${searchRequest.sortDirection} == 'asc'">오름차순</option>
@@ -261,15 +276,16 @@
         <div class="grid-container" id="cardContainer">
 
             <div th:each="kanji : ${searchResponse}">
-
+                
                 <div th:if="${kanji.collectedCount} > 0" th:class="kanjiCard" th:classappend="
                     ${kanji.collectedCount} >= 10 ? ' border-lv3' :
                     (${kanji.collectedCount} >= 5 ? ' border-lv2' :
                     (${kanji.collectedCount} >= 1 ? ' border-lv1' : ''))
                     ">
-                    <!-- <span class="bookMark2" style="position: absolute; font-size: 20px;">☆</span> -->
                     <div class="card-face card-front">
                         <span class="kanji" th:text="${kanji.kanji}">水</span>
+                        <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
+                        <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
                         <hr>
                         <div class="kanjiExplain">
                             <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
@@ -285,10 +301,12 @@
                             <div class="detail-header">
                                 <div class="detailKanjiId" th:text="'No. ' +${kanji.kanjiId}"></div>
                                 <div class="detailJlptRank" th:text="${kanji.jlptRank}"></div>
-
+                                
                             </div>
                             <div class="detailKanjiCard">
                                 <span class="detailKanji" th:text="${kanji.kanji}"></span>
+                                <span class="bookMark2" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold;">★</span>
+                                <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;">☆</span>
                                 <div class="detailKanjiExplain">
                                     <div class="detailYomi" th:text="${kanji.KorKunyomi} + ' ' + ${kanji.KorOnyomi}">
                                     </div>
@@ -310,6 +328,9 @@
                 <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
                     <div class="card-face card-front">
                         <span class="kanji" th:text="${kanji.kanji}">火</span>
+                        <span style="position: sticky; left: 91%; bottom: 93%;">ㅤ</span>
+                        <!-- <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
+                        <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span> -->
                         <hr>
                         <div class="kanjiExplain">
                             <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
@@ -399,6 +420,10 @@
                     })
                     $(this).text('★');
                     $(this).css('color', 'gold');
+                    $(`.bookMark2[value=${kanjiId}]`).text('★');
+                    $(`.bookMark2[value=${kanjiId}]`).css('color', 'gold');
+                    $(`.bookMark3[value=${kanjiId}]`).text('★');
+                    $(`.bookMark3[value=${kanjiId}]`).css('color', 'gold');
 
                 } else {
                     $.ajax({
@@ -410,6 +435,10 @@
                     })
                     $(this).text('☆')
                     $(this).css('color', 'black');
+                    $(`.bookMark2[value=${kanjiId}]`).text('☆');
+                    $(`.bookMark2[value=${kanjiId}]`).css('color', 'black');
+                    $(`.bookMark3[value=${kanjiId}]`).text('☆');
+                    $(`.bookMark3[value=${kanjiId}]`).css('color', 'black');
                     e.stopPropagation();
                 }
             });
@@ -456,10 +485,10 @@
 
                                         <span th:if="${wrong.bookmarked} == 0"
                                             style="float: right; padding-right: 30px; color: black;"
-                                            class="bookMark">☆</span>
+                                            class="bookMark" th:value="${wrong.kanjiId}">☆</span>
                                         <span th:unless="${wrong.bookmarked} == 0"
                                             style="float: right; padding-right: 30px; color: gold;"
-                                            class="bookMark">★</span>
+                                            class="bookMark" th:value="${wrong.kanjiId}">★</span>
                                         <hr>
                                     </div>
                                 </div>

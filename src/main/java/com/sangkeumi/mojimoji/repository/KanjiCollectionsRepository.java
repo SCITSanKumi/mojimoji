@@ -213,4 +213,6 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
             WHERE bl.book.bookId = :bookId
             """)
     List<QuizKanjiDTO> findKanjisToQuiz(@Param("bookId") Long bookId, @Param("userId") Long userId);
+
+    Optional<KanjiCollection> findByUserAndKanji(User user, Kanji kanji);
 }
