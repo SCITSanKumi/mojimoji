@@ -70,7 +70,6 @@ public class GameController {
         gameService.gameEnd(bookId);
         GameEndResponse gameEndResponse = new GameEndResponse(
                 kanjiCollectionService.getKanjiQuiz(bookId, principal.getUserId()));
-        log.info("bookmark={}", gameEndResponse.kanjis().get(0).getBookmarked());
 
         return ResponseEntity.ok(gameEndResponse);
     }

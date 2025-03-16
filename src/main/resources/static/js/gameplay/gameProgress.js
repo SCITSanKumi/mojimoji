@@ -12,6 +12,13 @@ $(() => {
         "고죠 사토루": "https://i.namu.wiki/i/_x0r8tR6SjcSjIKCT_6Zsfl9WIXngll2_-229D7dNKkL_hAUOlUA8cK5ChdyWebjLQMJpJ7xkobRCCq0xj0khbdQggnkDSnXUIu6Tvy_AfCXUXrTKJ5B4vlqb7gpLHyVfGgqi9n_ibE9AJsjqimUnw.webp"
     };
 
+    // 기존 게임 상태 저장용 객체
+    let previousGameState = {
+        hp: null,
+        gold: null,
+        current_location: null
+    };
+
     // 현재 화자/이전 화자
     let currentSpeaker = "narration";
     let previousSpeaker = "";
@@ -185,9 +192,12 @@ $(() => {
             messageDiv = $("<div>").addClass("message");
             contentDiv = $("<div>").addClass("message-content");
 
-            if (currentSpeaker === "narration" || currentSpeaker === "teacher") {
+            if (currentSpeaker === "narration") {
                 messageDiv.addClass("narration-message");
                 contentDiv.addClass("narration-content");
+            } else if (currentSpeaker === "teacher") {
+                messageDiv.addClass("narration-message");
+                contentDiv.addClass("teacher-content");
             } else if (currentSpeaker === "player") {
                 messageDiv.addClass("player-message");
                 contentDiv.addClass("player-content");
@@ -220,10 +230,18 @@ $(() => {
             $("#healthBar").css("width", gameState.hp + "%").text(gameState.hp);
         }
         if (typeof gameState.gold === "number") {
-            $("#goldAmount").text(gameState.gold);
+            if (previousGameState.gold !== gameState.gold) {
+                previousGameState.gold = gameState.gold;
+                flashEffect($("#goldAmount"));
+                $("#goldAmount").text(gameState.gold);
+            }
         }
         if (typeof gameState.current_location === "string") {
-            $("#currentLocation").text(gameState.current_location);
+            if (previousGameState.current_location !== gameState.current_location) {
+                previousGameState.current_location = gameState.current_location;
+                flashEffect($("#currentLocation"));
+                $("#currentLocation").text(gameState.current_location);
+            }
         }
         if (Array.isArray(gameState.inventory)) {
             let inventoryHTML = "";
@@ -243,9 +261,23 @@ $(() => {
         if (gameState.isEnded) {
             isGameEnded = true;
 
-            $("#input-group").addClass("d-none");
+            $(".input-group").addClass("d-none");
             $("#end-btn").removeClass("d-none");
         }
+    }
+
+    // UI 변경 효과
+    function flashEffect(element) {
+        element.css({
+            "transition": "all 0.5s ease",
+            "background-color": "#adb5bd",
+        });
+
+        setTimeout(() => {
+            element.css({
+                "background-color": "transparent", // 원래 배경색
+            });
+        }, 300); // 0.3초 후 원래 상태로 되돌림
     }
 
     // 화자 정보 반영
