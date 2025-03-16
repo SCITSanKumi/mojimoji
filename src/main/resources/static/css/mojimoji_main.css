@@ -285,20 +285,20 @@
         /* 하단 가입 유도 버튼 */
 
         .join_button {
-            background-color: #ffc4d4;
-            color: white;
+            height: 300px;
+            background-color: #d8ebff;
             padding: 60px 0;
         }
         
         .join_button h2 {
-            font-family: 'NanumGothicBold', sans-serif;
+            font-family: 'DoHyeon-Regular', ttf;
             color: rgb(80, 79, 79);
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 20px;
         }
         
         .join_button p {
-            font-family: 'NanumGothicBold', sans-serif;
+            font-family: 'DoHyeon-Regular', ttf;
             font-size: 1.25rem;
             margin-bottom: 30px;
         }
@@ -308,7 +308,7 @@
             border: none;
             padding: 15px 30px;
             font-size: 1.25rem;
-            font-family: 'NanumGothicBold', sans-serif;
+            font-family: 'DoHyeon-Regular', sans-ttf;
         }
 
 
