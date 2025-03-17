@@ -64,9 +64,9 @@
         <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
             <div class="card-face card-front">
                 <span class="kanji" th:text="${kanji.kanji}">火</span>
-                <span style="position: sticky; left: 91%; bottom: 93%;">ㅤ</span>
-                <!-- <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
-                <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span> -->
+                <!-- <span style="position: sticky; left: 91%; bottom: 93%;">ㅤ</span> -->
+                <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
+                <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
                 <hr>
                 <div class="kanjiExplain">
                     <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
@@ -79,7 +79,9 @@
             <div class="card-face card-back">
                 <div class="card-back-inner">
                     <div class="card-back-content">
-                        <h2 class="card-back-title">?</h2>
+                        <span class="bookMark2" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: white;">★</span>
+                        <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: white;">☆</span>
+                        <h2 class="card-back-title">[[${kanji.kanji}]]</h2>
                     </div>
                 </div>
             </div>
