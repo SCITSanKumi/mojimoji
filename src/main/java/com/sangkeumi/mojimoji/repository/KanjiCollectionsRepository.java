@@ -16,6 +16,7 @@ import com.sangkeumi.mojimoji.entity.*;
 public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollection, Long> {
   // userId와 kanjiId에 해당하는 획득 기록 반환
   Optional<KanjiCollection> findByUserUserIdAndKanji_KanjiId(Long userId, Long kanjiId);
+
   Optional<KanjiCollection> findByKanjiAndUser(Kanji kanji, User user);
 
   @Query(value = """
@@ -202,4 +203,6 @@ public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollectio
       WHERE bl.book.bookId = :bookId
       """)
   List<QuizKanjiDTO> findKanjisToQuiz(@Param("bookId") Long bookId, @Param("userId") Long userId);
+
+  Optional<KanjiCollection> findByUserAndKanji(User user, Kanji kanji);
 }
