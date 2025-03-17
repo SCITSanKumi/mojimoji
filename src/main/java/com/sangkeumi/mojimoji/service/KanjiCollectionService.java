@@ -204,6 +204,18 @@ public class KanjiCollectionService {
 
         if (temp.isPresent()) {
             temp.get().setBookmarked(1);
+        } else {
+            // log.info("kc{}", temp.get().toString());
+            // kanjiCollectionsRepository.save(temp.get());
+            KanjiCollection kanjiCollection = kanjiCollectionsRepository.findByKanjiAndUser(kanji, user)
+                .orElse(KanjiCollection.builder()
+                        .kanji(kanji)
+                        .user(user)
+                        .collectedCount(0)
+                        .wrongCount(0)
+                        .bookmarked(1)
+                            .build());
+            kanjiCollectionsRepository.save(kanjiCollection);
         }
     }
 

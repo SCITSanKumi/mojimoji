@@ -26,7 +26,6 @@ $(function () {
     $(document).off('click', '.bookMark2').on('click', '.bookMark2', function (e) {
         e.stopPropagation();
         let kanjiId = $(this).attr('value');
-        console.log(kanjiId);
         if ($(this).text() == '☆') {
             $.ajax({
                 url: "/kanji/addBookMark",
@@ -36,7 +35,13 @@ $(function () {
                 }
             })
             $(this).text('★');
-            $(this).css('color', 'gold');
+            // $(this).css('color', 'gold');
+
+            if ($(this).parent().hasClass('card-back-content') === true) {
+                $(this).css('color', 'white');
+            } else { 
+                $(this).css('color', 'gold');
+            }
             $(`.bookMark3[value=${kanjiId}]`).text('★');
             $(`.bookMark3[value=${kanjiId}]`).css('color', 'gold');
             $(`.bookMark[value=${kanjiId}]`).text('★');
@@ -51,7 +56,11 @@ $(function () {
                 }
             })
             $(this).text('☆')
-            $(this).css('color', 'black');
+            if ($(this).parent().hasClass('card-back-content') === true) {
+                $(this).css('color', 'white');
+            } else { 
+                $(this).css('color', 'black');
+            }
             $(`.bookMark3[value=${kanjiId}]`).text('☆');
             $(`.bookMark3[value=${kanjiId}]`).css('color', 'black');
             $(`.bookMark[value=${kanjiId}]`).text('☆');
