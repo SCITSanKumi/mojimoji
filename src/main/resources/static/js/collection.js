@@ -1,10 +1,12 @@
 $(function () {
-    let currentPage = 1, hasMore = true;
     const gridContainer = document.getElementById('cardContainer');
     const activeLayer = document.getElementById('activeLayer');
-    let activeCard = null;
     const originalData = new Map();
+
+    let currentPage = 1, hasMore = true;
+    let activeCard = null;
     let isAnimating = false;
+    let isLoadingPage = false;  // loadNextPage 실행 여부 플래그
 
     $(document).on('change', '#kanjiSort', function () {
         if ($('select[name=kanjiSort] option:selected').val() == 'kanjiId') {
@@ -39,7 +41,7 @@ $(function () {
 
             if ($(this).parent().hasClass('card-back-content') === true) {
                 $(this).css('color', 'white');
-            } else { 
+            } else {
                 $(this).css('color', 'gold');
             }
             $(`.bookMark3[value=${kanjiId}]`).text('★');
@@ -58,7 +60,7 @@ $(function () {
             $(this).text('☆')
             if ($(this).parent().hasClass('card-back-content') === true) {
                 $(this).css('color', 'white');
-            } else { 
+            } else {
                 $(this).css('color', 'black');
             }
             $(`.bookMark3[value=${kanjiId}]`).text('☆');
@@ -70,33 +72,39 @@ $(function () {
     })
 
     // 무한 스크롤 & 스크롤 화살표
-    $(window).on("scroll", function () {
-        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100 && hasMore) {
-            loadNextPage();
-        }
-        $("#scrollArrow").toggle($(window).scrollTop() + $(window).height() < $(document).height() - 10);
-        if (activeCard) keepCardCentered(activeCard);
-    });
     $("#scrollArrow").on("click", function () {
         $("html, body").animate({ scrollTop: $(window).scrollTop() + 300 }, 400);
     });
-    function updateArrow() { /* 이미 위에서 처리 */ }
 
-
+    $(window).on("scroll", function () {
+        // 스크롤 위치, hasMore, isLoadingPage 조건을 동시에 만족해야 loadNextPage 호출
+        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100 && hasMore && !isLoadingPage) {
+            loadNextPage();
+        }
+        $("#scrollArrow").toggle($(window).scrollTop() + $(window).height() < $(document).height() - 10);
+        if (activeCard) {
+            keepCardCentered(activeCard);
+        }
+    });
 
     function loadNextPage() {
+        if (isLoadingPage) return;
+        isLoadingPage = true;
         currentPage++;
         let queryParams = $("#searchForm").serialize() + "&page=" + currentPage;
         $.ajax({
-            url: "/kanji/collectionAjax", method: "GET", data: queryParams,
+            url: "/kanji/collectionAjax",
+            method: "GET",
+            data: queryParams,
             success: function (html) {
-                if ($.trim(html).length < 10) { hasMore = false; }
+                if ($.trim(html).length < 10) {
+                    hasMore = false;
+                }
                 $("#cardContainer").append(html);
                 // 새로 추가된 카드에 VanillaTilt 적용
                 VanillaTilt.init(document.querySelectorAll("#cardContainer .kanjiCard, #cardContainer .notKanjiCard"), {
                     max: 15, speed: 400, glare: true, "max-glare": 0.2,
                 });
-
 
                 if (document.querySelectorAll('.border-lv0').length) {
                     gsap.to('.border-lv0', {
@@ -141,9 +149,12 @@ $(function () {
                 $(document).on('mouseleave', '.border-lv0, .border-lv1, .border-lv2, .border-lv3', function () {
                     gsap.to(this, { scale: 1, duration: 0.3, ease: "power1.out" });
                 });
-
+                isLoadingPage = false;
             },
-            error: function () { hasMore = false; }
+            error: function () {
+                hasMore = false;
+                isLoadingPage = false;
+            }
         });
     }
 
