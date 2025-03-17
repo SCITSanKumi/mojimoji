@@ -37,9 +37,8 @@ out/
 .vscode/
 application.properties
 application.yml
-src/main/resources/static/image/profile_images/
-src/main/resources/static/image/thumbnail_images/
+src/main/resources/uploads/image/profile_images/
+src/main/resources/uploads/image/thumbnail_images/
 /build/
 /logs/
 myproject.log
-

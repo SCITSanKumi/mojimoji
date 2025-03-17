@@ -9,19 +9,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.sangkeumi.mojimoji.dto.kanji.BookmarkedKanjiDTO;
-import com.sangkeumi.mojimoji.dto.kanji.KanjiCount;
-import com.sangkeumi.mojimoji.dto.kanji.KanjiSearchResponse;
-import com.sangkeumi.mojimoji.dto.kanji.QuizKanjiDTO;
-import com.sangkeumi.mojimoji.dto.kanji.WrongKanji;
+import com.sangkeumi.mojimoji.dto.kanji.*;
 import com.sangkeumi.mojimoji.dto.mypage.*;
 import com.sangkeumi.mojimoji.entity.*;
 
 public interface KanjiCollectionsRepository extends JpaRepository<KanjiCollection, Long> {
-
   // userId와 kanjiId에 해당하는 획득 기록 반환
   Optional<KanjiCollection> findByUserUserIdAndKanji_KanjiId(Long userId, Long kanjiId);
-
   Optional<KanjiCollection> findByKanjiAndUser(Kanji kanji, User user);
 
   @Query(value = """
