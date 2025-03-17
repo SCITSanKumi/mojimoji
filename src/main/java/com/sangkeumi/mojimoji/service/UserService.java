@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -60,20 +59,16 @@ public class UserService {
     }
 
     public boolean existByUsername(String username) {
-        // 중복된 아이디 있는지 확인 있으면 true 없으면 false 반환
-        boolean result = userRepository.existsByUsername(username);
         // 중복된 아이디가 있다면 false 반환 없다면 true 반환
-        return !result;
+        return !userRepository.existsByUsername(username);
     }
 
     public boolean existByNickname(String nickname) {
-        boolean result = userRepository.existsByNickname(nickname);
-        return !result;
+        return !userRepository.existsByNickname(nickname);
     }
 
     public boolean existByEmail(String email) {
-        boolean result = userRepository.existsByEmail(email);
-        return !result;
+        return !userRepository.existsByEmail(email);
     }
 
     @Transactional
@@ -85,14 +80,7 @@ public class UserService {
     }
 
     public User getUser(Long userId) {
-
-        Optional<User> temp = userRepository.findById(userId);
-
-        if (temp.isPresent()) {
-            User user = temp.get();
-            return user;
-        }
-        return null;
+        return userRepository.findById(userId).orElseGet(null);
     }
 
     public UserUpdateView findById(Long userId) {
@@ -152,13 +140,19 @@ public class UserService {
                     Files.createDirectories(dirPath);
                 }
 
+                // 기존 파일 삭제 (프로필 이미지가 이미 존재하는 경우)
+                if (user.getProfileUrl() != null) {
+                    Path existingFilePath = Paths.get(imagePath, user.getProfileUrl().replace("/uploads/image/", ""));
+                    Files.deleteIfExists(existingFilePath);
+                }
+
                 // 고유 파일명 생성 후 파일 저장
                 String fileName = UUID.randomUUID().toString() + "_" + profileImageFile.getOriginalFilename();
                 Path filePath = dirPath.resolve(fileName);
                 Files.copy(profileImageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
                 // 웹 접근 가능한 상대 URL로 설정
-                user.setProfileUrl("/image/profile_images/" + fileName);
+                user.setProfileUrl("/uploads/image/profile_images/" + fileName);
             }
 
             // 변경된 사용자 정보를 DB에 저장
@@ -218,7 +212,7 @@ public class UserService {
 
     public String getUserProfileImageUrl(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return user.getProfileUrl();
     }

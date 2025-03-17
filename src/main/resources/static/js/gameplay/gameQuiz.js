@@ -13,10 +13,10 @@ $(() => {
             url: `/game/end/${bookId}`,
             type: "GET",
             success: (response) => {
-                if (!response || !response.kanjis?.length) {
-                    alert("퀴즈 데이터를 불러올 수 없습니다.");
-                    return;
-                }
+                // if (!response || !response.kanjis?.length) {
+                //     alert("퀴즈 데이터를 불러올 수 없습니다.");
+                //     return;
+                // }
                 questionList = response.kanjis;
                 currentIndex = 0;
                 score = 0;
@@ -24,7 +24,7 @@ $(() => {
                     $('.quizNow').append(`○ `);
                 })
 
-
+                $('.quizScroll').css('height','97.4px');
                 $("#quiz-modal").modal("show");
                 startQuiz();
             },
@@ -37,12 +37,14 @@ $(() => {
         if (currentIndex < questionList.length) {
             let quizItem = $(".quiz-item");
             let question = questionList[currentIndex];
+
             let quizNowProc = $('.quizNow').html();
             quizNowProc = quizNowProc.replace('○', '●');
             $('.quizNow').html(quizNowProc);
 
+
             setTimeout(() => {
-                $('.quizScroll').scrollLeft($('.quizScroll')[0].scrollWidth);
+                $('.quizScroll').scrollLeft($('.quizScroll')[0].scrollWidth * (currentIndex/questionList.length)-100);
             }, 25);
 
             quizItem.find(".kanji-question").text(`${question.kanji}`);
@@ -71,12 +73,13 @@ $(() => {
                 url: "/kanji/addCollection",
                 data: { "kanjiId": question.kanjiId },
                 success: function () {
-                    $('#quizProc').html('정답입니다! 컬렉션에 추가되었습니다.')
+                    $('#quizProc').css('color', 'black');
+                    $('#quizProc').html('정답입니다! 컬렉션에 추가되었습니다. <br> ㅤ')
                     quizNowProc = quizNowProc.replace('●', `<div class= "quizEnd" data-kanjiId="${question.kanjiId}"
-                    data-kanji="${question.kanji}" data-category="${question.category}" data-jlptRank="${question.jlptRank}"
+                    data-kanji="${question.kanji}" data-category="${question.category}" data-jlptrank="${question.jlptRank}"
                     data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
                     data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
-                    data-meaning="${question.meaning}" data-createdAt="카드 수집 완료" style = "color: black; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:16px; border:1px solid #ccc; padding:5px; margin-right:7px; text-align: center; width:51.6px; height:75.6px; display: inline-block;" > ${question.kanji} <br> ${question.jlptRank}</div > `);
+                    data-meaning="${question.meaning}" data-createdAt="카드 수집 완료" data-bookmark="${question.bookmarked}" style = "color: black; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:16px; border:1px solid #ccc; padding:5px; margin-right:7px; text-align: center; width:51.6px; height:75.6px; display: inline-block;" > ${question.kanji} <br> ${question.jlptRank}</div > `);
                     $('.quizNow').html(quizNowProc);
                 },
                 error: () => $('#quizProc').html('컬렉션 추가 중 오류 발생')
@@ -91,10 +94,10 @@ $(() => {
                     $('#quizProc').css('color', 'red');
                     $('#quizProc').html(`오답입니다! <br> ${question.kanji} : ${question.korKunyomi} ${question.korOnyomi}`);
                     quizNowProc = quizNowProc.replace('●', `<div class= "quizEnd" data-kanjiId="${question.kanjiId}"
-                    data-kanji="${question.kanji}" data-category="${question.category}" data-jlptRank="${question.jlptRank}"
+                    data-kanji="${question.kanji}" data-category="${question.category}" data-jlptrank="${question.jlptRank}"
                     data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
                     data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
-                    data-meaning="${question.meaning}" data-createdAt="오답노트 추가 완료" style = "background-color: lightgray; opacity: 0.5; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:16px; border:1px solid #ccc; padding:5px; margin-right:7px; text-align: center; width:51.6px; height:75.6px; display: inline-block;" > ${question.kanji} <br> ${question.jlptRank}</div > `);
+                    data-meaning="${question.meaning}" data-createdAt="오답노트 추가 완료" data-bookmark="${question.bookmarked}" style = "background-color: lightgray; opacity: 0.5; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:16px; border:1px solid #ccc; padding:5px; margin-right:7px; text-align: center; width:51.6px; height:75.6px; display: inline-block;" > ${question.kanji} <br> ${question.jlptRank}</div > `);
                     $('.quizNow').html(quizNowProc);
                 }
             });
@@ -111,14 +114,17 @@ $(() => {
 
         $(document).on('click', '.quizEnd', function () {
             // $('.quizEnd').on('click', function () {
-            let kanjiId = $(this).attr('data-kanjiId');
+            let kanjiId = $(this).data('kanjiid');
             let kanji = $(this).data('kanji');
             let category = $(this).data('category');
             let jlptRank = $(this).data('jlptrank');
             let korKunyomi = $(this).data('korkunyomi');
-            let korOnyomi = $(this).attr('data-korOnyomi');
+            let korOnyomi = $(this).data('koronyomi');
             let jpnKunyomi = $(this).data('jpnkunyomi');
             let jpnOnyomi = $(this).data('jpnonyomi');
+            let bookMark = $(this).attr('data-bookmark');
+
+            console.log(bookMark);
 
             let meaning = $(this).attr('data-meaning').replace(/\\n/g, '<br>');
             let createdAt = $(this).data('createdat');
@@ -132,6 +138,18 @@ $(() => {
             $(".detailJpnOnyomi").text('음독 : ' + `${jpnOnyomi}`);
             $(".detailMeaning").html('의미 :<br>' + `${meaning}`);
             $(".detailCreatedAt").text(`${createdAt}`);
+
+            if (bookMark == 1) {
+                $('.bookMark').text('★')
+                $('.bookMark').css('color', 'gold');
+                $(this).attr('data-bookmark', 1);
+                question.bookmarked = 1;
+            } else {
+                $('.bookMark').text('☆')
+                $('.bookMark').css('color', 'black');
+                $(this).attr('data-bookmark', 0);
+                question.bookmarked = 0;
+            }
 
             $(".kanjiModal").css("display", "block");
         });
@@ -150,10 +168,10 @@ $(() => {
             let color = correctAnswerIndexes.includes(index) ? "white" : "lightgray; opacity : 0.5";
             let inCreatedAt = correctAnswerIndexes.includes(index) ? "카드 수집 완료" : "오답노트 추가 완료";
             return `<div div class= "quizEnd" data-kanjiId="${question.kanjiId}"
-                data-kanji="${question.kanji}" data-category="${question.category}" data-jlptRank="${question.jlptRank}"
-                data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
-                data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
-                data-meaning="${question.meaning}" data-createdAt="${inCreatedAt}" style = "background-color: ${color}; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:65px; border:1px solid #ccc; padding:5px; margin-right:20px; text-align: center; width:77.4px; height:113.4px; display: inline-block;"> ${question.kanji}</div > `;
+            data-kanji="${question.kanji}" data-category="${question.category}" data-jlptrank="${question.jlptRank}"
+            data-korKunyomi="${question.korKunyomi}" data-korOnyomi="${question.korOnyomi}"
+            data-jpnKunyomi="${question.jpnKunyomi}" data-jpnOnyomi="${question.jpnOnyomi}"
+            data-meaning="${question.meaning}" data-createdAt="${inCreatedAt}" data-bookmark="${question.bookmarked}" style = "background-color: ${color}; border-radius: 10px; transition:transform 0.2s; font-weight: 500; font-size:65px; border:1px solid #ccc; padding:5px; margin-right:20px; text-align: center; width:77.4px; height:113.4px; display: inline-block;"> ${question.kanji}</div > `;
         }).join(" ");
 
         $("#quiz-container").hide();
@@ -165,38 +183,15 @@ $(() => {
             <div class="quizScroll">${resultHtml}</div><br>
 
             <div class="text-center mt-3">
-                <button id="to-main" class="btn btn-secondary" disabled" style="margin-right : 15px">메인으로</button>
-                <button id="share-story" class="btn btn-secondary" disabled"style="margin-left : 15px">스토리 공유하기</button>
+            <button id="to-main" class="btn btn-secondary" disabled" style="margin-right : 15px">메인으로</button>
+            <button id="share-story" class="btn btn-secondary" disabled"style="margin-left : 15px">스토리 공유하기</button>
             </div >
-                `);
+            `);
 
-        $("#to-main").off("click").on("click", () => location.href = "/");
-        $("#share-story").off("click").on("click", shareStory);
-        $('.quizEnd').on('click', function () {
-            let kanjiId = $(this).attr('data-kanjiId');
-            let kanji = $(this).data('kanji');
-            let category = $(this).data('category');
-            let jlptRank = $(this).data('jlptrank');
-            let korKunyomi = $(this).data('korkunyomi');
-            let korOnyomi = $(this).attr('data-korOnyomi');
-            let jpnKunyomi = $(this).data('jpnkunyomi');
-            let jpnOnyomi = $(this).data('jpnonyomi');
-
-            let meaning = $(this).attr('data-meaning').replace(/\\n/g, '<br>');
-            let createdAt = $(this).data('createdAt');
-
-            $(".detailKanjiId").text('No.' + `${kanjiId}`);
-            $(".detailKanji").text(`${kanji}`);
-            $(".detailCategory").text('카테고리 : ' + `${category}`);
-            $(".detailJlptRank").text(`${jlptRank}`);
-            $(".detailYomi").text(`${korKunyomi}` + ' ' + `${korOnyomi}`);
-            $(".detailJpnKunyomi").text('훈독 : ' + `${jpnKunyomi}`);
-            $(".detailJpnOnyomi").text('음독 : ' + `${jpnOnyomi}`);
-            $(".detailMeaning").html('의미 :<br>' + `${meaning}`);
-
-            $(".kanjiModal").css("display", "block");
-
-        })}
+            $('.quizScroll').css('height','');
+            $("#to-main").off("click").on("click", () => location.href = "/");
+            $("#share-story").off("click").on("click", shareStory);
+    }
 
     function shareStory() {
         if (bookId === -1) {
@@ -204,8 +199,8 @@ $(() => {
             return;
         }
         $.post("/board/myStory/share", {
-                bookId
-            })
+            bookId
+        })
             .done(() => {
                 alert("스토리가 성공적으로 공유되었습니다!");
                 location.href = "/board/story/list";
@@ -234,6 +229,8 @@ $(document).off('click', '.bookMark').on('click', '.bookMark', function (e) {
             data: { "kanjiId": kanjiId },
             success: function () {
                 $this.text('★');
+                $this.css('color', 'gold');
+                $(`.quizEnd[data-kanjiid=${kanjiId}]`).attr('data-bookmark', 1);
             },
             error: () => alert("북마크 추가에 실패했습니다.")
         });
@@ -244,6 +241,9 @@ $(document).off('click', '.bookMark').on('click', '.bookMark', function (e) {
             data: { "kanjiId": kanjiId },
             success: function () {
                 $this.text('☆');
+                $this.css('color', 'black');
+                $(`.quizEnd[data-kanjiid=${kanjiId}]`).attr('data-bookmark', 0);
+
             },
             error: () => alert("북마크 삭제에 실패했습니다.")
         });

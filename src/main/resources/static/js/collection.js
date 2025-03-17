@@ -6,6 +6,24 @@ $(function () {
   const originalData = new Map();
   let isAnimating = false;
 
+  $(document).on('change', '#kanjiSort', function () {
+    $('#searchForm').submit();
+  });
+
+  $(document).on('change', '#sortDirection', function () {
+    $('#searchForm').submit();
+  });
+
+  // $(document).on('click', '.wrongModal', function (e) {
+  // $('.bookMark2').on('click', function (e) {
+  //     e.stopPropagation();
+  //     if ($(this).text() == '☆') {
+  //         $(this).text('★');
+  //     } else {
+  //         $(this).text('☆');
+  //     }
+  // })
+
   // 무한 스크롤 & 스크롤 화살표
   $(window).on("scroll", function () {
     if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100 && hasMore) {
@@ -15,9 +33,7 @@ $(function () {
     if (activeCard) keepCardCentered(activeCard);
   });
   $("#scrollArrow").on("click", function () {
-    $("html, body").animate({
-      scrollTop: $(document).height() - $(window).height()
-    }, 400);
+    $("html, body").animate({ scrollTop: $(window).scrollTop() + 300 }, 400);
   });
   function updateArrow() { /* 이미 위에서 처리 */ }
 
@@ -35,6 +51,21 @@ $(function () {
         VanillaTilt.init(document.querySelectorAll("#cardContainer .kanjiCard, #cardContainer .notKanjiCard"), {
           max: 15, speed: 400, glare: true, "max-glare": 0.2,
         });
+
+        let count = 0;
+
+        if (count == 0) {
+          // $(document).on('click', '.bookMark2', function (e) {
+          $('.bookMark2').on('click', function (e) {
+            e.stopPropagation();
+            if ($(this).text() == '☆') {
+              $(this).text('★');
+            } else {
+              $(this).text('☆');
+            }
+          })
+          count++;
+        }
 
         if (document.querySelectorAll('.border-lv0').length) {
           gsap.to('.border-lv0', {
@@ -215,7 +246,7 @@ $(function () {
   }
   function getCenterPos(rect) {
     const scale = 1.7;
-    const w = rect.width * scale;
+    const w = rect.width * scale * 0.85;
     const h = rect.height * scale;
     const l = (window.innerWidth - w) / 2;
     const t = (window.innerHeight - h) / 2;

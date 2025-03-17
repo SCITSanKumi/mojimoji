@@ -7,6 +7,10 @@ $(document).ready(function () {
     var loading = false; // AJAX 요청 중복 방지
     var noMoreComments = false; // 더 이상 불러올 댓글이 없음을 체크
 
+    [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]')).map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
+    });
+
     function loadComments(reset = false) {
         if (loading || noMoreComments) return;
         loading = true;
