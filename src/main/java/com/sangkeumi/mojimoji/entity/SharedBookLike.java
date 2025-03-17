@@ -7,7 +7,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "Shared_Book_Likes", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "shared_book_id", "user_id" })
+    @UniqueConstraint(columnNames = { "shared_book_id", "user_id" })
 })
 @Getter
 @Setter
@@ -16,19 +16,20 @@ import lombok.*;
 @Builder
 public class SharedBookLike {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sharedBookLikeId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "shared_book_like_id")
+  private Long sharedBookLikeId;
 
-    @ManyToOne
-    @JoinColumn(name = "shared_book_id", nullable = false)
-    private SharedBook sharedBook;
+  @ManyToOne
+  @JoinColumn(name = "shared_book_id", nullable = false)
+  private SharedBook sharedBook;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+  @Column(name = "created_at", nullable = false, updatable = false)
+  @Builder.Default
+  private LocalDateTime createdAt = LocalDateTime.now();
 }

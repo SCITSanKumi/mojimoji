@@ -37,7 +37,7 @@ dependencies {
     implementation 'io.projectreactor.netty:reactor-netty'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	// runtimeOnly 'com.mysql:mysql-connector-j'
+	  runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
     compileOnly 'org.projectlombok:lombok'
