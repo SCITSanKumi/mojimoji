@@ -54,7 +54,7 @@ public class SecurityConfig {
         // requestMatchers(...)로 지정한 경로들은 인증 없이 접근 허용
         .requestMatchers(
             "/",
-            "/home/ubuntu/uploads/**",
+            "/uploads/**",
             "/user/login",
             "/user/regist",
             "/user/id-check",
