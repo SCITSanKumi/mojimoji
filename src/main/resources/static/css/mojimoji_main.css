@@ -230,13 +230,13 @@
         
         .stats-section .display-4 {
             font-size: 3rem;
-            color: #343a40;
+            color: #ea6292;
         }
         
         .stats-section p {
             font-size: 1.3rem;
             font-weight: 600;
-            color: #e980a8;
+            color: #000000;
         }
 
         .reduced-size {
@@ -244,7 +244,30 @@
             height: auto; /* 비율을 유지하면서 높이를 자동으로 조정 */
         }
 
-
+        .growing-text {
+            display: inline-block;
+            animation: growShrink 2s infinite ease-in-out;
+        }
+        
+        /* Keyframes for the growing/shrinking effect */
+        @keyframes growShrink {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1); /* Grow slightly */
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* Random animation delays for each h3 */
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.6s; }
+        .delay-3 { animation-delay: 1s; }
+        .delay-4 { animation-delay: 1.4s; }
+        
 
 
         /* 사용자 추천 섹션 */
@@ -256,11 +279,12 @@
             background-repeat: no-repeat;
             display: flex;
             align-items: center;
+            margin-bottom: 70px;
         }
 
         .recommendation-section .mb-4 {
             font-size: 3rem;
-            font-family: 'DoHyeon-Regular', ttf !important;
+            font-family: 'NanumGothicBold', sans-serif;
             font-weight: 550;
             margin-top: 0;
             padding-top: 0.5rem;
@@ -306,7 +330,9 @@
         /* 하단 가입 유도 버튼 */
 
         .join_button {
-            height: 250x;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            height: 270x;
             background-color: #d8ebff;
             padding: 60px 0;
         }
