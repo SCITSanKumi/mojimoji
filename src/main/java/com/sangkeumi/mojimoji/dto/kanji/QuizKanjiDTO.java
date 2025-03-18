@@ -1,11 +1,14 @@
 package com.sangkeumi.mojimoji.dto.kanji;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class QuizKanjiDTO {
+    @EqualsAndHashCode.Include
     private Long kanjiId;
     private String kanji;
     private String jlptRank;
