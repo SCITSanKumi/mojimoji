@@ -18,6 +18,6 @@ public record KanjiSearchRequest(
         this.kanjiSearch = (kanjiSearch == null || kanjiSearch.isBlank()) ? null : kanjiSearch;
         // 정렬 조건은 기본값 적용
         this.kanjiSort = (kanjiSort == null || kanjiSort.isBlank()) ? "kanjiId" : kanjiSort;
-        this.sortDirection = (sortDirection == null || sortDirection.isBlank()) ? "ASC" : sortDirection;
+        this.sortDirection = (sortDirection == null || sortDirection.isBlank()) ? "asc" : sortDirection;
     }
 }
