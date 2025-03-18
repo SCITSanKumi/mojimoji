@@ -9,10 +9,9 @@ import org.springframework.lang.NonNull;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/image/**")
-                .addResourceLocations("file:src/main/resources/uploads/image/");
-    }
+  @Override
+  public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+    registry.addResourceHandler("/uploads/**")
+        .addResourceLocations("file:/home/ubuntu/uploads/");
+  }
 }
-
