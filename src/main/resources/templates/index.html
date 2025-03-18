@@ -200,7 +200,7 @@
                     </p>
                 </div>
                 <div class="col-md-6 text-center">
-                    <img src="../static/image/모지모지실적.png" alt="모지모지실적" class="img-fluid reduced-size">
+                    <img th:src="@{/image/모지모지실적.png}" src="../static/image/모지모지실적.png" alt="모지모지실적" class="img-fluid reduced-size">
                 </div>
             </div>
             <div class="row text-center mt-5">
@@ -250,7 +250,7 @@
                                 </p>
                             </blockquote>
                             <div class="d-flex align-items-center justify-content-center mt-4">
-                                <img src="../static/image/학부모.png" alt="학부모" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                <img th:src="@{/image/학부모.png}" src="../static/image/학부모.png" alt="학부모" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
                                 <div class="ms-3">
                                     <h5 class="mb-0">김희영</h5>
                                     <p class="mb-0 text-muted">바른교육연구소 소장</p>
@@ -269,7 +269,7 @@
                                     별 5개 드립니다.</p>
                             </blockquote>
                             <div class="d-flex align-items-center justify-content-center mt-4">
-                                <img src="../static/image/선생님.png" alt="선생님" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                <img th:src="@{/image/선생님.png}" alt="선생님" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
                                 <div class="ms-3">
                                     <h5 class="mb-0">이민영</h5>
                                     <p class="mb-0 text-muted">공교육혁신위원회 부회장</p>
@@ -288,7 +288,7 @@
                                     한자 공부가 즐거워졌대요.</p>
                             </blockquote>
                             <div class="d-flex align-items-center justify-content-center mt-4">
-                                <img src="../static/image/학부모2.png" alt="학부모" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                <img th:src="@{/image/학부모2.png}" src="../static/image/학부모2.png" alt="학부모" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
                                 <div class="ms-3">
                                     <h5 class="mb-0">최화영</h5>
                                     <p class="mb-0 text-muted">대한한자교육협회장</p>
@@ -314,7 +314,7 @@
     <section class="join_button py-5">
         <div class="container text-center text-white">
             <h2 class="mb-4">한자의 세계에 풍덩!</h2>
-            <a href="#" class="btn btn-warning btn-lg text-white fw-bold">모지모지 시작하기</a>
+            <a th:href="@{/user/sign-up}" class="btn btn-warning btn-lg text-white fw-bold">모지모지 시작하기</a>
         </div>
     </section>
 

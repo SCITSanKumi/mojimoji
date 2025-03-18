@@ -34,25 +34,25 @@
 
         @font-face {
             font-family: 'NanumSquareRoundB';
-            src: url('../static/fonts/NanumSquareRoundB.ttf') format('truetype');
+            src: url('/fonts/NanumSquareRoundB.ttf') format('truetype');
         }
 
         @font-face {
             font-family: 'DokiDokiFantasia';
             /* src: url('../static/fonts/DokiDokiFantasia.otf') format('opentype'); */
-            src: url('../static/fonts/DokiDokiFantasia.otf') format('opentype');
+            src: url('/fonts/DokiDokiFantasia.otf') format('opentype');
         }
 
         @font-face {
             font-family: 'NanumGothicBold';
             /* src: url('../static/fonts/DokiDokiFantasia.otf') format('opentype'); */
-            src: url('../static/fonts/NanumGothicBold.otf') format('opentype');
+            src: url('/fonts/NanumGothicBold.otf') format('opentype');
         }
 
         @font-face {
             font-family: 'DoHyeon-Regular';
             /* src: url('../static/fonts/DokiDokiFantasia.otf') format('opentype'); */
-            src: url('../static/fonts/DoHyeon-Regular.ttf') format('truetype');
+            src: url('/fonts/DoHyeon-Regular.ttf') format('truetype');
         }
 
         .font-nanum-gothic-bold {
