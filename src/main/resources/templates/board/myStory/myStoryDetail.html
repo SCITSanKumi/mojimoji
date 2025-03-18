@@ -2,65 +2,64 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 스토리 상세</title>
-    <!-- jQuery -->
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" type="text/css" href="../../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-    <!-- Bootstrap JS -->
-    <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <script defer th:src="@{/js/myStory.js}"></script>
-    <style>
-        /* 내 스토리 내용을 감싸는 박스 스타일 (스크롤 적용 가능) */
-        .story-box {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            margin-top: 20px;
-            max-height: 400px;
-            /* 내용이 길면 최대 높이 지정 후 스크롤 */
-            overflow-y: auto;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mojimoji</title>
+  <!-- jQuery -->
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="../../../static/css/bootstrap.min.css"
+    th:href="@{/css/bootstrap.min.css}">
+  <!-- Bootstrap JS -->
+  <script defer src="../../../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <script defer th:src="@{/js/myStory.js}"></script>
+  <style>
+    /* 내 스토리 내용을 감싸는 박스 스타일 (스크롤 적용 가능) */
+    .story-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      margin-top: 20px;
+      max-height: 400px;
+      /* 내용이 길면 최대 높이 지정 후 스크롤 */
+      overflow-y: auto;
+    }
 
-        /* 버튼 영역 스타일 */
-        .btn-wrapper {
-            margin-bottom: 15px;
-        }
-    </style>
+    /* 버튼 영역 스타일 */
+    .btn-wrapper {
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 
 <body>
-    <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
+  <header class="fixed-top" th:insert="~{fragments/header :: header}"></header>
 
-    <!-- 로그인 사용자 ID -->
-    <input type="hidden" id="currentUserId" th:value="${#authentication.principal.userId}">
+  <!-- 로그인 사용자 ID -->
+  <input type="hidden" id="currentUserId" th:value="${#authentication.principal.userId}">
 
-    <div class="container mt-5 pt-5">
-        <div class="btn-wrapper" style="float: right;">
-            <button th:if="${myStoryInfo.isEnded}" type="button" class="btn btn-primary btn-sm me-2"
-                th:attr="onclick=|shareStory(${myStoryInfo.bookId})|">
-                공유
-            </button>
-            <a th:unless="${myStoryInfo.isEnded}" class="btn btn-primary btn-sm me-2"
-                th:href="@{/game/play(bookId=${myStoryInfo.bookId})}">
-                이어하기
-            </a>
-            <button type="button" class="btn btn-danger btn-sm me-2"
-                th:attr="onclick=|deleteStory(${myStoryInfo.bookId})|">
-                삭제
-            </button>
-        </div>
-        <h1 th:text="${myStoryInfo.title}">책 제목</h1>
+  <div class="container mt-5 pt-5">
+    <div class="btn-wrapper" style="float: right;">
+      <button th:if="${myStoryInfo.isEnded}" type="button" class="btn btn-primary btn-sm me-2"
+        th:attr="onclick=|shareStory(${myStoryInfo.bookId})|">
+        공유
+      </button>
+      <a th:unless="${myStoryInfo.isEnded}" class="btn btn-primary btn-sm me-2"
+        th:href="@{/game/play(bookId=${myStoryInfo.bookId})}">
+        이어하기
+      </a>
+      <button type="button" class="btn btn-danger btn-sm me-2" th:attr="onclick=|deleteStory(${myStoryInfo.bookId})|">
+        삭제
+      </button>
+    </div>
+    <h1 th:text="${myStoryInfo.title}">책 제목</h1>
 
-        <!-- 내 스토리 내용을 하나의 박스에 표시 (내용이 길면 스크롤 생김) -->
-        <div class="story-box">
-            <div th:each="myStory : ${myStoryContent}"
-                th:with="gameInfo=|<div class='game-info' style='display:flex; align-items:center;'>
+    <!-- 내 스토리 내용을 하나의 박스에 표시 (내용이 길면 스크롤 생김) -->
+    <div class="story-box">
+      <div th:each="myStory : ${myStoryContent}" th:with="gameInfo=|<div class='game-info' style='display:flex; align-items:center;'>
                     <i class='bi bi-heart-fill me-1'></i> ${myStory.hp}
                     <i class='bi bi-coin me-1'></i> ${myStory.gold}
                     <i class='bi bi-map me-1'></i> ${myStory.currentLocation}
@@ -72,24 +71,21 @@
                 teacherContent=${myStory.teacherContent != null and myStory.teacherContent != ''} ?
                     |<hr><div class='teacher-content'>${myStory.teacherContent}</div>| : ''">
 
-                <!-- 사용자 입력 내용 -->
-                <p th:text="${myStory.userContent}"></p>
+        <!-- 사용자 입력 내용 -->
+        <p th:text="${myStory.userContent}"></p>
 
-                <!-- gptContent를 <p> 태그로 출력 (줄바꿈 유지) 및 popover 적용 -->
-                <p th:text="${myStory.gptContent}" style="white-space: pre-line;"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    data-bs-placement="top"
-                    data-bs-html="true"
-                    th:attr="data-bs-content=${gameInfo + inventoryBox + teacherContent}">
-                </p>
-            </div>
-        </div>
-
-
-
-
+        <!-- gptContent를 <p> 태그로 출력 (줄바꿈 유지) 및 popover 적용 -->
+        <p th:text="${myStory.gptContent}" style="white-space: pre-line;" data-bs-toggle="popover"
+          data-bs-trigger="hover" data-bs-placement="top" data-bs-html="true"
+          th:attr="data-bs-content=${gameInfo + inventoryBox + teacherContent}">
+        </p>
+      </div>
     </div>
+
+
+
+
+  </div>
 </body>
 
 </html>
