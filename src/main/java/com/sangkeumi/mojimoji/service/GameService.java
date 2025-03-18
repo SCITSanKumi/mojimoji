@@ -116,10 +116,6 @@ public class GameService {
     // DB에서 한자 객체 조회
     List<Kanji> kanjiList = kanjiRepository.findByKanjiIn(kanjiSet);
 
-    if (kanjiList.isEmpty()) {
-      throw new RuntimeException("해당 한자가 존재하지 않습니다.");
-    }
-
     usedBookKanjiRepository.saveAll(kanjiList.stream()
         .map(kanji -> UsedBookKanji.builder()
             .bookLine(bookLine)
