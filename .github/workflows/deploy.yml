@@ -17,7 +17,19 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: '17'  # 원하는 자바 버전
+      - name: Create application.properties
+  run: |
+    mkdir -p src/main/resources
+    cat <<EOF > src/main/resources/application.properties
+${{ secrets.APP_PROPERTIES }}
+EOF
+
+
+      # gradlew에 실행 권한 부여
+      - name: Grant execution permission for gradlew
+        run: chmod +x gradlew
 
       # (3) Gradle 빌드
       - name: Build JAR
