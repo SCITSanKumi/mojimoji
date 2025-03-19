@@ -53,12 +53,8 @@ jobs:
 
       # (9) 서버로 JAR 업로드 (구 SCP 프로토콜 -O, 디버깅 -v, 표준입력 차단 < /dev/null)
       - name: Upload jar to server
-        run: scp -v -O \
-          -o StrictHostKeyChecking=no \
-          -o UserKnownHostsFile=/dev/null \
-          -o UpdateHostKeys=no \
-          build/libs/mojimoji-0.0.1-SNAPSHOT.jar \
-          ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/ < /dev/null
+        run: scp -v -O -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no build/libs/mojimoji-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/ < /dev/null
+
 
       # (10) 서버에 업로드된 JAR 해시 출력
       - name: Check jar on server
