@@ -1,0 +1,50 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ "main" ]  # main 브랜치에 push될 때 실행
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # (1) Git 체크아웃
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      # (2) 자바 환경 설정
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'  # 원하는 자바 버전
+
+      # (3) Gradle 빌드
+      - name: Build JAR
+        run: |
+          ./gradlew clean build
+
+      # (4) SSH Agent 설정 (EC2 접속용)
+      - name: SSH Agent Setup
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      # (5) EC2 서버로 배포
+      - name: Deploy to EC2
+        run: |
+          # (5-1) EC2 서버에 JAR 업로드
+          scp -o StrictHostKeyChecking=no \
+            build/libs/mojimoji-0.0.1-SNAPSHOT.jar \
+            ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/
+
+          # (5-2) 기존 프로세스 종료
+          ssh ubuntu@${{ secrets.EC2_HOST }} "pkill -f 'mojimoji-0.0.1-SNAPSHOT.jar' || true"
+
+          # (5-3) 새 JAR 실행 (서버에 이미 /home/ubuntu/config/application.properties 가 존재한다고 가정)
+          ssh ubuntu@${{ secrets.EC2_HOST }} "\
+            cd /home/ubuntu && \
+            nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar \
+            --spring.config.location=/home/ubuntu/config/application.properties \
+            > /dev/null 2>&1 & \
+          "
