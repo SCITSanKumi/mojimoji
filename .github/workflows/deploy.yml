@@ -65,7 +65,7 @@ jobs:
 
       # (10) 기존 프로세스 종료
       - name: Kill existing process
-        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "pkill -f 'mojimoji-0.0.1-SNAPSHOT.jar' || true"
+        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "pkill -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' || true"
 
       # (11) 새 JAR 실행
       - name: Run new jar
