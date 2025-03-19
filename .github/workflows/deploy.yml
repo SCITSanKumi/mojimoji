@@ -11,11 +11,11 @@ jobs:
     steps:
       # (1) Git 체크아웃
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # (2) 자바 환경 설정
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -70,4 +70,3 @@ jobs:
       # (11) 새 JAR 실행
       - name: Run new jar
         run: ssh -n -f -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "cd /home/ubuntu && nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/config/application.properties > /dev/null 2>&1 &"
-
