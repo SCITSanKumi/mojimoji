@@ -69,5 +69,5 @@ jobs:
 
       # (11) 새 JAR 실행
       - name: Run new jar
-        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "cd /home/ubuntu && nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/config/application.properties > /dev/null 2>&1 &"
+        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "cd /home/ubuntu && nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/config/application.properties > /dev/null 2>&1 &" < /dev/null
 
