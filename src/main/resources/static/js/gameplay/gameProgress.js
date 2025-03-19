@@ -5,10 +5,12 @@ $(() => {
 
     const npcImages = {
         "마을 이장": "/image/npc_images/People1-7.png",
-        "퇴역 용사": "/image/npc_images/Actor1-3.png",
         "퇴역 용사2": "/image/npc_images/People3-8.png",
+        "퇴역 용사": "/image/npc_images/Actor1-3.png",
         "마을 사람": "/image/npc_images/People2-6.png",
         "마왕": "/image/npc_images/Monster-8.png",
+        "승려": "/image/npc_images/Actor2-7.png",
+        "마법사": "/image/npc_images/Actor3-8.png",
         "고죠 사토루": "https://i.namu.wiki/i/_x0r8tR6SjcSjIKCT_6Zsfl9WIXngll2_-229D7dNKkL_hAUOlUA8cK5ChdyWebjLQMJpJ7xkobRCCq0xj0khbdQggnkDSnXUIu6Tvy_AfCXUXrTKJ5B4vlqb7gpLHyVfGgqi9n_ibE9AJsjqimUnw.webp"
     };
 
@@ -203,7 +205,14 @@ $(() => {
                 contentDiv.addClass("player-content");
             } else {
                 // 해당 NPC의 이미지 가져오기 (없으면 기본 이미지)
-                let profileImgSrc = npcImages[currentSpeaker] || "/image/npc_images/Actor1-1_silhouette.png";
+                let profileImgSrc = "/image/npc_images/Actor1-1_silhouette.png";
+
+                for (const [key, value] of Object.entries(npcImages)) {
+                    if (currentSpeaker.includes(key)) {
+                        profileImgSrc = value;
+                        break;
+                    }
+                }
 
                 let headerDiv = $("<div>").addClass("npc-header");
                 let profileImg = $("<img>").attr("src", profileImgSrc).addClass("npc-profile");
