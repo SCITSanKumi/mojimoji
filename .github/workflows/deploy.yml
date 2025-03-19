@@ -19,6 +19,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'  # 원하는 자바 버전
+          
+      # gradlew에 실행 권한 부여
+      - name: Grant execution permission for gradlew
+        run: chmod +x gradlew
 
       # (3) Gradle 빌드
       - name: Build JAR
