@@ -20,47 +20,54 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      # (3) application.properties 생성 (Secrets 활용)
       - name: Create application.properties
         run: |
           cat <<EOF > src/main/resources/application.properties
           ${{ secrets.APP_PROPERTIES }}
           EOF
 
-      # gradlew에 실행 권한 부여
+      # (4) gradlew에 실행 권한 부여
       - name: Grant execution permission for gradlew
         run: chmod +x gradlew
 
-      # (3) Gradle 빌드
+      # (5) Gradle 빌드
       - name: Build JAR
         run: ./gradlew clean build
 
-      # (4) SSH Agent 설정 (EC2 접속용)
+      # (6) SSH Agent 설정 (EC2 접속용)
       - name: SSH Agent Setup
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          # 만약 SSH 키에 passphrase가 있다면 아래처럼 추가:
+          # ssh-passphrase: ${{ secrets.EC2_PASSPHRASE }}
 
-      # (5) 로컬 JAR 해시 출력
+      # (7) SSH 연결 테스트
+      - name: Test SSH connection
+        run: ssh -v -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "echo 'SSH connected successfully'" < /dev/null
+
+      # (8) 로컬 JAR 해시 출력
       - name: Print local jar checksum
         run: sha256sum build/libs/mojimoji-0.0.1-SNAPSHOT.jar
 
-      # (6) 서버로 JAR 업로드
+      # (9) 서버로 JAR 업로드 (디버깅 옵션 -v, 입력 차단 < /dev/null)
       - name: Upload jar to server
-        run: scp -o StrictHostKeyChecking=no build/libs/mojimoji-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/
+        run: scp -v -o StrictHostKeyChecking=no build/libs/mojimoji-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/ < /dev/null
 
-      # (7) 서버에 업로드된 JAR 해시 출력
+      # (10) 서버에 업로드된 JAR 해시 출력
       - name: Check jar on server
         run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "sha256sum /home/ubuntu/mojimoji-0.0.1-SNAPSHOT.jar"
 
-      # (8) 기존 프로세스 종료
+      # (11) 기존 프로세스 종료
       - name: Kill existing process
         run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "pkill -f 'mojimoji-0.0.1-SNAPSHOT.jar' || true"
 
-      # (9) 새 JAR 실행
+      # (12) 새 JAR 실행
       - name: Run new jar
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "\
             cd /home/ubuntu && \
             nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar \
             --spring.config.location=/home/ubuntu/config/application.properties \
-          > /dev/null 2>&1 &" < /dev/null
+            > /dev/null 2>&1 &" < /dev/null
