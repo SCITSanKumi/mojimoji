@@ -61,20 +61,13 @@ jobs:
       # (9) 서버에 업로드된 JAR 해시 출력 (ssh -v 디버그, 실패해도 계속)
       - name: Check jar on server
         continue-on-error: true
-        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no \
-          ubuntu@${{ secrets.EC2_HOST }} "sha256sum /home/ubuntu/mojimoji-0.0.1-SNAPSHOT.jar"
+        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "sha256sum /home/ubuntu/mojimoji-0.0.1-SNAPSHOT.jar"
 
       # (10) 기존 프로세스 종료
       - name: Kill existing process
-        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no \
-          ubuntu@${{ secrets.EC2_HOST }} "pkill -f 'mojimoji-0.0.1-SNAPSHOT.jar' || true"
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "pkill -f 'mojimoji-0.0.1-SNAPSHOT.jar' || true"
 
       # (11) 새 JAR 실행
       - name: Run new jar
-        run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no \
-            ubuntu@${{ secrets.EC2_HOST }} "\
-              cd /home/ubuntu && \
-              nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar \
-              --spring.config.location=/home/ubuntu/config/application.properties \
-              > /dev/null 2>&1 &" < /dev/null
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "cd /home/ubuntu && nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/config/application.properties > /dev/null 2>&1 &"
+
