@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted  # self-hosted runner에서 실행
+    runs-on: ubuntu-latest  # self-hosted runner에서 실행
 
     steps:
       # (1) 리포지토리 체크아웃
