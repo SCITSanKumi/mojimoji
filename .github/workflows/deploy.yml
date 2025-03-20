@@ -2,61 +2,73 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ "main" ]  # main 브랜치에 push될 때 실행
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # GitHub가 제공하는 호스팅 Runner 사용
 
     steps:
       # (1) Git 체크아웃
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # (2) 자바 환경 설정
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'  # 원하는 자바 버전
+          java-version: '17'
+
+      # (3) application.properties 생성 (Secrets 활용)
       - name: Create application.properties
-  run: |
-    mkdir -p src/main/resources
-    cat <<EOF > src/main/resources/application.properties
-${{ secrets.APP_PROPERTIES }}
-EOF
+        run: |
+          cat <<EOF > src/main/resources/application.properties
+          ${{ secrets.APP_PROPERTIES }}
+          EOF
 
-
-      # gradlew에 실행 권한 부여
+      # (4) gradlew에 실행 권한 부여
       - name: Grant execution permission for gradlew
         run: chmod +x gradlew
 
-      # (3) Gradle 빌드
+      # (5) Gradle 빌드
       - name: Build JAR
-        run: |
-          ./gradlew clean build
+        run: ./gradlew clean build
 
-      # (4) SSH Agent 설정 (EC2 접속용)
+      # (6) SSH Agent 설정 (EC2 접속용)
       - name: SSH Agent Setup
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          # SSH 키에 passphrase가 있다면 아래 옵션도 추가:
+          # ssh-passphrase: ${{ secrets.EC2_PASSPHRASE }}
 
-      # (5) EC2 서버로 배포
-      - name: Deploy to EC2
+      # (7) 로컬 JAR 해시 출력 (선택, 실패해도 계속)
+      - name: Print local jar checksum
+        continue-on-error: true
+        run: sha256sum build/libs/mojimoji-0.0.1-SNAPSHOT.jar
+
+        #(8) 기존 프로세스 종료
+      - name: Kill existing process
+        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r pkill -f || true"
+
+      # (9) 서버로 JAR 업로드 (rsync 사용)
+      - name: Upload jar with rsync
         run: |
-          # (5-1) EC2 서버에 JAR 업로드
-          scp -o StrictHostKeyChecking=no \
+          # 필요 시 rsync 설치
+          # sudo apt-get update && sudo apt-get install -y rsync
+
+          rsync -avz \
+            -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no" \
             build/libs/mojimoji-0.0.1-SNAPSHOT.jar \
             ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/
 
-          # (5-2) 기존 프로세스 종료
-          ssh ubuntu@${{ secrets.EC2_HOST }} "pkill -f 'mojimoji-0.0.1-SNAPSHOT.jar' || true"
+      # (10) 서버에 업로드된 JAR 해시 출력 (ssh -v 디버그, 실패해도 계속)
+      - name: Check jar on server
+        continue-on-error: true
+        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "sha256sum /home/ubuntu/mojimoji-0.0.1-SNAPSHOT.jar"
 
-          # (5-3) 새 JAR 실행 (서버에 이미 /home/ubuntu/config/application.properties 가 존재한다고 가정)
-          ssh ubuntu@${{ secrets.EC2_HOST }} "\
-            cd /home/ubuntu && \
-            nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar \
-            --spring.config.location=/home/ubuntu/config/application.properties \
-            > /dev/null 2>&1 & \
-          "
+
+      # (11) 새 JAR 실행
+      - name: Run new jar
+        run: ssh -n -f -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "cd /home/ubuntu && nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/config/application.properties > /dev/null 2>&1 &"
