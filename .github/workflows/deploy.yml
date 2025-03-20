@@ -50,6 +50,7 @@ jobs:
 
         #(8) 기존 프로세스 종료
       - name: Kill existing process
+        continue-on-error: true
         run: |
           ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "
             # 먼저 'java.*mojimoji-0.0.1-SNAPSHOT.jar' 프로세스가 있는지 체크
