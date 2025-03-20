@@ -40,6 +40,7 @@ $(() => {
 
             let quizNowProc = $('.quizNow').html();
             quizNowProc = quizNowProc.replace('○', '●');
+            $('.kunyomi-input').focus();
             $('.quizNow').html(quizNowProc);
 
 

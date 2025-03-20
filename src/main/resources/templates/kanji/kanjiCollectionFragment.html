@@ -22,8 +22,13 @@
                 ">
             <div class="card-face card-front">
                 <span class="kanji" th:text="${kanji.kanji}">水</span>
-                <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
-                <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
+                <th:block th:if="${isMine}">
+                    <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
+                    <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
+                </th:block>
+                <th:block th:unless="${isMine}">
+                    <span class="bookMark3"> </span>
+                </th:block>
                 <hr>
                 <div class="kanjiExplain">
                     <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
@@ -38,8 +43,14 @@
                 <div class="toKanjiList">
                     <div class="detail-header">
                         <div class="detailKanjiId" th:text="'No. ' +${kanji.kanjiId}"></div>
-                        <span class="bookMark2" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold;">★</span>
-                        <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;">☆</span>
+                        <th:block th:if="${isMine}">
+                            <span class="bookMark2" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold;">★</span>
+                            <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;">☆</span>
+                        </th:block>
+                        <th:block th:unless="${isMine}">
+                            <span class="bookMark2"> </span>
+                        </th:block>
+
                         <div class="detailJlptRank" th:text="${kanji.jlptRank}"></div>
                     </div>
                     <div class="detailKanjiCard">
@@ -65,8 +76,13 @@
             <div class="card-face card-front">
                 <span class="kanji" th:text="${kanji.kanji}">火</span>
                 <!-- <span style="position: sticky; left: 91%; bottom: 93%;">ㅤ</span> -->
-                <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
-                <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
+                <th:block th:if="${isMine}">
+                    <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
+                    <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
+                </th:block>
+                <th:block th:unless="${isMine}">
+                    <span class="bookMark3"> </span>
+                </th:block>
                 <hr>
                 <div class="kanjiExplain">
                     <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
@@ -79,8 +95,13 @@
             <div class="card-face card-back">
                 <div class="card-back-inner">
                     <div class="card-back-content">
-                        <span class="bookMark2" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: white;">★</span>
-                        <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: white;">☆</span>
+                        <th:block th:if="${isMine}">
+                            <span class="bookMark2" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: white;">★</span>
+                            <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: white;">☆</span>
+                        </th:block>
+                        <th:block th:unless="${isMine}">
+                            <span class="bookMark2"> </span>
+                        </th:block>
                         <h2 class="card-back-title">[[${kanji.kanji}]]</h2>
                     </div>
                 </div>

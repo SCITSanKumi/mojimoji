@@ -1,0 +1,87 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # GitHub가 제공하는 호스팅 Runner 사용
+
+    steps:
+      # (1) Git 체크아웃
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # (2) 자바 환경 설정
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # (3) application.properties 생성 (Secrets 활용)
+      - name: Create application.properties
+        run: |
+          cat <<EOF > src/main/resources/application.properties
+          ${{ secrets.APP_PROPERTIES }}
+          EOF
+
+      # (4) gradlew에 실행 권한 부여
+      - name: Grant execution permission for gradlew
+        run: chmod +x gradlew
+
+      # (5) Gradle 빌드
+      - name: Build JAR
+        run: ./gradlew clean build
+
+      # (6) SSH Agent 설정 (EC2 접속용)
+      - name: SSH Agent Setup
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          # SSH 키에 passphrase가 있다면 아래 옵션도 추가:
+          # ssh-passphrase: ${{ secrets.EC2_PASSPHRASE }}
+
+      # (7) 로컬 JAR 해시 출력 (선택, 실패해도 계속)
+      - name: Print local jar checksum
+        continue-on-error: true
+        run: sha256sum build/libs/mojimoji-0.0.1-SNAPSHOT.jar
+
+        #(8) 기존 프로세스 종료
+      - name: Kill existing process
+        run: |
+          ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "
+            echo 'Sending SIGTERM to old jar...'
+            pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r kill -15 || true
+
+            echo 'Waiting up to 10s for graceful shutdown...'
+            sleep 10
+
+            # 혹시 아직 살아 있으면 강제 종료(kill -9)
+            if pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar'; then
+              echo 'Process still running. Forcing kill -9...'
+              pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r kill -9
+            fi
+          "
+
+      # (9) 서버로 JAR 업로드 (rsync 사용)
+      - name: Upload jar with rsync
+        run: |
+          # 필요 시 rsync 설치
+          # sudo apt-get update && sudo apt-get install -y rsync
+
+          rsync -avz \
+            -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no" \
+            build/libs/mojimoji-0.0.1-SNAPSHOT.jar \
+            ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/
+
+      # (10) 서버에 업로드된 JAR 해시 출력 (ssh -v 디버그, 실패해도 계속)
+      - name: Check jar on server
+        continue-on-error: true
+        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "sha256sum /home/ubuntu/mojimoji-0.0.1-SNAPSHOT.jar"
+
+
+      # (11) 새 JAR 실행
+      - name: Run new jar
+        run: ssh -n -f -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "cd /home/ubuntu && nohup java -jar mojimoji-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/config/application.properties > /dev/null 2>&1 &"

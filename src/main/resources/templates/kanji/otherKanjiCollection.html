@@ -15,6 +15,7 @@
   <!-- 공통 리소스 (CSS, 폰트 preload) -->
   <link rel="stylesheet" href="../../../static/css/main.css" th:href="@{/css/main.css}">
   <link rel="preload" href="/fonts/PretendardJPVariable.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" th:href="@{/css/collection.css}">
   <style>
     #top {
       text-align: center;
@@ -457,6 +458,8 @@
 
           <div class="card-face card-front">
             <span class="kanji" th:text="${kanji.kanji}">水</span>
+            <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
+                <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
             <hr>
             <div class="kanjiExplain">
               <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
@@ -496,6 +499,8 @@
         <div th:unless="${kanji.collectedCount} > 0" th:class="notKanjiCard" th:classappend="border-lv0">
           <div class="card-face card-front">
             <span class="kanji" th:text="${kanji.kanji}">火</span>
+            <span class="bookMark3" th:value="${kanji.kanjiId}" th:if="${kanji.bookmarked} == 1" style="color: gold; position: sticky; left: 91%; bottom: 93%;">★</span>
+                <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
             <hr>
             <div class="kanjiExplain">
               <div class="category">카테고리 : <span th:text="${kanji.category}">?</span></div>
@@ -508,7 +513,7 @@
           <div class="card-face card-back">
             <div class="card-back-inner">
               <div class="card-back-content">
-                <h2 class="card-back-title">?</h2>
+                <h2 class="card-back-title">[[${kanji.kanji}]]</h2>
               </div>
             </div>
           </div>
@@ -744,7 +749,7 @@
       }
       function getCenterPos(rect) {
         const scale = 1.7;
-        const w = rect.width * scale;
+        const w = rect.width * scale * 0.85;
         const h = rect.height * scale;
         const l = (window.innerWidth - w) / 2;
         const t = (window.innerHeight - h) / 2;

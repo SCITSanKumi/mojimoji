@@ -284,7 +284,7 @@
 
         .recommendation-section .mb-4 {
             font-size: 3rem;
-            font-family: 'NanumGothicBold', sans-serif;
+            font-family: 'DoHyeon-Regular', ttf !important;
             font-weight: 550;
             margin-top: 0;
             padding-top: 0.5rem;
@@ -330,9 +330,7 @@
         /* 하단 가입 유도 버튼 */
 
         .join_button {
-            margin-top: 30px;
-            margin-bottom: 20px;
-            height: 270x;
+            height: 250x;
             background-color: #d8ebff;
             padding: 60px 0;
         }
