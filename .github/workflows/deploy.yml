@@ -50,7 +50,14 @@ jobs:
 
         #(8) 기존 프로세스 종료
       - name: Kill existing process
-        run: ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r pkill -f || true"
+        run: |
+          # SSH로 기존 프로세스 찾아서 종료
+          ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "\
+            pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r pkill -f || true"
+          
+          # 프로세스가 종료될 시간을 주기 위해 5초 대기
+          echo "Waiting 5 seconds for the old process to fully terminate..."
+          sleep 5
 
       # (9) 서버로 JAR 업로드 (rsync 사용)
       - name: Upload jar with rsync
