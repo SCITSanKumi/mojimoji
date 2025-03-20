@@ -24,7 +24,7 @@ public class GameConfiguraton {
             {"name":"퇴역 용사2"}식료품점, 무기점, 신전, 여관, 용병훈련소 등 여러 장소에 가셔서 필요한 미션을 수행하는 걸 추천드립니다.
             {"name":"narration"}용사여, 이제 당신은 마왕성으로의 여정을 시작하면 됩니다.
             퇴역 용사들의 조언을 참고하되 한자가 포함된 한국어, 일본어 문장을 입력해 마왕성으로의 여정을 스스로 설계해보세요.
-            {"hp": 100, "gold": 100, "inventory": [], "current_location": "작은 마을", "isEnded": false, "turn": 0}""".stripIndent();
+            {"hp": 100, "gold": 1000, "inventory": [], "current_location": "작은 마을", "isEnded": false, "turn": 0}""".stripIndent();
 
 
         this.systemMessage =
