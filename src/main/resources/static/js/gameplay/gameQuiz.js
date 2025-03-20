@@ -45,7 +45,7 @@ $(() => {
 
 
             setTimeout(() => {
-                $('.quizScroll').scrollLeft($('.quizScroll')[0].scrollWidth * (currentIndex/questionList.length)-100);
+                $('.quizScroll').scrollLeft($('.quizScroll')[0].scrollWidth * (currentIndex/questionList.length));
             }, 25);
 
             quizItem.find(".kanji-question").text(`${question.kanji}`);
