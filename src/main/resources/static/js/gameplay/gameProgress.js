@@ -8,9 +8,17 @@ $(() => {
         "퇴역 용사2": "/image/npc_images/People3-8.png",
         "퇴역 용사": "/image/npc_images/Actor1-3.png",
         "마을 사람": "/image/npc_images/People2-6.png",
+        "무기점": "/image/npc_images/People4-5.png",
+        "용사": "/image/npc_images/Actor1-1.png",
         "마왕": "/image/npc_images/Monster-8.png",
         "승려": "/image/npc_images/Actor2-7.png",
-        "마법사": "/image/npc_images/Actor3-8.png",
+        "마법사": "/image/npc_images/Actor2-5.png",
+        "도적": "/image/npc_images/Actor1-5.png",
+        "전사": "/image/npc_images/Actor1-3.png",
+        "궁수": "/image/npc_images/Actor1-6.png",
+        "해적": "/image/npc_images/People2-4.png",
+        "무도가": "/image/npc_images/People2-1.png",
+        "축구 선수": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT40kfM7DbbZanc_rgJk_bIRPudIUpJVYtQOg&s",
         "고죠 사토루": "https://i.namu.wiki/i/_x0r8tR6SjcSjIKCT_6Zsfl9WIXngll2_-229D7dNKkL_hAUOlUA8cK5ChdyWebjLQMJpJ7xkobRCCq0xj0khbdQggnkDSnXUIu6Tvy_AfCXUXrTKJ5B4vlqb7gpLHyVfGgqi9n_ibE9AJsjqimUnw.webp"
     };
 
