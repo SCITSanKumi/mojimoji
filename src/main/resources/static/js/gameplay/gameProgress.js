@@ -9,6 +9,7 @@ $(() => {
         "퇴역 용사": "/image/npc_images/Actor1-3.png",
         "마을 사람": "/image/npc_images/People2-6.png",
         "무기점": "/image/npc_images/People4-5.png",
+        "담당자": "/image/npc_images/People4-4.png",
         "용사": "/image/npc_images/Actor1-1.png",
         "마왕": "/image/npc_images/Monster-8.png",
         "승려": "/image/npc_images/Actor2-7.png",
