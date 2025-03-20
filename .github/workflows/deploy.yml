@@ -52,16 +52,21 @@ jobs:
       - name: Kill existing process
         run: |
           ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o UpdateHostKeys=no ubuntu@${{ secrets.EC2_HOST }} "
-            echo 'Sending SIGTERM to old jar...'
-            pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r kill -15 || true
+            # 먼저 'java.*mojimoji-0.0.1-SNAPSHOT.jar' 프로세스가 있는지 체크
+            if pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' > /dev/null; then
+              echo 'Sending SIGTERM to old jar...'
+              pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r kill -15 || true
 
-            echo 'Waiting up to 10s for graceful shutdown...'
-            sleep 10
+              echo 'Waiting up to 10s for graceful shutdown...'
+              sleep 10
 
-            # 혹시 아직 살아 있으면 강제 종료(kill -9)
-            if pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar'; then
-              echo 'Process still running. Forcing kill -9...'
-              pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r kill -9
+              # 만약 여전히 살아 있다면 강제 종료(kill -9)
+              if pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' > /dev/null; then
+                echo 'Process still running. Forcing kill -9...'
+                pgrep -f 'java.*mojimoji-0.0.1-SNAPSHOT.jar' | xargs -r kill -9
+              fi
+            else
+              echo 'No existing jar. Skipping kill.'
             fi
           "
 
