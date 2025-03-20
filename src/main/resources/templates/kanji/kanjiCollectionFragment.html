@@ -27,7 +27,7 @@
                     <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
                 </th:block>
                 <th:block th:unless="${isMine}">
-                    <span class="bookMark3"> </span>
+                    <span class="bookMark3" style="position: sticky; left: 91%; bottom: 93%">ㅤ</span>
                 </th:block>
                 <hr>
                 <div class="kanjiExplain">
@@ -48,7 +48,7 @@
                             <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;">☆</span>
                         </th:block>
                         <th:block th:unless="${isMine}">
-                            <span class="bookMark2"> </span>
+                            <span class="bookMark2">ㅤ</span>
                         </th:block>
 
                         <div class="detailJlptRank" th:text="${kanji.jlptRank}"></div>
@@ -81,7 +81,7 @@
                     <span class="bookMark3" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: black;  position: sticky; left: 91%; bottom: 93%">☆</span>
                 </th:block>
                 <th:block th:unless="${isMine}">
-                    <span class="bookMark3"> </span>
+                    <span class="bookMark3" style="position: sticky; left: 91%; bottom: 93%;">ㅤ</span>
                 </th:block>
                 <hr>
                 <div class="kanjiExplain">
@@ -100,7 +100,7 @@
                             <span class="bookMark2" th:value="${kanji.kanjiId}" th:unless="${kanji.bookmarked} == 1" style="color: white;">☆</span>
                         </th:block>
                         <th:block th:unless="${isMine}">
-                            <span class="bookMark2"> </span>
+                            <span class="bookMark2">ㅤ</span>
                         </th:block>
                         <h2 class="card-back-title">[[${kanji.kanji}]]</h2>
                     </div>
