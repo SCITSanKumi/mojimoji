@@ -18,6 +18,7 @@
   - [3) ストーリー共有 & 掲示板](#3-ストーリー共有--掲示板)
   - [4) ランキングシステム](#4-ランキングシステム)
   - [5) マイページ & 統計](#5-マイページ--統計)
+- [紹介動画](#紹介動画)
 - [技術スタック](#技術スタック)
 - [ライセンス](#ライセンス)
 - [貢献者 (Contributors)](#貢献者-contributors)
@@ -69,12 +70,18 @@
 
 ---
 
+## 紹介動画
+
+[![mojimoji 紹介動画](https://img.youtube.com/vi/pi9H5oWwjZQ/0.jpg)](https://youtu.be/pi9H5oWwjZQ)
+
+---
+
 ## 技術スタック
 
 | 分野                   | 使用技術                                             |
 | ---------------------- | ------------------------------------------------------ |
 | **Frontend/Backend**   | **Java 17**, Spring Boot, Thymeleaf, HTML5, CSS3, JavaScript, Bootstrap |
-| **Database**           | MySQL または H2                                       |
+| **Database**           | MySQL, H2                                       |
 | **Infra**              | AWS EC2/RDS/NGINX、ローカル環境                          |
 | **ライブラリ & API**   | GSAP, anime.js, VanillaTilt, jQuery, OpenAI GPT, OAuth2.0 など      |
 
